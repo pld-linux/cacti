@@ -1,3 +1,4 @@
+%include	/usr/lib/rpm/macros.perl
 Summary:	Cacti is a php frontend for rrdtool
 Summary(pl):	Cacti - frontend w PHP do rrdtoola
 Name:		cacti
@@ -10,9 +11,6 @@ Source0:	http://www.raxnet.net/downloads/%{name}-%{version}.tar.gz
 #Patch0:		%{name}-%{version}-paths.patch.bz2
 URL:		http://www.raxnet.net/
 BuildRequires:	rpm-perlprov
-# This one is only to avoid 309 lines of error messages
-# It should be removed the minute generators are fixed
-BuildRequires:	rpm-php-pearprov
 Requires:	libnet-snmp50
 Requires:	mysql
 Requires:	net-snmp-utils
