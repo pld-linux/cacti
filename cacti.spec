@@ -1,3 +1,5 @@
+# TODO:
+# - SECURITY: http://securitytracker.com/alerts/2004/Aug/1010961.html
 %include	/usr/lib/rpm/macros.perl
 Summary:	Cacti is a php frontend for rrdtool
 Summary(pl):	Cacti - frontend w PHP do rrdtoola
