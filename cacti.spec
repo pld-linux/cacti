@@ -1,7 +1,7 @@
 Summary:	Cacti is a php frontend for rrdtool
 Summary(pl):	Cacti - frontend w PHP do rrdtoola
 Name:		cacti
-Version:	0.8.1
+Version:	0.8.2a
 Release:	1
 License:	GPL
 Group:		Applications/WWW
@@ -9,7 +9,7 @@ Source0:	http://www.raxnet.net/downloads/%{name}-%{version}.tar.gz
 # Source0-md5:	d87613690e82e025412de6d747b0674e
 #Patch0:		%{name}-%{version}-paths.patch.bz2
 URL:		http://www.raxnet.net/
-BuildRequires:	perl
+BuildRequires:	rpm-php-pearprov
 Requires:	libnet-snmp50
 Requires:	mysql
 Requires:	net-snmp-utils
@@ -51,15 +51,15 @@ tworzeniu wykresów ruchu przy u¿yciu MRTG.
 
 %build
 # clean up CVS stuff
-for i in `find . -type d -name CVS` `find . -type f -name .cvs\*` `find . -type f -name .#\*`; do
-    if [ -e "$i" ]; then rm -r $i; fi >&/dev/null
-done
+#for i in `find . -type d -name CVS` `find . -type f -name .cvs\*` `find . -type f -name .#\*`; do
+#	if [ -e "$i" ]; then rm -r $i; fi >/dev/null 2>&1
+#done
 
 # fix dir perms
-find . -type d | xargs chmod 755
+#find . -type d | xargs chmod 755
 
 # fix file perms
-find . -type f | xargs chmod 644
+#find . -type f | xargs chmod 644
 
 %install
 rm -rf $RPM_BUILD_ROOT
