@@ -39,7 +39,7 @@ cacti handles the data gathering also. There is also SNMP support for
 those used to creating traffic graphs with MRTG.
 
 %description -l pl
-Cacti to pe³ny frontent do rrdtoola, zapamiêtuj±cy wszystkie
+Cacti to pe³ny frontend do rrdtoola, zapamiêtuj±cy wszystkie
 informacje potrzebne do tworzenia wykresów i wype³niaj±ce je danymi w
 bazie MySQL.
 
