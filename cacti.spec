@@ -1,11 +1,12 @@
 # TODO:
-# - SECURITY: http://securitytracker.com/alerts/2004/Aug/1010961.html
+# - move config files to /etc/%{name}
+# - add apache config
 %include	/usr/lib/rpm/macros.perl
 Summary:	Cacti is a php frontend for rrdtool
 Summary(pl):	Cacti - frontend w PHP do rrdtoola
 Name:		cacti
-Version:	0.8.4
-Release:	2
+Version:	0.8.6
+Release:	0.1
 License:	GPL
 Group:		Applications/WWW
 Source0:	http://www.raxnet.net/downloads/%{name}-%{version}.tar.gz
@@ -26,7 +27,7 @@ Requires:	webserver
 BuildArch:	noarch
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
-%define		webadminroot /srv/httpd
+%define		webadminroot /usr/share/%{name}
 
 %description
 Cacti is a complete frondend to rrdtool, it stores all of the
