@@ -9,6 +9,7 @@ Source0:	http://www.raxnet.net/downloads/%{name}-%{version}.tar.gz
 # Source0-md5:	2f10bfc2b01f1b11866f319fe74b93e7
 #Patch0:		%{name}-%{version}-paths.patch.bz2
 URL:		http://www.raxnet.net/
+BuildRequires:	rpm-perlprov
 BuildRequires:	rpm-php-pearprov
 Requires:	libnet-snmp50
 Requires:	mysql
