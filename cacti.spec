@@ -11,7 +11,7 @@ Source0:	http://www.raxnet.net/downloads/%{name}-%{version}.tar.gz
 #Patch0:		%{name}-%{version}-paths.patch.bz2
 URL:		http://www.raxnet.net/
 BuildRequires:	rpm-perlprov
-Requires:	libnet-snmp50
+#Requires:	libnet-snmp50
 Requires:	mysql
 Requires:	net-snmp-utils
 Requires:	net-snmp
