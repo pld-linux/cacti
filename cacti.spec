@@ -10,7 +10,6 @@ Source0:	http://www.raxnet.net/downloads/%{name}-%{version}.tar.gz
 #Patch0:		%{name}-%{version}-paths.patch.bz2
 URL:		http://www.raxnet.net/
 BuildRequires:	perl
-Requires:	webserver
 Requires:	libnet-snmp50
 Requires:	mysql
 Requires:	net-snmp-utils
@@ -20,6 +19,7 @@ Requires:	php-gd
 Requires:	php-mysql
 Requires:	php-snmp
 Requires:	rrdtool
+Requires:	webserver
 BuildArch:	noarch
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -63,9 +63,9 @@ find . -type f | xargs chmod 644
 
 %install
 rm -rf $RPM_BUILD_ROOT
-
 install -d $RPM_BUILD_ROOT%{webadminroot}/%{name}
-cp -aRf * $RPM_BUILD_ROOT%{webadminroot}/%{name}/
+
+cp -aRf * $RPM_BUILD_ROOT%{webadminroot}/%{name}
 
 %clean
 rm -rf $RPM_BUILD_ROOT
