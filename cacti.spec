@@ -1,43 +1,44 @@
-%define name	cacti
-%define version	0.6.8a
-%define release	3mdk
-%define webadminroot /var/www/html/admin
-
 Summary:	Cacti is a php frontend for rrdtool
-Name:		%{name}
-Version:	%{version}
-Release:	%{release}
+Name:		cacti
+Version:	0.6.8a
+Release:	4
 License:	GPL
-Group:		System/Servers
+Group:		Applications/WWW
+Source0:	http://www.raxnet.net/downloads/%{name}-%{version}.tar.gz
+# Source0-md5:	8466cf3dbd3125778a2f4f2be2f73e38
+#Patch0:		%{name}-%{version}-paths.patch.bz2
 URL:		http://www.raxnet.net/
-Source0:	%{name}-%{version}.tar.bz2
-Patch0:		%{name}-%{version}-paths.patch.bz2
-Requires:	webserver mysqlserver mod_php php php-common php-gd php-mysql php-snmp
-Requires:	net-snmp-utils libnet-snmp50 net-snmp net-snmp-mibs
-Requires:	librrdtool0 rrdtool
 BuildRequires:	perl
-BuildRoot:	%{_tmppath}/%{name}-%{version}-buildroot
+Requires:	webserver
+Requires:	libnet-snmp50
+Requires:	mysql
+Requires:	net-snmp-utils
+Requires:	net-snmp
+Requires:	php
+Requires:	php-gd
+Requires:	php-mysql
+Requires:	php-snmp
+Requires:	rrdtool
 BuildArch:	noarch
-Prefix:		%{webadminroot}
+BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
+
+%define		webadminroot /home/services/httpd
 
 %description
 Cacti is a complete frondend to rrdtool, it stores all of the
-nessesary information to create graphs and populate them with
-data in a MySQL database.
+nessesary information to create graphs and populate them with data in
+a MySQL database.
 
-The frontend is completely PHP driven. Along with being able
-to maintain Graphs, Data Sources, and Round Robin Archives in
-a database, cacti handles the data gathering also. There is
-also SNMP support for those used to creating traffic graphs
-with MRTG.
+The frontend is completely PHP driven. Along with being able to
+maintain Graphs, Data Sources, and Round Robin Archives in a database,
+cacti handles the data gathering also. There is also SNMP support for
+those used to creating traffic graphs with MRTG.
 
 %prep
-
 %setup -q
-%patch0 -p1
+#%patch0 -p1
 
 %build
-
 # clean up CVS stuff
 for i in `find . -type d -name CVS` `find . -type f -name .cvs\*` `find . -type f -name .#\*`; do
     if [ -e "$i" ]; then rm -r $i; fi >&/dev/null
@@ -50,34 +51,19 @@ find . -type d | xargs chmod 755
 find . -type f | xargs chmod 644
 
 %install
-[ "%{buildroot}" != "/" ] && rm -rf %{buildroot}
+rm -rf $RPM_BUILD_ROOT
 
-mkdir -p %{buildroot}%{webadminroot}/%{name}
-cp -aRf * %{buildroot}%{webadminroot}/%{name}/
+install -d $RPM_BUILD_ROOT%{webadminroot}/%{name}
+cp -aRf * $RPM_BUILD_ROOT%{webadminroot}/%{name}/
 
 %clean
-[ "%{buildroot}" != "/" ] && rm -rf %{buildroot} 
+rm -rf $RPM_BUILD_ROOT
 
 %files
-%defattr(-, root, root)
+%defattr(644,root,root,755)
 %doc docs/CHANGELOG docs/CONTRIB docs/README
-%config(noreplace) %attr(0644,apache,apache) %{webadminroot}/%{name}/log/rrd.log
-%config(noreplace) %attr(0644,root,root) %{webadminroot}/%{name}/rra/.placeholder
-%config(noreplace) %attr(0644,apache,apache) %{webadminroot}/%{name}/include/config.php
+%dir %{webadminroot}/%{name}
+%config(noreplace) %verify(not size mtime md5) %attr(644,http,http) %{webadminroot}/%{name}/log/rrd.log
+%config(noreplace) %verify(not size mtime md5) %{webadminroot}/%{name}/rra/.placeholder
+%config(noreplace) %verify(not size mtime md5) %attr(644,http,http) %{webadminroot}/%{name}/include/config.php
 %{webadminroot}/%{name}/*
-
-%changelog
-* Thu Jan 16 2003 Oden Eriksson <oden.eriksson@kvikkjokk.net> 0.6.8a-3mdk
-- build release
-
-* Thu Sep 19 2002 Oden Eriksson <oden.eriksson@kvikkjokk.net> 0.6.8a-2mdk
-- misc spec file fixes
-- install in common and relocatable %%{webadminroot}/ directory
-
-* Wed Sep 18 2002 Oden Eriksson <oden.eriksson@kvikkjokk.net> 0.6.8a-1mdk
-- security release
-- do not require non existant php extensions
-- misc spec file fixes 
-
-* Sun May 12 2002 Oden Eriksson <oden.eriksson@kvikkjokk.net> 0.6.8-1mdk
-- initial cooker contrib
