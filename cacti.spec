@@ -6,7 +6,7 @@ Release:	1
 License:	GPL
 Group:		Applications/WWW
 Source0:	http://www.raxnet.net/downloads/%{name}-%{version}.tar.gz
-# Source0-md5:	d87613690e82e025412de6d747b0674e
+# Source0-md5:	2f10bfc2b01f1b11866f319fe74b93e7
 #Patch0:		%{name}-%{version}-paths.patch.bz2
 URL:		http://www.raxnet.net/
 BuildRequires:	rpm-php-pearprov
