@@ -5,12 +5,12 @@
 Summary:	Cacti is a PHP frontend for rrdtool
 Summary(pl):	Cacti - frontend w PHP do rrdtoola
 Name:		cacti
-Version:	0.8.6
+Version:	0.8.6c
 Release:	0.1
 License:	GPL
 Group:		Applications/WWW
 Source0:	http://www.cacti.net/downloads/%{name}-%{version}.tar.gz
-# Source0-md5:	538c648b985a3b0ea9d74909f082798d
+# Source0-md5:	f48b1cc12ebdf96358563760c812e227
 URL:		http://www.cacti.net/
 BuildRequires:	rpm-perlprov
 Requires:	mysql
@@ -67,7 +67,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %doc docs/CHANGELOG docs/CONTRIB docs/README
 %dir %{webadminroot}/%{name}
-%config(noreplace) %verify(not size mtime md5) %attr(644,http,http) %{webadminroot}/%{name}/log/rrd.log
+%config(noreplace) %verify(not size mtime md5) %attr(644,http,http) %{webadminroot}/%{name}/log/cacti.log
 %config(noreplace) %verify(not size mtime md5) %{webadminroot}/%{name}/rra/.placeholder
 %config(noreplace) %verify(not size mtime md5) %attr(644,http,http) %{webadminroot}/%{name}/include/config.php
 %{webadminroot}/%{name}/*
