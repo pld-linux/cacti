@@ -9,9 +9,9 @@ Version:	0.8.6
 Release:	0.1
 License:	GPL
 Group:		Applications/WWW
-Source0:	http://www.raxnet.net/downloads/%{name}-%{version}.tar.gz
-# Source0-md5:	afa100acd57db792dd65f4443268a64d
-URL:		http://www.raxnet.net/
+Source0:	http://www.cacti.net/downloads/%{name}-%{version}.tar.gz
+# Source0-md5:	538c648b985a3b0ea9d74909f082798d
+URL:		http://www.cacti.net/
 BuildRequires:	rpm-perlprov
 Requires:	mysql
 Requires:	net-snmp-utils
