@@ -66,8 +66,12 @@ rm -rf $RPM_BUILD_ROOT
 %files
 %defattr(644,root,root,755)
 %doc docs/CHANGELOG docs/CONTRIB docs/README
+%dir %{webadminroot}
 %dir %{webadminroot}/%{name}
+%dir %{webadminroot}/%{name}/log
 %config(noreplace) %verify(not size mtime md5) %attr(644,http,http) %{webadminroot}/%{name}/log/cacti.log
+%dir %{webadminroot}/%{name}/rra
 %config(noreplace) %verify(not size mtime md5) %{webadminroot}/%{name}/rra/.placeholder
+%dir %{webadminroot}/%{name}/include
 %config(noreplace) %verify(not size mtime md5) %attr(644,http,http) %{webadminroot}/%{name}/include/config.php
 %{webadminroot}/%{name}/*
