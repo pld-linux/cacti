@@ -1,6 +1,7 @@
 # TODO:
 # - move config files to /etc/%{name}
 # - add apache config
+# - security http://security.gentoo.org/glsa/glsa-200506-20.xml
 %include	/usr/lib/rpm/macros.perl
 Summary:	Cacti is a PHP frontend for rrdtool
 Summary(pl):	Cacti - frontend w PHP do rrdtoola
