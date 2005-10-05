@@ -1,0 +1,34 @@
+diff -ruBbd cacti-0.8.6g/graph_view.php cacti-0.8.6g-patched/graph_view.php
+--- cacti-0.8.6g/graph_view.php	2005-09-08 19:56:25.000000000 -0400
++++ cacti-0.8.6g-patched/graph_view.php	2005-09-13 22:14:01.000000000 -0400
+@@ -374,7 +374,7 @@
+ 
+ 	<tr bgcolor="<?php print $colors["panel"];?>">
+ 		<form name="form_graph_id" method="POST" onSubmit='form_graph(document.graphs,document.form_graph_id)'>
+-		<input type='hidden' name='graph_list' value='<? print $graph_list_text; ?>'>
++		<input type='hidden' name='graph_list' value='<?php print $graph_list_text; ?>'>
+ 		<input type='hidden' name='graph_add' value=''>
+ 		<input type='hidden' name='graph_remove' value=''>
+ 		<td>
+@@ -564,10 +564,10 @@
+ 	<input type='hidden' name='page' value='1'>
+ 	<input type='hidden' name='style' value='selective'>
+ 	<input type='hidden' name='action' value='preview'>
+-	<input type='hidden' name='graph_list' value='<? print $graph_list_text; ?>'>
++	<input type='hidden' name='graph_list' value='<?php print $graph_list_text; ?>'>
+ 	<input type='hidden' name='graph_add' value=''>
+ 	<input type='hidden' name='graph_remove' value=''>
+-	</form><?;
++	</form><?php
+ 
+ 	break;
+ }
+diff -ruBbd cacti-0.8.6g/include/html/inc_graph_view_filter_table.php cacti-0.8.6g-patched/include/html/inc_graph_view_filter_table.php
+--- cacti-0.8.6g/include/html/inc_graph_view_filter_table.php	2005-09-08 19:56:24.000000000 -0400
++++ cacti-0.8.6g-patched/include/html/inc_graph_view_filter_table.php	2005-09-13 22:14:25.000000000 -0400
+@@ -1,4 +1,4 @@
+-	<? if (empty($_REQUEST["host_id"])) { $_REQUEST["host_id"] = 0; } 
++	<?php if (empty($_REQUEST["host_id"])) { $_REQUEST["host_id"] = 0; }
+ 	if (empty($_REQUEST["filter"])) { $_REQUEST["filter"] = ""; } ?>
+ 	<tr bgcolor="<?php print $colors["panel"];?>">
+ 		<form name="form_graph_id" method="post">
