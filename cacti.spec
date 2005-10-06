@@ -104,7 +104,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(640,root,http) %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/%{name}/%{name}.cfg
 %attr(750,root,http) %dir /var/log/%{name}
 %attr(660,root,http) %ghost /var/log/%{name}/*.log
-%attr(750,root,root) %dir /var/lib/%{name}
+%attr(750,root,http) %dir /var/lib/%{name}
 %attr(770,root,http) %dir /var/lib/%{name}/rra
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) /etc/cron.d/%{name}
 %{webadminroot}
