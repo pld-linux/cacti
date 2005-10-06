@@ -102,7 +102,7 @@ rm -rf $RPM_BUILD_ROOT
 %doc docs/CHANGELOG docs/CONTRIB docs/README
 %attr(750,root,http) %dir %{_sysconfdir}/%{name}
 %attr(640,root,http) %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/%{name}/%{name}.cfg
-%attr(750,root,http) %dir /var/log/%{name}
+%attr(770,root,http) %dir /var/log/%{name}
 %attr(660,root,http) %ghost /var/log/%{name}/*.log
 %attr(750,root,http) %dir /var/lib/%{name}
 %attr(770,root,http) %dir /var/lib/%{name}/rra
