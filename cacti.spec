@@ -69,7 +69,7 @@ tworzeniu wykresów ruchu przy u¿yciu MRTG.
 rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT%{webadminroot}
 install -d $RPM_BUILD_ROOT%{_sysconfdir}/{%{name},cron.d}
-install -d $RPM_BUILD_ROOT/var/{log,lib}
+install -d $RPM_BUILD_ROOT/var/{log,lib/%{name}}
 
 cp -aRf * $RPM_BUILD_ROOT%{webadminroot}
 ln -s . $RPM_BUILD_ROOT%{webadminroot}/%{name}
