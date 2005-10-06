@@ -1,5 +1,4 @@
 # TODO:
-# - move config files to /etc/%{name}
 # - add apache config
 # - security http://security.gentoo.org/glsa/glsa-200506-20.xml
 %include	/usr/lib/rpm/macros.perl
@@ -18,10 +17,11 @@ Patch2:		http://www.cacti.net/downloads/patches/0.8.6g/script_server_snmp_auth.p
 Patch3:		http://www.cacti.net/downloads/patches/0.8.6g/mib_file_loading.patch
 URL:		http://www.cacti.net/
 BuildRequires:	rpm-perlprov
-Requires:	mysql
+Requires:	crondaemon
 Requires:	net-snmp-utils
 Requires:	net-snmp
 Requires:	php
+Requires:	php-cli
 Requires:	php-gd
 Requires:	php-mysql
 Requires:	php-pcre
@@ -65,9 +65,24 @@ tworzeniu wykresów ruchu przy u¿yciu MRTG.
 
 %install
 rm -rf $RPM_BUILD_ROOT
-install -d $RPM_BUILD_ROOT%{webadminroot}/%{name}
+install -d $RPM_BUILD_ROOT%{webadminroot}
+install -d $RPM_BUILD_ROOT%{_sysconfdir}/{%{name},cron.d}
+install -d $RPM_BUILD_ROOT/var/{log,lib}
 
-cp -aRf * $RPM_BUILD_ROOT%{webadminroot}/%{name}
+cp -aRf * $RPM_BUILD_ROOT%{webadminroot}
+
+install include/config.php $RPM_BUILD_ROOT%{_sysconfdir}/%{name}/%{name}.cfg
+ln -sf %{_sysconfdir}/%{name}/%{name}.cfg $RPM_BUILD_ROOT%{webadminroot}/include/config.php
+
+mv $RPM_BUILD_ROOT%{webadminroot}/log $RPM_BUILD_ROOT/var/log/%{name}
+ln -sf /var/log/cacti $RPM_BUILD_ROOT%{webadminroot}/log
+
+mv $RPM_BUILD_ROOT%{webadminroot}/rra $RPM_BUILD_ROOT/var/lib/%{name}
+ln -sf /var/lib/%{name}/rra $RPM_BUILD_ROOT%{webadminroot}/rrd
+
+cat  << EOF > $RPM_BUILD_ROOT%{_sysconfdir}/cron.d/%{name}
+*/5 * * * * http umask 022; /usr/bin/php %{webadminroot}/poller.php > /dev/null 2>&1
+EOF
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -75,12 +90,10 @@ rm -rf $RPM_BUILD_ROOT
 %files
 %defattr(644,root,root,755)
 %doc docs/CHANGELOG docs/CONTRIB docs/README
-%dir %{webadminroot}
-%dir %{webadminroot}/%{name}
-%dir %{webadminroot}/%{name}/log
-%config(noreplace) %verify(not size mtime md5) %attr(644,http,http) %{webadminroot}/%{name}/log/cacti.log
-%dir %{webadminroot}/%{name}/rra
-%config(noreplace) %verify(not size mtime md5) %{webadminroot}/%{name}/rra/.placeholder
-%dir %{webadminroot}/%{name}/include
-%config(noreplace) %verify(not size mtime md5) %attr(644,http,http) %{webadminroot}/%{name}/include/config.php
-%{webadminroot}/%{name}/*
+%attr(750,root,http) %dir %{_sysconfdir}/%{name}
+%attr(640,root,http) %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/%{name}/%{name}.cfg
+%attr(750,root,http) %dir /var/log/%{name}
+%attr(660,root,http) %ghost /var/log/%{name}/*.log
+%attr(750,root,root) /var/lib/%{name}
+%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) /etc/cron.d/%{name}
+%{webadminroot}
