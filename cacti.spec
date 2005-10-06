@@ -72,6 +72,7 @@ install -d $RPM_BUILD_ROOT%{_sysconfdir}/{%{name},cron.d}
 install -d $RPM_BUILD_ROOT/var/{log,lib}
 
 cp -aRf * $RPM_BUILD_ROOT%{webadminroot}
+ln -s . $RPM_BUILD_ROOT%{webadminroot}/%{name}
 
 cat << EOF > $RPM_BUILD_ROOT%{_sysconfdir}/%{name}/%{name}.cfg
 <?php
@@ -87,7 +88,7 @@ mv $RPM_BUILD_ROOT%{webadminroot}/log $RPM_BUILD_ROOT/var/log/%{name}
 ln -sf /var/log/cacti $RPM_BUILD_ROOT%{webadminroot}/log
 
 mv $RPM_BUILD_ROOT%{webadminroot}/rra $RPM_BUILD_ROOT/var/lib/%{name}
-ln -sf /var/lib/%{name}/rra $RPM_BUILD_ROOT%{webadminroot}/rrd
+ln -sf /var/lib/%{name}/rra $RPM_BUILD_ROOT%{webadminroot}/rra
 
 cat  << EOF > $RPM_BUILD_ROOT%{_sysconfdir}/cron.d/%{name}
 */5 * * * * http umask 022; /usr/bin/php %{webadminroot}/poller.php > /dev/null 2>&1
