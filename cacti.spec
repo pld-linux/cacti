@@ -15,6 +15,7 @@ Patch0:		http://www.cacti.net/downloads/patches/0.8.6g/short_open_tag_parse_erro
 Patch1:		http://www.cacti.net/downloads/patches/0.8.6g/graph_properties_zoom.patch
 Patch2:		http://www.cacti.net/downloads/patches/0.8.6g/script_server_snmp_auth.patch
 Patch3:		http://www.cacti.net/downloads/patches/0.8.6g/mib_file_loading.patch
+Patch4:		%{name}-config.patch
 URL:		http://www.cacti.net/
 BuildRequires:	rpm-perlprov
 Requires:	crondaemon
@@ -60,6 +61,7 @@ tworzeniu wykresów ruchu przy u¿yciu MRTG.
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
+%patch4 -p1
 
 %build
 
@@ -71,8 +73,15 @@ install -d $RPM_BUILD_ROOT/var/{log,lib}
 
 cp -aRf * $RPM_BUILD_ROOT%{webadminroot}
 
-install include/config.php $RPM_BUILD_ROOT%{_sysconfdir}/%{name}/%{name}.cfg
-ln -sf %{_sysconfdir}/%{name}/%{name}.cfg $RPM_BUILD_ROOT%{webadminroot}/include/config.php
+cat << EOF > $RPM_BUILD_ROOT%{_sysconfdir}/%{name}/%{name}.cfg
+<?php
+\$database_type = "mysql";
+\$database_default = "cacti";
+\$database_hostname = "localhost";
+\$database_username = "cactiuser";
+\$database_password = "cactiuser";
+?>
+EOF
 
 mv $RPM_BUILD_ROOT%{webadminroot}/log $RPM_BUILD_ROOT/var/log/%{name}
 ln -sf /var/log/cacti $RPM_BUILD_ROOT%{webadminroot}/log
