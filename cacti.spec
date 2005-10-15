@@ -17,7 +17,6 @@ URL:		http://www.cacti.net/
 BuildRequires:	rpm-perlprov
 Requires:	crondaemon
 Requires:	net-snmp-utils
-Requires:	net-snmp
 Requires:	php
 Requires:	php-cli
 Requires:	php-gd
