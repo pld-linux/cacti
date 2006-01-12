@@ -74,13 +74,15 @@ install -d $RPM_BUILD_ROOT/var/{log,lib/%{name}}
 cp -aRf * $RPM_BUILD_ROOT%{webadminroot}
 ln -s . $RPM_BUILD_ROOT%{webadminroot}/%{name}
 
-cat << EOF > $RPM_BUILD_ROOT%{_sysconfdir}/%{name}/%{name}.cfg
+# TODO: move this to SOURCES. it's a lot better to backtrack changes
+# if it's a separate file.
+cat << 'EOF' > $RPM_BUILD_ROOT%{_sysconfdir}/%{name}/%{name}.cfg
 <?php
-\$database_type = "mysql";
-\$database_default = "cacti";
-\$database_hostname = "localhost";
-\$database_username = "cactiuser";
-\$database_password = "cactiuser";
+$database_type = 'mysql';
+$database_default = 'cacti';
+$database_hostname = 'localhost';
+$database_username = 'cactiuser';
+$database_password = 'cactiuser';
 
 $plugins = array();
 // $plugins[] = 'thold';
@@ -94,7 +96,7 @@ $config = array();
    For example, if your cacti was accessible by http://server/cacti/ you would user '/cacti/'
    as the url path.  For just http://server/ use '/'
 */
-$config["url_path"] = '/cacti/';
+$config['url_path'] = '/cacti/';
 
 ?>
 EOF
@@ -105,7 +107,7 @@ ln -sf /var/log/cacti $RPM_BUILD_ROOT%{webadminroot}/log
 mv $RPM_BUILD_ROOT%{webadminroot}/rra $RPM_BUILD_ROOT/var/lib/%{name}
 ln -sf /var/lib/%{name}/rra $RPM_BUILD_ROOT%{webadminroot}/rra
 
-cat  << EOF > $RPM_BUILD_ROOT%{_sysconfdir}/cron.d/%{name}
+cat  << 'EOF' > $RPM_BUILD_ROOT%{_sysconfdir}/cron.d/%{name}
 */5 * * * * http umask 022; /usr/bin/php %{webadminroot}/poller.php > /dev/null 2>&1
 EOF
 
