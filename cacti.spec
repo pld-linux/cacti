@@ -3,17 +3,18 @@ Summary:	Cacti is a PHP frontend for rrdtool
 Summary(pl):	Cacti - frontend w PHP do rrdtoola
 Name:		cacti
 Version:	0.8.6g
-Release:	2
+Release:	2.1
 License:	GPL
 Group:		Applications/WWW
 Source0:	http://www.cacti.net/downloads/%{name}-%{version}.tar.gz
 # Source0-md5:	b3cf31349d2db47d14dcf347b8422bc2
-Patch0:		http://www.cacti.net/downloads/patches/0.8.6g/short_open_tag_parse_error.patch
-Patch1:		http://www.cacti.net/downloads/patches/0.8.6g/graph_properties_zoom.patch
-Patch2:		http://www.cacti.net/downloads/patches/0.8.6g/script_server_snmp_auth.patch
-Patch3:		http://www.cacti.net/downloads/patches/0.8.6g/mib_file_loading.patch
-Patch4:		%{name}-config.patch
-Patch5:		%{name}-mysql5.patch
+Patch0:         %{name}-plugin-%{version}.diff
+Patch1:		http://www.cacti.net/downloads/patches/0.8.6g/short_open_tag_parse_error.patch
+Patch2:		http://www.cacti.net/downloads/patches/0.8.6g/graph_properties_zoom.patch
+Patch3:		http://www.cacti.net/downloads/patches/0.8.6g/script_server_snmp_auth.patch
+Patch4:		http://www.cacti.net/downloads/patches/0.8.6g/mib_file_loading.patch
+Patch5:		%{name}-config.patch
+Patch6:		%{name}-mysql5.patch
 URL:		http://www.cacti.net/
 BuildRequires:	rpm-perlprov
 Requires:	crondaemon
@@ -60,6 +61,7 @@ tworzeniu wykresów ruchu przy u¿yciu MRTG.
 %patch3 -p1
 %patch4 -p1
 %patch5 -p1
+%patch6 -p1
 
 %build
 
@@ -79,6 +81,21 @@ cat << EOF > $RPM_BUILD_ROOT%{_sysconfdir}/%{name}/%{name}.cfg
 \$database_hostname = "localhost";
 \$database_username = "cactiuser";
 \$database_password = "cactiuser";
+
+$plugins = array();
+// $plugins[] = 'thold';
+// $plugins[] = 'monitor';
+// $plugins[] = 'discovery';
+
+/* Do not edit this line */
+$config = array();
+
+/* This is full URL Path to the Cacti installation
+   For example, if your cacti was accessible by http://server/cacti/ you would user '/cacti/'
+   as the url path.  For just http://server/ use '/'
+*/
+$config["url_path"] = '/cacti/';
+
 ?>
 EOF
 
