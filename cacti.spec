@@ -2,19 +2,18 @@
 Summary:	Cacti is a PHP frontend for rrdtool
 Summary(pl):	Cacti - frontend w PHP do rrdtoola
 Name:		cacti
-Version:	0.8.6g
-Release:	2.1
+Version:	0.8.6h
+Release:	1
 License:	GPL
 Group:		Applications/WWW
 Source0:	http://www.cacti.net/downloads/%{name}-%{version}.tar.gz
-# Source0-md5:	b3cf31349d2db47d14dcf347b8422bc2
-Patch0:         %{name}-plugin-%{version}.diff
-Patch1:		http://www.cacti.net/downloads/patches/0.8.6g/short_open_tag_parse_error.patch
-Patch2:		http://www.cacti.net/downloads/patches/0.8.6g/graph_properties_zoom.patch
-Patch3:		http://www.cacti.net/downloads/patches/0.8.6g/script_server_snmp_auth.patch
-Patch4:		http://www.cacti.net/downloads/patches/0.8.6g/mib_file_loading.patch
+# Source0-md5:	5f6100b525b5b29e81f43cc7c55f4000
+Patch0:		http://www.cacti.net/downloads/patches/0.8.6h/fix_search_session_clear_issue.patch
+Patch1:		http://www.cacti.net/downloads/patches/0.8.6h/fix_sql_syntax_related_to_default_rra_id.patch
+Patch2:		http://www.cacti.net/downloads/patches/0.8.6h/nth_percentile_empty_return_set_issue.patch
+Patch3:		http://www.cacti.net/downloads/patches/0.8.6h/mysql_5x_strict.patch
+Patch4:         %{name}-plugin-%{version}.diff
 Patch5:		%{name}-config.patch
-Patch6:		%{name}-mysql5.patch
 URL:		http://www.cacti.net/
 BuildRequires:	rpm-perlprov
 Requires:	crondaemon
@@ -61,7 +60,6 @@ tworzeniu wykresów ruchu przy u¿yciu MRTG.
 %patch3 -p1
 %patch4 -p1
 %patch5 -p1
-%patch6 -p1
 
 %build
 
