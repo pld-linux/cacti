@@ -1,6 +1,5 @@
-diff -urbB cacti-0.8.6g.org/include/config.php cacti-0.8.6g/include/config.php
---- cacti-0.8.6g.org/include/config.php	2005-09-09 01:56:25.000000000 +0200
-+++ cacti-0.8.6g/include/config.php	2005-10-06 11:57:42.021629992 +0200
+--- cacti-0.8.6g/include/config.php	2005-10-06 11:57:42.021629992 +0200
++++ cacti-0.8.6h/include/config.php	2006-04-15 14:05:53.184042777 +0300
 @@ -31,6 +31,8 @@
  $database_username = "cactiuser";
  $database_password = "cactiuser";
@@ -10,3 +9,12 @@ diff -urbB cacti-0.8.6g.org/include/config.php cacti-0.8.6g/include/config.php
  /* ----- you probably do not need to change anything below this line ----- */
  
  /* Files that do not need http header information - Command line scripts */
+@@ -163,7 +165,7 @@
+ error_reporting(E_ALL);
+ 
+ /* include base modules */
+-include($config["library_path"] . "/adodb/adodb.inc.php");
++include('/usr/share/php/adodb/adodb.inc.php');
+ include($config["library_path"] . "/database.php");
+ include_once($config["library_path"] . "/functions.php");
+ include_once($config["include_path"] . "/config_constants.php");
