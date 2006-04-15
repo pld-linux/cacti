@@ -3,7 +3,7 @@ Summary:	Cacti is a PHP frontend for rrdtool
 Summary(pl):	Cacti - frontend w PHP do rrdtoola
 Name:		cacti
 Version:	0.8.6h
-Release:	1
+Release:	2
 License:	GPL
 Group:		Applications/WWW
 Source0:	http://www.cacti.net/downloads/%{name}-%{version}.tar.gz
@@ -12,10 +12,11 @@ Patch0:		http://www.cacti.net/downloads/patches/0.8.6h/fix_search_session_clear_
 Patch1:		http://www.cacti.net/downloads/patches/0.8.6h/fix_sql_syntax_related_to_default_rra_id.patch
 Patch2:		http://www.cacti.net/downloads/patches/0.8.6h/nth_percentile_empty_return_set_issue.patch
 Patch3:		http://www.cacti.net/downloads/patches/0.8.6h/mysql_5x_strict.patch
-Patch4:         %{name}-plugin-%{version}.diff
+Patch4:		%{name}-plugin-%{version}.diff
 Patch5:		%{name}-config.patch
 URL:		http://www.cacti.net/
 BuildRequires:	rpm-perlprov
+Requires:	adodb >= 4.67-1.17
 Requires:	crondaemon
 Requires:	net-snmp-utils
 Requires:	php
@@ -61,7 +62,7 @@ tworzeniu wykresów ruchu przy u¿yciu MRTG.
 %patch4 -p1
 %patch5 -p1
 
-%build
+rm -rf lib/adodb
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -106,7 +107,7 @@ mv $RPM_BUILD_ROOT%{webadminroot}/rra $RPM_BUILD_ROOT/var/lib/%{name}
 ln -sf /var/lib/%{name}/rra $RPM_BUILD_ROOT%{webadminroot}/rra
 
 cat  << 'EOF' > $RPM_BUILD_ROOT%{_sysconfdir}/cron.d/%{name}
-*/5 * * * * http umask 022; /usr/bin/php %{webadminroot}/poller.php > /dev/null 2>&1
+*/5 * * * * http umask 022; %{_bindir}/php %{webadminroot}/poller.php > /dev/null 2>&1
 EOF
 
 %clean
