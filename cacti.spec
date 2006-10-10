@@ -71,7 +71,7 @@ rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT%{webadminroot}
 install -d $RPM_BUILD_ROOT%{_sysconfdir}/{%{name},cron.d}
 install -d $RPM_BUILD_ROOT/var/{log,lib/%{name}}
-install -d -d $RPM_BUILD_ROOT/usr/share/cacti/lib/adodb
+install -d $RPM_BUILD_ROOT/usr/share/cacti/lib/adodb
 cp -aRf * $RPM_BUILD_ROOT%{webadminroot}
 ln -s . $RPM_BUILD_ROOT%{webadminroot}/%{name}
 
