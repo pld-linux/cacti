@@ -71,7 +71,6 @@ rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT%{webadminroot}
 install -d $RPM_BUILD_ROOT%{_sysconfdir}/{%{name},cron.d}
 install -d $RPM_BUILD_ROOT/var/{log,lib/%{name}}
-install -d $RPM_BUILD_ROOT/usr/share/cacti/lib/adodb
 cp -aRf * $RPM_BUILD_ROOT%{webadminroot}
 ln -s . $RPM_BUILD_ROOT%{webadminroot}/%{name}
 
@@ -107,8 +106,7 @@ ln -sf /var/log/cacti $RPM_BUILD_ROOT%{webadminroot}/log
 
 mv $RPM_BUILD_ROOT%{webadminroot}/rra $RPM_BUILD_ROOT/var/lib/%{name}
 ln -sf /var/lib/%{name}/rra $RPM_BUILD_ROOT%{webadminroot}/rra
-ln -sf /usr/share/php/adodb/adodb.inc.php $RPM_BUILD_ROOT%{webadminroot}/lib/adodb/adodb.inc.php 
-
+ln -sf /usr/share/php/adodb $RPM_BUILD_ROOT%{webadminroot}/lib/adodb
 
 cat  << 'EOF' > $RPM_BUILD_ROOT%{_sysconfdir}/cron.d/%{name}
 */5 * * * * http umask 022; %{_bindir}/php %{webadminroot}/poller.php > /dev/null 2>&1
