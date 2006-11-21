@@ -3,7 +3,7 @@ Summary:	Cacti is a PHP frontend for rrdtool
 Summary(pl):	Cacti - frontend w PHP do rrdtoola
 Name:		cacti
 Version:	0.8.6h
-Release:	2
+Release:	3
 License:	GPL
 Group:		Applications/WWW
 Source0:	http://www.cacti.net/downloads/%{name}-%{version}.tar.gz
@@ -19,15 +19,15 @@ BuildRequires:	rpm-perlprov
 Requires:	adodb >= 4.67-1.17
 Requires:	crondaemon
 Requires:	net-snmp-utils
-Requires:	php
+Requires:	php(gd)
+Requires:	php(mysql)
+Requires:	php(pcre)
+Requires:	php(snmp)
+Requires:	php(xml)
 Requires:	php-cli
-Requires:	php-gd
-Requires:	php-mysql
-Requires:	php-pcre
-Requires:	php-snmp
-Requires:	php-xml
 Requires:	rrdtool
 Requires:	webserver
+Requires:	webserver(php)
 BuildArch:	noarch
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
