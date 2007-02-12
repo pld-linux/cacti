@@ -2,14 +2,17 @@
 # - patch source to use adodb system path instead of symlinking
 %include	/usr/lib/rpm/macros.perl
 Summary:	Cacti is a PHP frontend for rrdtool
-Summary(pl.UTF-8):   Cacti - frontend w PHP do rrdtoola
+Summary(pl.UTF-8):Cacti - frontend w PHP do rrdtoola
 Name:		cacti
 Version:	0.8.6j
-Release:	1
+Release:	2
 License:	GPL
 Group:		Applications/WWW
 Source0:	http://www.cacti.net/downloads/%{name}-%{version}.tar.gz
 # Source0-md5:	29436be46b289d13dfce48e7618129e2
+Patch1:		http://www.cacti.net/downloads/patches/0.8.6j/ping_php_version4_snmpgetnext.patch
+Patch2:		http://www.cacti.net/downloads/patches/0.8.6j/tree_console_missing_hosts.patch
+Patch3:		http://www.cacti.net/downloads/patches/0.8.6j/thumbnail_graphs_not_working.patch
 Patch10:	%{name}-plugin-%{version}.diff
 Patch11:	%{name}-config.patch
 URL:		http://www.cacti.net/
@@ -43,16 +46,19 @@ those used to creating traffic graphs with MRTG.
 
 %description -l pl.UTF-8
 Cacti to pełny frontend do rrdtoola, zapamiętujący wszystkie
-informacje potrzebne do tworzenia wykresów i wypełniające je danymi w
-bazie MySQL.
+informacje potrzebne do tworzenia wykresów i wypełniające je danymi
+w bazie MySQL.
 
 Frontend jest w pełni oparty na PHP. Oprócz zarządzania wykresami,
-źródłami danych, archiwami Round Robin w bazie danych, cacti obsługuje
-także gromadzenie danych. Ma także obsługę SNMP przydatną przy
-tworzeniu wykresów ruchu przy użyciu MRTG.
+źródłami danych, archiwami Round Robin w bazie danych, cacti
+obsługuje także gromadzenie danych. Ma także obsługę SNMP
+przydatną przy tworzeniu wykresów ruchu przy użyciu MRTG.
 
 %prep
 %setup -q
+%patch1	-p1
+%patch2	-p1
+%patch3	-p1
 %patch10 -p1
 %patch11 -p1
 
@@ -98,7 +104,7 @@ ln -sf /var/log/cacti $RPM_BUILD_ROOT%{webadminroot}/log
 
 mv $RPM_BUILD_ROOT%{webadminroot}/rra $RPM_BUILD_ROOT/var/lib/%{name}
 ln -sf /var/lib/%{name}/rra $RPM_BUILD_ROOT%{webadminroot}/rra
-ln -sf /usr/share/php/adodb $RPM_BUILD_ROOT%{webadminroot}/lib/adodb
+ln -sf %{_datadir}/php/adodb $RPM_BUILD_ROOT%{webadminroot}/lib/adodb
 
 cat  << 'EOF' > $RPM_BUILD_ROOT%{_sysconfdir}/cron.d/%{name}
 */5 * * * * http umask 022; %{_bindir}/php %{webadminroot}/poller.php > /dev/null 2>&1
