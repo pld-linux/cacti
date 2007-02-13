@@ -1,19 +1,20 @@
+# TODO
+# - patch source to use adodb system path instead of symlinking
 %include	/usr/lib/rpm/macros.perl
 Summary:	Cacti is a PHP frontend for rrdtool
-Summary(pl):	Cacti - frontend w PHP do rrdtoola
+Summary(pl.UTF-8):Cacti - frontend w PHP do rrdtoola
 Name:		cacti
-Version:	0.8.6h
-Release:	3
+Version:	0.8.6j
+Release:	2
 License:	GPL
 Group:		Applications/WWW
 Source0:	http://www.cacti.net/downloads/%{name}-%{version}.tar.gz
-# Source0-md5:	5f6100b525b5b29e81f43cc7c55f4000
-Patch0:		http://www.cacti.net/downloads/patches/0.8.6h/fix_search_session_clear_issue.patch
-Patch1:		http://www.cacti.net/downloads/patches/0.8.6h/fix_sql_syntax_related_to_default_rra_id.patch
-Patch2:		http://www.cacti.net/downloads/patches/0.8.6h/nth_percentile_empty_return_set_issue.patch
-Patch3:		http://www.cacti.net/downloads/patches/0.8.6h/mysql_5x_strict.patch
-Patch4:		%{name}-plugin-%{version}.diff
-Patch5:		%{name}-config.patch
+# Source0-md5:	29436be46b289d13dfce48e7618129e2
+Patch1:		http://www.cacti.net/downloads/patches/0.8.6j/ping_php_version4_snmpgetnext.patch
+Patch2:		http://www.cacti.net/downloads/patches/0.8.6j/tree_console_missing_hosts.patch
+Patch3:		http://www.cacti.net/downloads/patches/0.8.6j/thumbnail_graphs_not_working.patch
+Patch10:	%{name}-plugin-%{version}.diff
+Patch11:	%{name}-config.patch
 URL:		http://www.cacti.net/
 BuildRequires:	rpm-perlprov
 Requires:	adodb >= 4.67-1.17
@@ -43,24 +44,23 @@ maintain Graphs, Data Sources, and Round Robin Archives in a database,
 cacti handles the data gathering also. There is also SNMP support for
 those used to creating traffic graphs with MRTG.
 
-%description -l pl
-Cacti to pe≥ny frontend do rrdtoola, zapamiÍtuj±cy wszystkie
-informacje potrzebne do tworzenia wykresÛw i wype≥niaj±ce je danymi w
-bazie MySQL.
+%description -l pl.UTF-8
+Cacti to pe≈Çny frontend do rrdtoola, zapamiƒôtujƒÖcy wszystkie
+informacje potrzebne do tworzenia wykres√≥w i wype≈ÇniajƒÖce je danymi
+w bazie MySQL.
 
-Frontend jest w pe≥ni oparty na PHP. OprÛcz zarz±dzania wykresami,
-ºrÛd≥ami danych, archiwami Round Robin w bazie danych, cacti obs≥uguje
-takøe gromadzenie danych. Ma takøe obs≥ugÍ SNMP przydatn± przy
-tworzeniu wykresÛw ruchu przy uøyciu MRTG.
+Frontend jest w pe≈Çni oparty na PHP. Opr√≥cz zarzƒÖdzania wykresami,
+≈∫r√≥d≈Çami danych, archiwami Round Robin w bazie danych, cacti
+obs≈Çuguje tak≈ºe gromadzenie danych. Ma tak≈ºe obs≈Çugƒô SNMP
+przydatnƒÖ przy tworzeniu wykres√≥w ruchu przy u≈ºyciu MRTG.
 
 %prep
 %setup -q
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
+%patch1	-p1
+%patch2	-p1
+%patch3	-p1
+%patch10 -p1
+%patch11 -p1
 
 rm -rf lib/adodb
 
@@ -69,7 +69,6 @@ rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT%{webadminroot}
 install -d $RPM_BUILD_ROOT%{_sysconfdir}/{%{name},cron.d}
 install -d $RPM_BUILD_ROOT/var/{log,lib/%{name}}
-
 cp -aRf * $RPM_BUILD_ROOT%{webadminroot}
 ln -s . $RPM_BUILD_ROOT%{webadminroot}/%{name}
 
@@ -105,6 +104,7 @@ ln -sf /var/log/cacti $RPM_BUILD_ROOT%{webadminroot}/log
 
 mv $RPM_BUILD_ROOT%{webadminroot}/rra $RPM_BUILD_ROOT/var/lib/%{name}
 ln -sf /var/lib/%{name}/rra $RPM_BUILD_ROOT%{webadminroot}/rra
+ln -sf %{_datadir}/php/adodb $RPM_BUILD_ROOT%{webadminroot}/lib/adodb
 
 cat  << 'EOF' > $RPM_BUILD_ROOT%{_sysconfdir}/cron.d/%{name}
 */5 * * * * http umask 022; %{_bindir}/php %{webadminroot}/poller.php > /dev/null 2>&1
