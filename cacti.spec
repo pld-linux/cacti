@@ -2,7 +2,7 @@
 # - patch source to use adodb system path instead of symlinking
 %include	/usr/lib/rpm/macros.perl
 Summary:	Cacti is a PHP frontend for rrdtool
-Summary(pl.UTF-8):	Cacti - frontend w PHP do rrdtoola
+Summary(pl):	Cacti - frontend w PHP do rrdtoola
 Name:		cacti
 Version:	0.8.6j
 Release:	2
@@ -44,15 +44,15 @@ maintain Graphs, Data Sources, and Round Robin Archives in a database,
 cacti handles the data gathering also. There is also SNMP support for
 those used to creating traffic graphs with MRTG.
 
-%description -l pl.UTF-8
+%description -l pl
 Cacti to pe³ny frontend do rrdtoola, zapamiêtuj±cy wszystkie
-informacje potrzebne do tworzenia wykresów i wype³niaj±ce je danymi
-w bazie MySQL.
+informacje potrzebne do tworzenia wykresów i wype³niaj±ce je danymi w
+bazie MySQL.
 
 Frontend jest w pe³ni oparty na PHP. Oprócz zarz±dzania wykresami,
-¼ród³ami danych, archiwami Round Robin w bazie danych, cacti
-obs³uguje tak¿e gromadzenie danych. Ma tak¿e obs³ugê SNMP
-przydatn± przy tworzeniu wykresów ruchu przy u¿yciu MRTG.
+¼ród³ami danych, archiwami Round Robin w bazie danych, cacti obs³uguje
+tak¿e gromadzenie danych. Ma tak¿e obs³ugê SNMP przydatn± przy
+tworzeniu wykresów ruchu przy u¿yciu MRTG.
 
 %prep
 %setup -q
