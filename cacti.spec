@@ -45,14 +45,14 @@ cacti handles the data gathering also. There is also SNMP support for
 those used to creating traffic graphs with MRTG.
 
 %description -l pl.UTF-8
-Cacti to peÅ‚ny frontend do rrdtoola, zapamiÄ™tujÄ…cy wszystkie
-informacje potrzebne do tworzenia wykresÃ³w i wypeÅ‚niajÄ…ce je danymi
+Cacti to pe³ny frontend do rrdtoola, zapamiêtuj±cy wszystkie
+informacje potrzebne do tworzenia wykresów i wype³niaj±ce je danymi
 w bazie MySQL.
 
-Frontend jest w peÅ‚ni oparty na PHP. OprÃ³cz zarzÄ…dzania wykresami,
-ÅºrÃ³dÅ‚ami danych, archiwami Round Robin w bazie danych, cacti
-obsÅ‚uguje takÅ¼e gromadzenie danych. Ma takÅ¼e obsÅ‚ugÄ™ SNMP
-przydatnÄ… przy tworzeniu wykresÃ³w ruchu przy uÅ¼yciu MRTG.
+Frontend jest w pe³ni oparty na PHP. Oprócz zarz±dzania wykresami,
+¼ród³ami danych, archiwami Round Robin w bazie danych, cacti
+obs³uguje tak¿e gromadzenie danych. Ma tak¿e obs³ugê SNMP
+przydatn± przy tworzeniu wykresów ruchu przy u¿yciu MRTG.
 
 %prep
 %setup -q
