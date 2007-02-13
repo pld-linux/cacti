@@ -2,7 +2,7 @@
 # - patch source to use adodb system path instead of symlinking
 %include	/usr/lib/rpm/macros.perl
 Summary:	Cacti is a PHP frontend for rrdtool
-Summary(pl.UTF-8):Cacti - frontend w PHP do rrdtoola
+Summary(pl.UTF-8):	Cacti - frontend w PHP do rrdtoola
 Name:		cacti
 Version:	0.8.6j
 Release:	2
