@@ -60,6 +60,7 @@ przydatną przy tworzeniu wykresów ruchu przy użyciu MRTG.
 %patch1	-p1
 %patch2	-p1
 %patch3	-p1
+%patch4	-p1
 %patch10 -p1
 %patch11 -p1
 
