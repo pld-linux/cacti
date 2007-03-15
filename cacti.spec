@@ -2,10 +2,10 @@
 # - patch source to use adodb system path instead of symlinking
 %include	/usr/lib/rpm/macros.perl
 Summary:	Cacti is a PHP frontend for rrdtool
-Summary(pl.UTF-8):Cacti - frontend w PHP do rrdtoola
+Summary(pl):	Cacti - frontend w PHP do rrdtoola
 Name:		cacti
 Version:	0.8.6j
-Release:	2
+Release:	3
 License:	GPL
 Group:		Applications/WWW
 Source0:	http://www.cacti.net/downloads/%{name}-%{version}.tar.gz
@@ -13,6 +13,7 @@ Source0:	http://www.cacti.net/downloads/%{name}-%{version}.tar.gz
 Patch1:		http://www.cacti.net/downloads/patches/0.8.6j/ping_php_version4_snmpgetnext.patch
 Patch2:		http://www.cacti.net/downloads/patches/0.8.6j/tree_console_missing_hosts.patch
 Patch3:		http://www.cacti.net/downloads/patches/0.8.6j/thumbnail_graphs_not_working.patch
+Patch4:		http://www.cacti.net/downloads/patches/0.8.6j/graph_debug_lockup_fix.patch
 Patch10:	%{name}-plugin-%{version}.diff
 Patch11:	%{name}-config.patch
 URL:		http://www.cacti.net/
@@ -44,21 +45,22 @@ maintain Graphs, Data Sources, and Round Robin Archives in a database,
 cacti handles the data gathering also. There is also SNMP support for
 those used to creating traffic graphs with MRTG.
 
-%description -l pl.UTF-8
-Cacti to pe≈Çny frontend do rrdtoola, zapamiƒôtujƒÖcy wszystkie
-informacje potrzebne do tworzenia wykres√≥w i wype≈ÇniajƒÖce je danymi
-w bazie MySQL.
+%description -l pl
+Cacti to pe≥ny frontend do rrdtoola, zapamiÍtuj±cy wszystkie
+informacje potrzebne do tworzenia wykresÛw i wype≥niaj±ce je danymi w
+bazie MySQL.
 
-Frontend jest w pe≈Çni oparty na PHP. Opr√≥cz zarzƒÖdzania wykresami,
-≈∫r√≥d≈Çami danych, archiwami Round Robin w bazie danych, cacti
-obs≈Çuguje tak≈ºe gromadzenie danych. Ma tak≈ºe obs≈Çugƒô SNMP
-przydatnƒÖ przy tworzeniu wykres√≥w ruchu przy u≈ºyciu MRTG.
+Frontend jest w pe≥ni oparty na PHP. OprÛcz zarz±dzania wykresami,
+ºrÛd≥ami danych, archiwami Round Robin w bazie danych, cacti obs≥uguje
+takøe gromadzenie danych. Ma takøe obs≥ugÍ SNMP przydatn± przy
+tworzeniu wykresÛw ruchu przy uøyciu MRTG.
 
 %prep
 %setup -q
 %patch1	-p1
 %patch2	-p1
 %patch3	-p1
+%patch4	-p1
 %patch10 -p1
 %patch11 -p1
 
