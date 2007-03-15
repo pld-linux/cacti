@@ -1,0 +1,18 @@
+--- cacti-0.8.6j/lib/rrd.php	2007-01-17 19:23:10.000000000 -0500
++++ cacti-0.8.6j-patch/lib/rrd.php	2007-03-01 15:32:18.609375000 -0500
+@@ -83,6 +83,7 @@
+ 	if ($config["cacti_server_os"] == "unix") {
+ 		/* an empty $rrd_struc array means no fp is available */
+ 		if (sizeof($rrd_struc) == 0) {
++			session_write_close();
+ 			$fp = popen(read_config_option("path_rrdtool") . escape_command(" $command_line"), "r");
+ 		}else{
+ 			fwrite(rrd_get_fd($rrd_struc, RRDTOOL_PIPE_CHILD_READ), escape_command(" $command_line") . "\r\n");
+@@ -91,6 +92,7 @@
+ 	}elseif ($config["cacti_server_os"] == "win32") {
+ 		/* an empty $rrd_struc array means no fp is available */
+ 		if (sizeof($rrd_struc) == 0) {
++			session_write_close();
+ 			$fp = popen(read_config_option("path_rrdtool") . escape_command(" $command_line"), "rb");
+ 		}else{
+ 			fwrite(rrd_get_fd($rrd_struc, RRDTOOL_PIPE_CHILD_READ), escape_command(" $command_line") . "\r\n");
