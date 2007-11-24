@@ -1,8 +1,9 @@
 # TODO
 # - patch source to use adodb system path instead of symlinking
+# - R: /usr/bin/php should came from rpm autodeps (chmod +x or sth)
 %include	/usr/lib/rpm/macros.perl
 Summary:	Cacti is a PHP frontend for rrdtool
-Summary(pl.UTF-8):Cacti - frontend w PHP do rrdtoola
+Summary(pl.UTF-8):	Cacti - frontend w PHP do rrdtoola
 Name:		cacti
 Version:	0.8.6j
 Release:	6
@@ -21,6 +22,7 @@ Patch11:	%{name}-config.patch
 Patch12:	%{name}-opera.patch
 URL:		http://www.cacti.net/
 BuildRequires:	rpm-perlprov
+Requires:	/usr/bin/php
 Requires:	adodb >= 4.67-1.17
 Requires:	crondaemon
 Requires:	nc
@@ -30,7 +32,6 @@ Requires:	php(mysql)
 Requires:	php(pcre)
 Requires:	php(snmp)
 Requires:	php(xml)
-Requires:	php-program
 Requires:	rrdtool
 Requires:	webserver
 Requires:	webserver(php)
