@@ -23,13 +23,14 @@ URL:		http://www.cacti.net/
 BuildRequires:	rpm-perlprov
 Requires:	adodb >= 4.67-1.17
 Requires:	crondaemon
+Requires:	nc
 Requires:	net-snmp-utils
 Requires:	php(gd)
 Requires:	php(mysql)
 Requires:	php(pcre)
 Requires:	php(snmp)
 Requires:	php(xml)
-Requires:	php-cli
+Requires:	php-program
 Requires:	rrdtool
 Requires:	webserver
 Requires:	webserver(php)
