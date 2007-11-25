@@ -1,25 +1,22 @@
 # TODO
 # - patch source to use adodb system path instead of symlinking
 # - R: /usr/bin/php should came from rpm autodeps (chmod +x or sth)
+# - UPDATE OR DROP plugin patch
 %include	/usr/lib/rpm/macros.perl
 Summary:	Cacti is a PHP frontend for rrdtool
 Summary(pl.UTF-8):	Cacti - frontend w PHP do rrdtoola
 Name:		cacti
-Version:	0.8.6j
-Release:	6
+Version:	0.8.7a
+Release:	0.1
 License:	GPL
 Group:		Applications/WWW
 Source0:	http://www.cacti.net/downloads/%{name}-%{version}.tar.gz
-# Source0-md5:	29436be46b289d13dfce48e7618129e2
-Patch1:		http://www.cacti.net/downloads/patches/0.8.6j/ping_php_version4_snmpgetnext.patch
-Patch2:		http://www.cacti.net/downloads/patches/0.8.6j/tree_console_missing_hosts.patch
-Patch3:		http://www.cacti.net/downloads/patches/0.8.6j/thumbnail_graphs_not_working.patch
-Patch4:		http://www.cacti.net/downloads/patches/0.8.6j/graph_debug_lockup_fix.patch
-Patch5:		http://www.cacti.net/downloads/patches/0.8.6j/snmpwalk_fix.patch
-Patch6:		http://www.cacti.net/downloads/patches/0.8.6j/sec_sql_injection-0.8.6j.patch
-Patch10:	%{name}-plugin-%{version}.diff
-Patch11:	%{name}-config.patch
-Patch12:	%{name}-opera.patch
+# Source0-md5:	7d298e496058ec91f6d1ecdc97e0cca5
+# official patches
+#Patch0:...
+# custom patches
+Patch100:	%{name}-plugin-0.8.6j.diff
+Patch101:	%{name}-config.patch
 URL:		http://www.cacti.net/
 BuildRequires:	rpm-perlprov
 Requires:	/usr/bin/php
@@ -62,15 +59,8 @@ przydatną przy tworzeniu wykresów ruchu przy użyciu MRTG.
 
 %prep
 %setup -q
-%patch1 -p1
-%patch2	-p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
-%patch6 -p1
-%patch10 -p1
-%patch11 -p1
-%patch12 -p1
+#%patch100 -p1
+%patch101 -p1
 
 rm -rf lib/adodb
 
