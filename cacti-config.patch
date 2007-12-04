@@ -1,22 +1,12 @@
-diff -urN cacti-0.8.7a.org/include/config.php cacti-0.8.7a/include/config.php
---- cacti-0.8.7a.org/include/config.php	2007-11-17 19:11:52.000000000 +0100
-+++ cacti-0.8.7a/include/config.php	2007-11-25 16:38:21.751333314 +0100
-@@ -33,4 +33,6 @@
- /* Default session name - Session name must contain alpha characters */
- #$cacti_session_name = "Cacti";
+diff -urN cacti-0.8.7a.orig/include/config.php cacti-0.8.7a/include/config.php
+--- cacti-0.8.7a.orig/include/config.php	2007-11-17 19:11:52.000000000 +0100
++++ cacti-0.8.7a/include/config.php	2007-12-04 10:53:28.000000000 +0100
+@@ -30,6 +30,8 @@
+ $database_password = "cactiuser";
+ $database_port = "3306";
  
 +include '/etc/cacti/cacti.cfg';
 +
- ?>
-diff -urN cacti-0.8.7a.org/include/global.php cacti-0.8.7a/include/global.php
---- cacti-0.8.7a.org/include/global.php	2007-11-17 19:11:52.000000000 +0100
-+++ cacti-0.8.7a/include/global.php	2007-11-25 16:39:16.847520953 +0100
-@@ -170,7 +170,7 @@
- error_reporting(E_ALL);
+ /* Default session name - Session name must contain alpha characters */
+ #$cacti_session_name = "Cacti";
  
- /* include base modules */
--include($config["library_path"] . "/adodb/adodb.inc.php");
-+include("/usr/share/php/adodb/adodb.inc.php");
- include($config["library_path"] . "/database.php");
- include_once($config["library_path"] . "/functions.php");
- include_once($config["include_path"] . "/global_constants.php");
