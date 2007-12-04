@@ -1,0 +1,12 @@
+diff -urN cacti-0.8.7a.orig/include/global.php cacti-0.8.7a/include/global.php
+--- cacti-0.8.7a.orig/include/global.php	2007-12-03 16:15:52.000000000 +0100
++++ cacti-0.8.7a/include/global.php	2007-12-03 16:21:36.000000000 +0100
+@@ -191,7 +191,7 @@
+ error_reporting(E_ALL);
+ 
+ /* include base modules */
+-include($config["library_path"] . "/adodb/adodb.inc.php");
++include('/usr/share/php/adodb/adodb.inc.php');
+ include($config["library_path"] . "/database.php");
+ include_once($config["library_path"] . "/functions.php");
+ include_once($config["include_path"] . "/global_constants.php");
