@@ -5,11 +5,13 @@ Summary:	Cacti is a PHP frontend for rrdtool
 Summary(pl.UTF-8):Cacti - frontend w PHP do rrdtoola
 Name:		cacti
 Version:	0.8.7a
-Release:	1
+Release:	2
 License:	GPL
 Group:		Applications/WWW
 Source0:	http://www.cacti.net/downloads/%{name}-%{version}.tar.gz
 # Source0-md5:	7d298e496058ec91f6d1ecdc97e0cca5
+Patch1:		http://www.cacti.net/downloads/patches/0.8.7a/cmd-php-non-unique-hosts.patch
+Patch2:		http://www.cacti.net/downloads/patches/0.8.7a/graph-issue-wrra-specs.patch
 Patch10:	%{name}-plugin-%{version}.diff
 Patch11:	%{name}-config.patch
 Patch12:	%{name}-adodb.patch
@@ -54,6 +56,8 @@ przydatną przy tworzeniu wykresów ruchu przy użyciu MRTG.
 
 %prep
 %setup -q
+%patch1 -p1
+%patch2 -p1
 %patch10 -p1
 %patch11 -p1
 %patch12 -p1
