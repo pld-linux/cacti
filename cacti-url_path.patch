@@ -1,0 +1,12 @@
+diff -urN cacti-0.8.7b.orig/include/plugins.php cacti-0.8.7b/include/plugins.php
+--- cacti-0.8.7b.orig/include/plugins.php	2008-02-14 13:30:31.000000000 +0100
++++ cacti-0.8.7b/include/plugins.php	2008-02-14 13:30:58.000000000 +0100
+@@ -33,7 +33,7 @@
+ }
+ 
+ if (isset($_SERVER['DOCUMENT_ROOT']) && isset($_SERVER['REMOTE_ADDR'])) {
+-	$config['url_path'] = substr(__FILE__, strlen($_SERVER['DOCUMENT_ROOT']), strlen(__FILE__) - strlen($_SERVER['DOCUMENT_ROOT']) - strlen('include/plugins.php'));
++//	$config['url_path'] = substr(__FILE__, strlen($_SERVER['DOCUMENT_ROOT']), strlen(__FILE__) - strlen($_SERVER['DOCUMENT_ROOT']) - strlen('include/plugins.php'));
+ 	db_execute("REPLACE INTO settings (name, value) VALUES ('url_path', '" . $config['url_path'] . "')");
+ } else {
+ 	$config['url_path'] = db_fetch_cell("SELECT value FROM settings WHERE name = 'url_path'");
