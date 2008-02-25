@@ -10,7 +10,7 @@ License:	GPL
 Group:		Applications/WWW
 Source0:	http://www.cacti.net/downloads/%{name}-%{version}.tar.gz
 # Source0-md5:	63ffca5735b60bc33c68bc880f0e8042
-Patch1:		http://www.cacti.net/downloads/patches/%{version}/upgrade_from_086k_fix.patch
+Patch1:		%{name}-upgrade_from_086k_fix.patch
 Patch10:	%{name}-plugin-%{version}.diff
 Patch11:	%{name}-config.patch
 Patch12:	%{name}-adodb.patch
@@ -46,14 +46,14 @@ cacti handles the data gathering also. There is also SNMP support for
 those used to creating traffic graphs with MRTG.
 
 %description -l pl.UTF-8
-Cacti to pełny frontend do rrdtoola, zapamiętujący wszystkie
-informacje potrzebne do tworzenia wykresów i wypełniające je danymi w
+Cacti to pe??ny frontend do rrdtoola, zapami??tuj??cy wszystkie
+informacje potrzebne do tworzenia wykres??w i wype??niaj??ce je danymi w
 bazie MySQL.
 
-Frontend jest w pełni oparty na PHP. Oprócz zarządzania wykresami,
-źródłami danych, archiwami Round Robin w bazie danych, cacti obsługuje
-także gromadzenie danych. Ma także obsługę SNMP przydatną przy
-tworzeniu wykresów ruchu przy użyciu MRTG.
+Frontend jest w pe??ni oparty na PHP. Opr??cz zarz??dzania wykresami,
+??r??d??ami danych, archiwami Round Robin w bazie danych, cacti obs??uguje
+tak??e gromadzenie danych. Ma tak??e obs??ug?? SNMP przydatn?? przy
+tworzeniu wykres??w ruchu przy u??yciu MRTG.
 
 %prep
 %setup -q
