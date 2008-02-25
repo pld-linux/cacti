@@ -2,7 +2,7 @@
 # - patch source to use adodb system path instead of symlinking
 %include	/usr/lib/rpm/macros.perl
 Summary:	Cacti is a PHP frontend for rrdtool
-Summary(pl.UTF-8):	Cacti - frontend w PHP do rrdtoola
+Summary(pl.UTF-8):Cacti - frontend w PHP do rrdtoola
 Name:		cacti
 Version:	0.8.7b
 Release:	3
@@ -46,14 +46,14 @@ cacti handles the data gathering also. There is also SNMP support for
 those used to creating traffic graphs with MRTG.
 
 %description -l pl.UTF-8
-Cacti to pe??ny frontend do rrdtoola, zapami??tuj??cy wszystkie
-informacje potrzebne do tworzenia wykres??w i wype??niaj??ce je danymi w
-bazie MySQL.
+Cacti to pełny frontend do rrdtoola, zapamiętujący wszystkie
+informacje potrzebne do tworzenia wykresów i wypełniające je danymi
+w bazie MySQL.
 
-Frontend jest w pe??ni oparty na PHP. Opr??cz zarz??dzania wykresami,
-??r??d??ami danych, archiwami Round Robin w bazie danych, cacti obs??uguje
-tak??e gromadzenie danych. Ma tak??e obs??ug?? SNMP przydatn?? przy
-tworzeniu wykres??w ruchu przy u??yciu MRTG.
+Frontend jest w pełni oparty na PHP. Oprócz zarządzania wykresami,
+źródłami danych, archiwami Round Robin w bazie danych, cacti
+obsługuje także gromadzenie danych. Ma także obsługę SNMP
+przydatną przy tworzeniu wykresów ruchu przy użyciu MRTG.
 
 %prep
 %setup -q
@@ -68,7 +68,7 @@ rm -rf lib/adodb
 %install
 rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT%{webadminroot}
-install -d $RPM_BUILD_ROOT%{_sysconfdir}/{%{name},cron.d}
+install -d $RPM_BUILD_ROOT{%{_sysconfdir}/%{name},/etc/cron.d}
 install -d $RPM_BUILD_ROOT/var/{log,lib/%{name}}
 cp -aRf * $RPM_BUILD_ROOT%{webadminroot}
 ln -s . $RPM_BUILD_ROOT%{webadminroot}/%{name}
