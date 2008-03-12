@@ -1,15 +1,17 @@
 # TODO
 # - patch source to use adodb system path instead of symlinking
+# - shouldn't files in scripts dir be executable?
 %include	/usr/lib/rpm/macros.perl
 Summary:	Cacti is a PHP frontend for rrdtool
 Summary(pl.UTF-8):	Cacti - frontend w PHP do rrdtoola
 Name:		cacti
 Version:	0.8.7b
-Release:	4
+Release:	5
 License:	GPL
 Group:		Applications/WWW
 Source0:	http://www.cacti.net/downloads/%{name}-%{version}.tar.gz
 # Source0-md5:	63ffca5735b60bc33c68bc880f0e8042
+Source1:	%{name}.cfg.php
 Patch1:		%{name}-upgrade_from_086k_fix.patch
 Patch2:		http://www.cacti.net/downloads/patches/0.8.7b/snmp_auth_none_notice.patch
 Patch10:	%{name}-plugin-%{version}.diff
@@ -18,8 +20,12 @@ Patch12:	%{name}-adodb.patch
 Patch13:	%{name}-url_path.patch
 URL:		http://www.cacti.net/
 BuildRequires:	rpm-perlprov
+Requires(postun):	/usr/sbin/userdel
+Requires(pre):	/bin/id
+Requires(pre):	/usr/sbin/useradd
 Requires:	adodb >= 4.67-1.17
 Requires:	crondaemon
+Requires:	group(http)
 Requires:	net-snmp-utils
 Requires:	php(gd)
 Requires:	php(mysql)
@@ -31,6 +37,7 @@ Requires:	rrdtool
 Requires:	webserver
 Requires:	webserver(php)
 Suggests:	cacti-spine
+Provides:	user(cacti)
 BuildArch:	noarch
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -67,40 +74,18 @@ tworzeniu wykresów ruchu przy użyciu MRTG.
 
 rm -rf lib/adodb
 
+find '(' -name '*~' -o -name '*.orig' ')' -print0 | xargs -0 -r -l512 rm -f
+
 %install
 rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT%{webadminroot}
 install -d $RPM_BUILD_ROOT{%{_sysconfdir}/%{name},/etc/cron.d}
 install -d $RPM_BUILD_ROOT/var/{log,lib/%{name}}
-cp -aRf * $RPM_BUILD_ROOT%{webadminroot}
+cp -a * $RPM_BUILD_ROOT%{webadminroot}
+# wtf is this?
 ln -s . $RPM_BUILD_ROOT%{webadminroot}/%{name}
 
-# TODO: move this to SOURCES. it's a lot better to backtrack changes
-# if it's a separate file.
-cat << 'EOF' > $RPM_BUILD_ROOT%{_sysconfdir}/%{name}/%{name}.cfg
-<?php
-$database_type = 'mysql';
-$database_default = 'cacti';
-$database_hostname = 'localhost';
-$database_username = 'cactiuser';
-$database_password = 'cactiuser';
-
-$plugins = array();
-// $plugins[] = 'thold';
-// $plugins[] = 'monitor';
-// $plugins[] = 'discovery';
-
-/* Do not edit this line */
-$config = array();
-
-/* This is full URL Path to the Cacti installation
-   For example, if your cacti was accessible by http://server/cacti/ you would user '/cacti/'
-   as the url path.  For just http://server/ use '/'
-*/
-$config['url_path'] = '/cacti/';
-
-?>
-EOF
+cp -a %{SOURCE1} $RPM_BUILD_ROOT%{_sysconfdir}/%{name}/%{name}.cfg
 
 mv $RPM_BUILD_ROOT%{webadminroot}/log $RPM_BUILD_ROOT/var/log/%{name}
 ln -sf /var/log/cacti $RPM_BUILD_ROOT%{webadminroot}/log
@@ -109,12 +94,21 @@ mv $RPM_BUILD_ROOT%{webadminroot}/rra $RPM_BUILD_ROOT/var/lib/%{name}
 ln -sf /var/lib/%{name}/rra $RPM_BUILD_ROOT%{webadminroot}/rra
 ln -sf %{_datadir}/php/adodb $RPM_BUILD_ROOT%{webadminroot}/lib/adodb
 
+# TODO: switch to user cacti here
 cat  << 'EOF' > $RPM_BUILD_ROOT%{_sysconfdir}/cron.d/%{name}
 */5 * * * * http umask 022; %{_bindir}/php %{webadminroot}/poller.php > /dev/null 2>&1
 EOF
 
 %clean
 rm -rf $RPM_BUILD_ROOT
+
+%pre
+%useradd -u 184 -d /var/lib/%{name} -g http -c "Cacti User" cacti
+
+%postun
+if [ "$1" = "0" ]; then
+	%userremove cacti
+fi
 
 %files
 %defattr(644,root,root,755)
