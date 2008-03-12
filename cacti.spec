@@ -12,6 +12,7 @@ Group:		Applications/WWW
 Source0:	http://www.cacti.net/downloads/%{name}-%{version}.tar.gz
 # Source0-md5:	63ffca5735b60bc33c68bc880f0e8042
 Source1:	%{name}.cfg.php
+Source2:	%{name}.crontab
 Patch1:		%{name}-upgrade_from_086k_fix.patch
 Patch2:		http://www.cacti.net/downloads/patches/0.8.7b/snmp_auth_none_notice.patch
 Patch10:	%{name}-plugin-%{version}.diff
@@ -95,9 +96,7 @@ ln -sf /var/lib/%{name}/rra $RPM_BUILD_ROOT%{webadminroot}/rra
 ln -sf %{_datadir}/php/adodb $RPM_BUILD_ROOT%{webadminroot}/lib/adodb
 
 # TODO: switch to user cacti here
-cat  << 'EOF' > $RPM_BUILD_ROOT%{_sysconfdir}/cron.d/%{name}
-*/5 * * * * http umask 022; %{_bindir}/php %{webadminroot}/poller.php > /dev/null 2>&1
-EOF
+cp -a %{SOURCE2} $RPM_BUILD_ROOT%{_sysconfdir}/cron.d/%{name}
 
 %clean
 rm -rf $RPM_BUILD_ROOT
