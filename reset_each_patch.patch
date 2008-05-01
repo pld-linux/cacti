@@ -1,0 +1,27 @@
+--- 0.8.7/lib/functions.php	2008/02/01 19:58:05	4448
++++ 0.8.7-patched/lib/functions.php	2008/03/17 23:45:09	4552
+@@ -143,14 +143,16 @@
+ function read_default_config_option($config_name) {
+ 	global $config, $settings;
+ 
+-	reset($settings);
+-	while (list($tab_name, $tab_array) = each($settings)) {
+-		if ((isset($tab_array[$config_name])) && (isset($tab_array[$config_name]["default"]))) {
+-			return $tab_array[$config_name]["default"];
+-		}else{
+-			while (list($field_name, $field_array) = each($tab_array)) {
+-				if ((isset($field_array["items"])) && (isset($field_array["items"][$config_name])) && (isset($field_array["items"][$config_name]["default"]))) {
+-					return $field_array["items"][$config_name]["default"];
++	if (is_array($settings)) {
++		reset($settings);
++		while (list($tab_name, $tab_array) = each($settings)) {
++			if ((isset($tab_array[$config_name])) && (isset($tab_array[$config_name]["default"]))) {
++				return $tab_array[$config_name]["default"];
++			}else{
++				while (list($field_name, $field_array) = each($tab_array)) {
++					if ((isset($field_array["items"])) && (isset($field_array["items"][$config_name])) && (isset($field_array["items"][$config_name]["default"]))) {
++						return $field_array["items"][$config_name]["default"];
++					}
+ 				}
+ 			}
+ 		}
