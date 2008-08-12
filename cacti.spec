@@ -71,7 +71,7 @@ tworzeniu wykresów ruchu przy użyciu MRTG.
 %patch2 -p1
 %patch3 -p1
 
-patch -p1 -s < cacti-plugin-arch/cacti-plugin-0.8.7b-PA-v2.1.diff
+patch -p1 -s < cacti-plugin-arch/cacti-plugin-0.8.7b-PA-v2.1.diff || exit 1
 
 %patch11 -p1
 %patch12 -p1
