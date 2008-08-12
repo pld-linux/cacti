@@ -6,20 +6,20 @@ Summary:	Cacti is a PHP frontend for rrdtool
 Summary(pl.UTF-8):	Cacti - frontend w PHP do rrdtoola
 Name:		cacti
 Version:	0.8.7b
-Release:	7
+Release:	8
 License:	GPL
 Group:		Applications/WWW
 Source0:	http://www.cacti.net/downloads/%{name}-%{version}.tar.gz
 # Source0-md5:	63ffca5735b60bc33c68bc880f0e8042
 Source1:	%{name}.cfg.php
 Source2:	%{name}.crontab
+Source3:	http://cactiusers.org/downloads/cacti-plugin-arch.tar.gz
+# Source3-md5:	7079c1f366e8ea1b26c7e251e6373226
 Patch1:		%{name}-upgrade_from_086k_fix.patch
 Patch2:		http://www.cacti.net/downloads/patches/0.8.7b/snmp_auth_none_notice.patch
 Patch3:		http://www.cacti.net/downloads/patches/0.8.7b/reset_each_patch.patch
-Patch10:	%{name}-plugin-%{version}.diff
 Patch11:	%{name}-config.patch
 Patch12:	%{name}-adodb.patch
-Patch13:	%{name}-url_path.patch
 URL:		http://www.cacti.net/
 BuildRequires:	rpm-perlprov
 Requires(postun):	/usr/sbin/userdel
@@ -66,14 +66,15 @@ także gromadzenie danych. Ma także obsługę SNMP przydatną przy
 tworzeniu wykresów ruchu przy użyciu MRTG.
 
 %prep
-%setup -q
+%setup -q -a 3
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
-%patch10 -p1
+
+patch -p1 -s < cacti-plugin-arch/cacti-plugin-0.8.7b-PA-v2.1.diff
+
 %patch11 -p1
 %patch12 -p1
-%patch13 -p1
 
 rm -rf lib/adodb
 
@@ -113,7 +114,7 @@ fi
 
 %files
 %defattr(644,root,root,755)
-%doc docs/CHANGELOG docs/CONTRIB docs/README
+%doc docs/CHANGELOG docs/CONTRIB docs/README cacti-plugin-arch/pa.sql
 %attr(750,root,http) %dir %{_sysconfdir}/%{name}
 %attr(640,root,http) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/%{name}/%{name}.cfg
 %attr(770,root,http) %dir /var/log/%{name}
