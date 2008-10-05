@@ -5,13 +5,9 @@ $database_hostname = 'localhost';
 $database_username = 'mysql';
 $database_password = '';
 
-$plugins = array();
 // $plugins[] = 'thold';
 // $plugins[] = 'monitor';
 // $plugins[] = 'discovery';
-
-/* Do not edit this line */
-$config = array();
 
 /* This is full URL Path to the Cacti installation
    For example, if your cacti was accessible by http://server/cacti/ you would user '/cacti/'
