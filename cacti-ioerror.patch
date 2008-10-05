@@ -1,0 +1,12 @@
+--- cacti/lib/functions.php~	2008-10-05 06:16:11.000000000 +0300
++++ cacti/lib/functions.php	2008-10-05 06:16:13.069722888 +0300
+@@ -437,6 +437,9 @@
+ 
+ 	if (file_exists($file_name)) {
+ 		$fp = fopen($file_name, "r");
++		if (!$fp) {
++			return $file_array;
++		}
+ 
+ 		/* reset back the number of bytes */
+ 		if ($number_of_lines > 0) {
