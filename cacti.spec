@@ -20,6 +20,7 @@ Patch3:		http://www.cacti.net/downloads/patches/0.8.7b/reset_each_patch.patch
 Patch4:		%{name}-config.patch
 Patch5:		%{name}-adodb.patch
 Patch6:		%{name}-ioerror.patch
+Patch7:		%{name}-webroot.patch
 URL:		http://www.cacti.net/
 BuildRequires:	rpm-perlprov
 BuildRequires:	sed >= 4.0
@@ -99,6 +100,7 @@ HTML Documentation for Cacti.
 %patch4 -p1
 %patch5 -p1
 %patch6 -p1
+%patch7 -p1
 
 mkdir -p sql
 mv *.sql sql
