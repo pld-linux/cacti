@@ -1,11 +1,9 @@
-# TODO
-# - shouldn't files in scripts dir be executable?
 %include	/usr/lib/rpm/macros.perl
 Summary:	Cacti is a PHP frontend for rrdtool
 Summary(pl.UTF-8):	Cacti - frontend w PHP do rrdtoola
 Name:		cacti
 Version:	0.8.7b
-Release:	9.18
+Release:	9.21
 License:	GPL
 Group:		Applications/WWW
 Source0:	http://www.cacti.net/downloads/%{name}-%{version}.tar.gz
@@ -24,6 +22,7 @@ Patch5:		%{name}-adodb.patch
 Patch6:		%{name}-ioerror.patch
 URL:		http://www.cacti.net/
 BuildRequires:	rpm-perlprov
+BuildRequires:	sed >= 4.0
 Requires(postun):	/usr/sbin/userdel
 Requires(pre):	/bin/id
 Requires(pre):	/usr/sbin/useradd
@@ -109,6 +108,10 @@ rm -rf cacti-plugin-arch
 rm -rf lib/adodb
 rm -f log/.htaccess
 rm -f rra/.placeholder
+rm -f plugins/index.php
+
+%{__sed} -i -e '1i#!%{_bindir}/php' scripts/*.php
+chmod a+rx scripts/*
 
 find '(' -name '*~' -o -name '*.orig' ')' -print0 | xargs -0 -r -l512 rm -f
 
@@ -183,9 +186,20 @@ fi
 %attr(640,root,http) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/config.php
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) /etc/cron.d/%{name}
 %attr(755,root,root) %{_sbindir}/cacti-poller
-%{_appdir}
+%dir %{_appdir}
 %exclude %{_appdir}/install
 %exclude %{_appdir}/docs
+%{_appdir}/resource
+%{_appdir}/sql
+%{_appdir}/lib
+%{_appdir}/include
+%{_appdir}/images
+%{_appdir}/cli
+%{_appdir}/plugins
+%{_appdir}/*.php
+
+%dir %{_appdir}/scripts
+%attr(755,root,root) %{_appdir}/scripts/*
 
 %attr(750,root,http) %dir /var/lib/%{name}
 %attr(770,root,http) %dir /var/lib/%{name}/rra
