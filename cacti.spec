@@ -5,7 +5,7 @@ Summary:	Cacti is a PHP frontend for rrdtool
 Summary(pl.UTF-8):	Cacti - frontend w PHP do rrdtoola
 Name:		cacti
 Version:	0.8.7b
-Release:	9.17
+Release:	9.18
 License:	GPL
 Group:		Applications/WWW
 Source0:	http://www.cacti.net/downloads/%{name}-%{version}.tar.gz
@@ -19,8 +19,9 @@ Source5:	%{name}-lighttpd.conf
 Patch1:		%{name}-upgrade_from_086k_fix.patch
 Patch2:		http://www.cacti.net/downloads/patches/0.8.7b/snmp_auth_none_notice.patch
 Patch3:		http://www.cacti.net/downloads/patches/0.8.7b/reset_each_patch.patch
-Patch11:	%{name}-config.patch
-Patch12:	%{name}-adodb.patch
+Patch4:		%{name}-config.patch
+Patch5:		%{name}-adodb.patch
+Patch6:		%{name}-ioerror.patch
 URL:		http://www.cacti.net/
 BuildRequires:	rpm-perlprov
 Requires(postun):	/usr/sbin/userdel
@@ -75,7 +76,7 @@ Summary:	Cacti setup package
 Summary(pl.UTF-8):	Pakiet do wstępnej konfiguracji Cacti
 Group:		Applications/WWW
 Requires:	%{name} = %{version}-%{release}
-Requires:	%{name}-doc = %{version}-%{release}
+Suggests:	%{name}-doc = %{version}-%{release}
 
 %description setup
 Install this package to configure initial Cacti installation. You
@@ -96,8 +97,9 @@ HTML Documentation for Cacti.
 %patch2 -p1
 %patch3 -p1
 %{__patch} -p1 -s < cacti-plugin-arch/cacti-plugin-0.8.7b-PA-v2.1.diff
-%patch11 -p1
-%patch12 -p1
+%patch4 -p1
+%patch5 -p1
+%patch6 -p1
 
 mkdir -p sql
 mv *.sql sql
