@@ -89,3 +89,19 @@
  	}
  
  	html_start_box("<strong>Clear Cacti Log File</strong>", "100%", $colors["header"], "1", "center", "");
+--- cacti/poller.php~	2008-10-05 05:08:10.000000000 +0300
++++ cacti/poller.php	2008-10-05 05:11:11.327705168 +0300
+@@ -1,3 +1,4 @@
++#!/usr/bin/php
+ <?php
+ /*
+  +-------------------------------------------------------------------------+
+@@ -32,7 +32,7 @@
+ $no_http_headers = true;
+ 
+ /* start initialization section */
+-include(dirname(__FILE__) . "/include/global.php");
++require "/usr/share/cacti/include/global.php";
+ include_once($config["base_path"] . "/lib/poller.php");
+ include_once($config["base_path"] . "/lib/data_query.php");
+ include_once($config["base_path"] . "/lib/graph_export.php");
