@@ -2,8 +2,8 @@
 $database_type = 'mysql';
 $database_default = 'cacti';
 $database_hostname = 'localhost';
-$database_username = 'cactiuser';
-$database_password = 'cactiuser';
+$database_username = 'mysql';
+$database_password = '';
 
 $plugins = array();
 // $plugins[] = 'thold';
