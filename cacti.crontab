@@ -1,5 +1,5 @@
 MAILTO=root
 
-*/5 * * * * http umask 022; /usr/sbin/cacti-poller
+*/5 * * * * cacti umask 022; /usr/sbin/cacti-poller
 
 # vim:ft=crontab
