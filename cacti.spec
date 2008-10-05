@@ -21,6 +21,7 @@ Patch4:		%{name}-config.patch
 Patch5:		%{name}-adodb.patch
 Patch6:		%{name}-ioerror.patch
 Patch7:		%{name}-webroot.patch
+Patch8:		%{name}-linux_memory.patch
 URL:		http://www.cacti.net/
 BuildRequires:	rpm-perlprov
 BuildRequires:	sed >= 4.0
@@ -101,6 +102,7 @@ HTML Documentation for Cacti.
 %patch5 -p1
 %patch6 -p1
 %patch7 -p1
+%patch8 -p1
 
 mkdir -p sql
 mv *.sql sql
