@@ -5,7 +5,7 @@
  $config["library_path"] = ereg_replace("(.*[\/\\])include", "\\1lib", dirname(__FILE__));
  $config["include_path"] = dirname(__FILE__);
 -$config["rra_path"] = $config["base_path"] . '/rra';
-+$config["rra_path"] = '/var/lib/cacti/rra'
++$config["rra_path"] = '/var/lib/cacti/rra';
 +$config["log_path"] = '/var/log/cacti';
  
  /* colors */
@@ -16,7 +16,7 @@
  $database_password = "cactiuser";
  $database_port = "3306";
  
-+include '/etc/cacti/cacti.cfg';
++include '/etc/webapps/cacti/config.php';
 +
  /* Default session name - Session name must contain alpha characters */
  #$cacti_session_name = "Cacti";
