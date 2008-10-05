@@ -1,20 +1,21 @@
 # TODO
-# - patch source to use adodb system path instead of symlinking
 # - shouldn't files in scripts dir be executable?
 %include	/usr/lib/rpm/macros.perl
 Summary:	Cacti is a PHP frontend for rrdtool
 Summary(pl.UTF-8):	Cacti - frontend w PHP do rrdtoola
 Name:		cacti
 Version:	0.8.7b
-Release:	9
+Release:	9.17
 License:	GPL
 Group:		Applications/WWW
 Source0:	http://www.cacti.net/downloads/%{name}-%{version}.tar.gz
 # Source0-md5:	63ffca5735b60bc33c68bc880f0e8042
 Source1:	%{name}.cfg.php
 Source2:	%{name}.crontab
-Source3:	http://cactiusers.org/downloads/cacti-plugin-arch.tar.gz
+Source3:	http://cactiusers.org/downloads/%{name}-plugin-arch.tar.gz
 # Source3-md5:	7079c1f366e8ea1b26c7e251e6373226
+Source4:	%{name}-apache.conf
+Source5:	%{name}-lighttpd.conf
 Patch1:		%{name}-upgrade_from_086k_fix.patch
 Patch2:		http://www.cacti.net/downloads/patches/0.8.7b/snmp_auth_none_notice.patch
 Patch3:		http://www.cacti.net/downloads/patches/0.8.7b/reset_each_patch.patch
@@ -36,6 +37,7 @@ Requires:	php(snmp)
 Requires:	php(xml)
 Requires:	php-cli
 Requires:	rrdtool
+Requires:	webapps
 Requires:	webserver
 Requires:	webserver(php)
 Suggests:	cacti-spine
@@ -43,7 +45,10 @@ Provides:	user(cacti)
 BuildArch:	noarch
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
-%define		webadminroot /usr/share/%{name}
+%define		_webapps	/etc/webapps
+%define		_webapp		%{name}
+%define		_sysconfdir	%{_webapps}/%{_webapp}
+%define		_appdir		/usr/share/%{name}
 
 %description
 Cacti is a complete frondend to rrdtool, it stores all of the
@@ -65,40 +70,66 @@ Frontend jest w pełni oparty na PHP. Oprócz zarządzania wykresami,
 także gromadzenie danych. Ma także obsługę SNMP przydatną przy
 tworzeniu wykresów ruchu przy użyciu MRTG.
 
+%package setup
+Summary:	Cacti setup package
+Summary(pl.UTF-8):	Pakiet do wstępnej konfiguracji Cacti
+Group:		Applications/WWW
+Requires:	%{name} = %{version}-%{release}
+Requires:	%{name}-doc = %{version}-%{release}
+
+%description setup
+Install this package to configure initial Cacti installation. You
+should uninstall this package when you're done, as it considered
+insecure to keep the setup files in place.
+
+%package doc
+Summary:	HTML Documentation for Cacti
+Group:		Documentation
+Requires:	%{name} = %{version}-%{release}
+
+%description doc
+HTML Documentation for Cacti.
+
 %prep
 %setup -q -a 3
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
-
-patch -p1 -s < cacti-plugin-arch/cacti-plugin-0.8.7b-PA-v2.1.diff || exit 1
-
+%{__patch} -p1 -s < cacti-plugin-arch/cacti-plugin-0.8.7b-PA-v2.1.diff
 %patch11 -p1
 %patch12 -p1
 
+mkdir -p sql
+mv *.sql sql
+
+mv cacti-plugin-arch/pa.sql sql
+rm -rf cacti-plugin-arch
 rm -rf lib/adodb
+rm -f log/.htaccess
+rm -f rra/.placeholder
 
 find '(' -name '*~' -o -name '*.orig' ')' -print0 | xargs -0 -r -l512 rm -f
 
 %install
 rm -rf $RPM_BUILD_ROOT
-install -d $RPM_BUILD_ROOT%{webadminroot}
-install -d $RPM_BUILD_ROOT{%{_sysconfdir}/%{name},/etc/cron.d}
+install -d $RPM_BUILD_ROOT{%{_sysconfdir}/%{name},%{_appdir}/docs,/etc/cron.d,%{_sbindir}}
 install -d $RPM_BUILD_ROOT/var/{log,lib/%{name}}
-cp -a * $RPM_BUILD_ROOT%{webadminroot}
-rm -fr $RPM_BUILD_ROOT%{webadminroot}/cacti-plugin-arch
 
-cp -a %{SOURCE1} $RPM_BUILD_ROOT%{_sysconfdir}/%{name}/%{name}.cfg
+cp -a *.php $RPM_BUILD_ROOT%{_appdir}
+cp -a cli images include install lib plugins resource scripts sql $RPM_BUILD_ROOT%{_appdir}
+cp -a docs/html $RPM_BUILD_ROOT%{_appdir}/docs/html
+mv $RPM_BUILD_ROOT{%{_appdir}/poller.php,%{_sbindir}/cacti-poller}
 
-mv $RPM_BUILD_ROOT%{webadminroot}/log $RPM_BUILD_ROOT/var/log/%{name}
-ln -sf /var/log/cacti $RPM_BUILD_ROOT%{webadminroot}/log
+cp -a log $RPM_BUILD_ROOT/var/log/%{name}
+cp -a rra $RPM_BUILD_ROOT/var/lib/%{name}
 
-mv $RPM_BUILD_ROOT%{webadminroot}/rra $RPM_BUILD_ROOT/var/lib/%{name}
-ln -sf /var/lib/%{name}/rra $RPM_BUILD_ROOT%{webadminroot}/rra
-ln -sf %{_datadir}/php/adodb $RPM_BUILD_ROOT%{webadminroot}/lib/adodb
-
+cp -a %{SOURCE1} $RPM_BUILD_ROOT%{_sysconfdir}/config.php
 # TODO: switch to user cacti here
-cp -a %{SOURCE2} $RPM_BUILD_ROOT%{_sysconfdir}/cron.d/%{name}
+cp -a %{SOURCE2} $RPM_BUILD_ROOT/etc/cron.d/%{name}
+
+cp -a %{SOURCE4} $RPM_BUILD_ROOT%{_sysconfdir}/apache.conf
+cp -a %{SOURCE4} $RPM_BUILD_ROOT%{_sysconfdir}/httpd.conf
+cp -a %{SOURCE5} $RPM_BUILD_ROOT%{_sysconfdir}/lighttpd.conf
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -106,19 +137,63 @@ rm -rf $RPM_BUILD_ROOT
 %pre
 %useradd -u 184 -d /var/lib/%{name} -g http -c "Cacti User" cacti
 
+%post
+if [ ! -f /var/log/%{name}/cacti.log ]; then
+	install -m660 -oroot -ghttp /dev/null /var/log/%{name}/cacti.log
+fi
+
 %postun
 if [ "$1" = "0" ]; then
 	%userremove cacti
 fi
 
+%triggerin -- apache1 < 1.3.37-3, apache1-base
+%webapp_register apache %{_webapp}
+
+%triggerun -- apache1 < 1.3.37-3, apache1-base
+%webapp_unregister apache %{_webapp}
+
+%triggerin -- apache < 2.2.0, apache-base
+%webapp_register httpd %{_webapp}
+
+%triggerun -- apache < 2.2.0, apache-base
+%webapp_unregister httpd %{_webapp}
+
+%triggerin -- lighttpd
+%webapp_register lighttpd %{_webapp}
+
+%triggerun -- lighttpd
+%webapp_unregister lighttpd %{_webapp}
+
+%triggerpostun -- %{name} < 0.8.7b-9.5
+if [ -f /etc/cacti/cacti.cfg.rpmsave ]; then
+	cp -f %{_sysconfdir}/config.php{,.rpmnew}
+	mv /etc/cacti/cacti.cfg.rpmsave %{_sysconfdir}/config.php
+fi
+
 %files
 %defattr(644,root,root,755)
-%doc docs/CHANGELOG docs/CONTRIB docs/README cacti-plugin-arch/pa.sql
-%attr(750,root,http) %dir %{_sysconfdir}/%{name}
-%attr(640,root,http) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/%{name}/%{name}.cfg
-%attr(770,root,http) %dir /var/log/%{name}
-%attr(660,root,http) %ghost /var/log/%{name}/*.log
+%doc docs/CHANGELOG docs/CONTRIB docs/README docs/text/manual.txt
+%dir %attr(750,root,http) %{_sysconfdir}
+%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/apache.conf
+%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/httpd.conf
+%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/lighttpd.conf
+%attr(640,root,http) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/config.php
+%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) /etc/cron.d/%{name}
+%attr(755,root,root) %{_sbindir}/cacti-poller
+%{_appdir}
+%exclude %{_appdir}/install
+%exclude %{_appdir}/docs
+
 %attr(750,root,http) %dir /var/lib/%{name}
 %attr(770,root,http) %dir /var/lib/%{name}/rra
-%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) /etc/cron.d/%{name}
-%{webadminroot}
+%attr(730,root,http) %dir /var/log/%{name}
+%attr(660,root,http) %ghost /var/log/%{name}/cacti.log
+
+%files setup
+%defattr(644,root,root,755)
+%{_appdir}/install
+
+%files doc
+%defattr(644,root,root,755)
+%{_appdir}/docs/html
