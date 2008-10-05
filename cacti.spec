@@ -14,6 +14,7 @@ Source3:	http://cactiusers.org/downloads/%{name}-plugin-arch.tar.gz
 # Source3-md5:	7079c1f366e8ea1b26c7e251e6373226
 Source4:	%{name}-apache.conf
 Source5:	%{name}-lighttpd.conf
+Source6:	%{name}-rrdpath.sql
 Patch1:		%{name}-upgrade_from_086k_fix.patch
 Patch2:		http://www.cacti.net/downloads/patches/0.8.7b/snmp_auth_none_notice.patch
 Patch3:		http://www.cacti.net/downloads/patches/0.8.7b/reset_each_patch.patch
@@ -22,6 +23,7 @@ Patch5:		%{name}-adodb.patch
 Patch6:		%{name}-ioerror.patch
 Patch7:		%{name}-webroot.patch
 Patch8:		%{name}-linux_memory.patch
+Patch9:		%{name}-log-verbosity.patch
 URL:		http://www.cacti.net/
 BuildRequires:	rpm-perlprov
 BuildRequires:	sed >= 4.0
@@ -103,9 +105,12 @@ HTML Documentation for Cacti.
 %patch6 -p1
 %patch7 -p1
 %patch8 -p1
+%patch9 -p1
 
 mkdir -p sql
 mv *.sql sql
+# you should run this sql if your database contains path to %{_datadir}...
+cp %{SOURCE6} sql
 
 mv cacti-plugin-arch/pa.sql sql
 rm -rf cacti-plugin-arch
