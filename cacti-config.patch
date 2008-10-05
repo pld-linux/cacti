@@ -1,4 +1,15 @@
-diff -urN cacti-0.8.7a.orig/include/config.php cacti-0.8.7a/include/config.php
+--- cacti-0.8.7b/include/global.php~	2008-10-05 04:29:33.131404241 +0300
++++ cacti-0.8.7b/include/global.php	2008-10-05 04:38:29.740276226 +0300
+@@ -101,7 +101,8 @@
+ $config["base_path"] = strtr(ereg_replace("(.*)[\/\\]include", "\\1", dirname(__FILE__)), "\\", "/");
+ $config["library_path"] = ereg_replace("(.*[\/\\])include", "\\1lib", dirname(__FILE__));
+ $config["include_path"] = dirname(__FILE__);
+-$config["rra_path"] = $config["base_path"] . '/rra';
++$config["rra_path"] = '/var/lib/cacti/rra'
++$config["log_path"] = '/var/log/cacti';
+ 
+ /* colors */
+ $colors["dark_outline"] = "454E53";
 --- cacti-0.8.7a.orig/include/config.php	2007-11-17 19:11:52.000000000 +0100
 +++ cacti-0.8.7a/include/config.php	2007-12-04 10:53:28.000000000 +0100
 @@ -30,6 +30,8 @@
@@ -10,3 +21,71 @@ diff -urN cacti-0.8.7a.orig/include/config.php cacti-0.8.7a/include/config.php
  /* Default session name - Session name must contain alpha characters */
  #$cacti_session_name = "Cacti";
  
+--- cacti-0.8.7b/include/global_settings.php~	2008-10-05 04:29:33.121404239 +0300
++++ cacti-0.8.7b/include/global_settings.php	2008-10-05 04:41:11.807395633 +0300
+@@ -96,7 +96,7 @@
+ 			"friendly_name" => "Cacti Log File Path",
+ 			"description" => "The path to your Cacti log file (if blank, defaults to <path_cacti>/log/cacti.log)",
+ 			"method" => "filepath",
+-			"default" => $config["base_path"] . "/log/cacti.log",
++			"default" => $config["log_path"] . "/cacti.log",
+ 			"max_length" => "255"
+ 			),
+ 		"pollerpaths_header" => array(
+--- cacti-0.8.7b/install/index.php~	2008-10-05 04:29:33.113733438 +0300
++++ cacti-0.8.7b/install/index.php	2008-10-05 04:41:37.276839747 +0300
+@@ -244,7 +244,7 @@
+ if (config_value_exists("path_cactilog")) {
+ 	$input["path_cactilog"]["default"] = read_config_option("path_cactilog");
+ } else {
+-	$input["path_cactilog"]["default"] = $config["base_path"] . "/log/cacti.log";
++	$input["path_cactilog"]["default"] = $config["log_path"] . "/cacti.log";
+ }
+ 
+ /* SNMP Version */
+--- cacti-0.8.7b/lib/functions.php~	2008-10-05 04:29:33.124737562 +0300
++++ cacti-0.8.7b/lib/functions.php	2008-10-05 04:42:05.046758504 +0300
+@@ -367,7 +367,7 @@
+ 	/* Log to Logfile */
+ 	if ((($logdestination == 1) || ($logdestination == 2)) && (read_config_option("log_verbosity") != POLLER_VERBOSITY_NONE)) {
+ 		if ($logfile == "") {
+-			$logfile = $config["base_path"] . "/log/cacti.log";
++			$logfile = $config["log_path"] . "/cacti.log";
+ 		}
+ 
+ 		/* echo the data to the log (append) */
+--- cacti-0.8.7b/utilities.php~	2008-10-05 04:29:33.128070807 +0300
++++ cacti-0.8.7b/utilities.php	2008-10-05 04:43:30.176737491 +0300
+@@ -693,12 +693,12 @@
+ }
+ 
+ function utilities_view_logfile() {
+-	global $colors, $log_tail_lines, $page_refresh_interval;
++	global $config, $colors, $log_tail_lines, $page_refresh_interval;
+ 
+ 	$logfile = read_config_option("path_cactilog");
+ 
+ 	if ($logfile == "") {
+-		$logfile = "./log/rrd.log";
++		$logfile = $config['log_path']. "/rrd.log";
+ 	}
+ 
+ 	/* helps determine output color */
+@@ -858,7 +858,7 @@
+ }
+ 
+ function utilities_clear_logfile() {
+-	global $colors;
++	global $config, $colors;
+ 
+ 	load_current_session_value("refresh", "sess_logfile_refresh", read_config_option("log_refresh_interval"));
+ 
+@@ -870,7 +870,7 @@
+ 	$logfile = read_config_option("path_cactilog");
+ 
+ 	if ($logfile == "") {
+-		$logfile = "./log/cacti.log";
++		$logfile = $config['log_path']."/cacti.log";
+ 	}
+ 
+ 	html_start_box("<strong>Clear Cacti Log File</strong>", "100%", $colors["header"], "1", "center", "");
