@@ -1,0 +1,24 @@
+--- cacti-0.8.7b/poller.php~	2008-10-05 16:58:33.000000000 +0300
++++ cacti-0.8.7b/poller.php	2008-10-05 17:45:53.825952709 +0300
+@@ -312,7 +312,9 @@
+ 					$num_polling_items,
+ 					$rrds_processed);
+ 
+-				cacti_log("STATS: " . $cacti_stats ,true,"SYSTEM");
++				if (read_config_option('log_verbosity') > POLLER_VERBOSITY_NONE) {
++					cacti_log("STATS: " . $cacti_stats ,true,"SYSTEM");
++				}
+ 
+ 				/* insert poller stats into the settings table */
+ 				db_execute("replace into settings (name,value) values ('stats_poller','$cacti_stats')");
+@@ -352,7 +354,9 @@
+ 						$num_polling_items,
+ 						$rrds_processed);
+ 
+-					cacti_log("STATS: " . $cacti_stats ,true,"SYSTEM");
++					if (read_config_option('log_verbosity') > POLLER_VERBOSITY_NONE) {
++						cacti_log("STATS: " . $cacti_stats ,true,"SYSTEM");
++					}
+ 
+ 					/* insert poller stats into the settings table */
+ 					db_execute("replace into settings (name,value) values ('stats_poller','$cacti_stats')");
