@@ -3,7 +3,7 @@ Summary:	Cacti is a PHP frontend for rrdtool
 Summary(pl.UTF-8):	Cacti - frontend w PHP do rrdtoola
 Name:		cacti
 Version:	0.8.7b
-Release:	10
+Release:	11
 License:	GPL
 Group:		Applications/WWW
 Source0:	http://www.cacti.net/downloads/%{name}-%{version}.tar.gz
@@ -15,15 +15,16 @@ Source3:	http://cactiusers.org/downloads/%{name}-plugin-arch.tar.gz
 Source4:	%{name}-apache.conf
 Source5:	%{name}-lighttpd.conf
 Source6:	%{name}-rrdpath.sql
-Patch1:		%{name}-upgrade_from_086k_fix.patch
-Patch2:		http://www.cacti.net/downloads/patches/0.8.7b/snmp_auth_none_notice.patch
-Patch3:		http://www.cacti.net/downloads/patches/0.8.7b/reset_each_patch.patch
-Patch4:		%{name}-config.patch
-Patch5:		%{name}-adodb.patch
-Patch6:		%{name}-ioerror.patch
-Patch7:		%{name}-webroot.patch
-Patch8:		%{name}-linux_memory.patch
-Patch9:		%{name}-log-verbosity.patch
+Patch100:	http://www.cacti.net/downloads/patches/0.8.7b/upgrade_from_086k_fix.patch
+Patch101:	http://www.cacti.net/downloads/patches/0.8.7b/snmp_auth_none_notice.patch
+Patch102:	http://www.cacti.net/downloads/patches/0.8.7b/reset_each_patch.patch
+Patch0:		%{name}-config.patch
+Patch1:		%{name}-adodb.patch
+Patch2:		%{name}-ioerror.patch
+Patch3:		%{name}-webroot.patch
+Patch4:		%{name}-linux_memory.patch
+Patch5:		%{name}-log-verbosity.patch
+Patch6:		%{name}-ss_disk-array-indices.patch
 URL:		http://www.cacti.net/
 BuildRequires:	rpm-perlprov
 BuildRequires:	sed >= 4.0
@@ -96,16 +97,17 @@ HTML Documentation for Cacti.
 
 %prep
 %setup -q -a 3
+%patch100 -p1
+%patch101 -p1
+%patch102 -p1
+%{__patch} -p1 -s < cacti-plugin-arch/cacti-plugin-0.8.7b-PA-v2.1.diff
+%patch0 -p1
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
-%{__patch} -p1 -s < cacti-plugin-arch/cacti-plugin-0.8.7b-PA-v2.1.diff
 %patch4 -p1
 %patch5 -p1
 %patch6 -p1
-%patch7 -p1
-%patch8 -p1
-%patch9 -p1
 
 mkdir -p sql
 mv *.sql sql
@@ -116,11 +118,15 @@ mv cacti-plugin-arch/pa.sql sql
 rm -rf cacti-plugin-arch
 rm -rf lib/adodb
 rm -f log/.htaccess
+rm -f cli/.htaccess
 rm -f rra/.placeholder
 rm -f plugins/index.php
 
 %{__sed} -i -e '1i#!%{_bindir}/php' scripts/*.php
 chmod a+rx scripts/*
+
+%{__sed} -i -e '1i#!%{_bindir}/php' cli/*.php
+chmod a+rx cli/*
 
 find '(' -name '*~' -o -name '*.orig' ')' -print0 | xargs -0 -r -l512 rm -f
 
@@ -202,9 +208,11 @@ fi
 %{_appdir}/lib
 %{_appdir}/include
 %{_appdir}/images
-%{_appdir}/cli
 %{_appdir}/plugins
 %{_appdir}/*.php
+
+%dir %{_appdir}/cli
+%attr(755,root,root) %{_appdir}/cli/*
 
 %dir %{_appdir}/scripts
 %attr(755,root,root) %{_appdir}/scripts/*
