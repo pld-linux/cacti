@@ -87,13 +87,22 @@ Install this package to configure initial Cacti installation. You
 should uninstall this package when you're done, as it considered
 insecure to keep the setup files in place.
 
+%description setup -l pl.UTF-8
+Ten pakiet należy zainstalować, aby wstępnie skonfigurować instalację
+Cacti. Po tym pakiet powinien zostać odinstalowany, jako że jego
+obecność może być niebezpieczna.
+
 %package doc
 Summary:	HTML Documentation for Cacti
+Summary(pl.UTF-8):	Dokumentacja do Cacti w formacie HTML
 Group:		Documentation
 Requires:	%{name} = %{version}-%{release}
 
 %description doc
 HTML Documentation for Cacti.
+
+%description doc -l pl.UTF-8
+Dokumentacja do Cacti w formacie HTML.
 
 %prep
 %setup -q -a 3
