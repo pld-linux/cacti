@@ -41,6 +41,7 @@ Requires:	php(pcre)
 Requires:	php(snmp)
 Requires:	php(xml)
 Requires:	php-cli
+Requires:	php-program
 Requires:	rrdtool
 Requires:	webapps
 Requires:	webserver
@@ -237,4 +238,4 @@ fi
 
 %files doc
 %defattr(644,root,root,755)
-%{_appdir}/docs/html
+%{_appdir}/docs
