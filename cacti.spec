@@ -41,7 +41,6 @@ Requires:	php(pcre)
 Requires:	php(snmp)
 Requires:	php(xml)
 Requires:	php-cli
-Requires:	php-program
 Requires:	rrdtool
 Requires:	webapps
 Requires:	webserver
