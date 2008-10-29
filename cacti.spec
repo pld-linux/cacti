@@ -228,8 +228,8 @@ fi
 %dir %{_appdir}/scripts
 %attr(755,root,root) %{_appdir}/scripts/*
 
-%attr(750,root,http) %dir /var/lib/%{name}
-%attr(770,root,http) %dir /var/lib/%{name}/rra
+%attr(750,cacti,http) %dir /var/lib/%{name}
+%attr(770,cacti,http) %dir /var/lib/%{name}/rra
 %attr(730,root,http) %dir /var/log/%{name}
 %attr(660,root,http) %ghost /var/log/%{name}/cacti.log
 
