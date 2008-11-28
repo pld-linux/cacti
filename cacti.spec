@@ -161,10 +161,6 @@ cp -a %{SOURCE4} $RPM_BUILD_ROOT%{_sysconfdir}/apache.conf
 cp -a %{SOURCE4} $RPM_BUILD_ROOT%{_sysconfdir}/httpd.conf
 cp -a %{SOURCE5} $RPM_BUILD_ROOT%{_sysconfdir}/lighttpd.conf
 
-# This is for backward compatibility with broken installations.
-# Such installations should be repaired by cacti-rrdpath.sql.
-ln -sf /var/lib/%{name}/rra $RPM_BUILD_ROOT%{webadminroot}/rra
-
 %clean
 rm -rf $RPM_BUILD_ROOT
 
