@@ -1,0 +1,13 @@
+--- cacti/lib/rrd.php~	2008-10-07 19:32:18.000000000 +0300
++++ cacti/lib/rrd.php	2008-11-28 02:29:52.807698495 +0200
+@@ -54,7 +54,9 @@
+ 
+ function rrd_close($rrd_struc) {
+ 	/* close the rrdtool file descriptor */
+-	pclose($rrd_struc["fd"]);
++	if (is_resource($rrd_struc["fd"])) {
++		pclose($rrd_struc["fd"]);
++	}
+ }
+ 
+ function rrd_get_fd(&$rrd_struc, $fd_type) {
