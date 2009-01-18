@@ -46,6 +46,7 @@ Requires:	php-cli
 Requires:	rrdtool
 Requires:	webapps
 Requires:	webserver
+Requires:	webserver(access)
 Requires:	webserver(alias)
 Requires:	webserver(php)
 Suggests:	cacti-spine
