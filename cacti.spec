@@ -48,6 +48,7 @@ Requires:	webapps
 Requires:	webserver
 Requires:	webserver(access)
 Requires:	webserver(alias)
+Requires:	webserver(indexfile)
 Requires:	webserver(php)
 Suggests:	cacti-spine
 Provides:	user(cacti)
