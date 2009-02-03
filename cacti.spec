@@ -2,22 +2,19 @@
 Summary:	Cacti is a PHP frontend for rrdtool
 Summary(pl.UTF-8):	Cacti - frontend w PHP do rrdtoola
 Name:		cacti
-Version:	0.8.7b
-Release:	15
+Version:	0.8.7c
+Release:	1
 License:	GPL
 Group:		Applications/WWW
 Source0:	http://www.cacti.net/downloads/%{name}-%{version}.tar.gz
-# Source0-md5:	63ffca5735b60bc33c68bc880f0e8042
+# Source0-md5:	7a1cd5a0aadfabfb9593c9291d79ad53
 Source1:	%{name}.cfg.php
 Source2:	%{name}.crontab
 Source3:	http://cactiusers.org/downloads/%{name}-plugin-arch.tar.gz
-# Source3-md5:	7079c1f366e8ea1b26c7e251e6373226
+# Source3-md5:	8707462c4e0bfdf0f93e6a963af258c1
 Source4:	%{name}-apache.conf
 Source5:	%{name}-lighttpd.conf
 Source6:	%{name}-rrdpath.sql
-Patch100:	http://www.cacti.net/downloads/patches/0.8.7b/upgrade_from_086k_fix.patch
-Patch101:	http://www.cacti.net/downloads/patches/0.8.7b/snmp_auth_none_notice.patch
-Patch102:	http://www.cacti.net/downloads/patches/0.8.7b/reset_each_patch.patch
 Patch0:		%{name}-config.patch
 Patch1:		%{name}-adodb.patch
 Patch2:		%{name}-ioerror.patch
@@ -25,8 +22,7 @@ Patch3:		%{name}-webroot.patch
 Patch4:		%{name}-linux_memory.patch
 Patch5:		%{name}-log-verbosity.patch
 Patch6:		%{name}-ss_disk-array-indices.patch
-Patch7:		%{name}-rrdtool-1.3.patch
-Patch8:		%{name}-rrdresourcecheck.patch
+Patch7:		%{name}-rrdresourcecheck.patch
 URL:		http://www.cacti.net/
 BuildRequires:	rpm-perlprov
 BuildRequires:	sed >= 4.0
@@ -111,10 +107,7 @@ Dokumentacja do Cacti w formacie HTML.
 
 %prep
 %setup -q -a 3
-%patch100 -p1
-%patch101 -p1
-%patch102 -p1
-%{__patch} -p1 -s < cacti-plugin-arch/cacti-plugin-0.8.7b-PA-v2.1.diff
+%{__patch} -p1 -s < cacti-plugin-arch/cacti-plugin-0.8.7c-PA-v2.3.diff || exit 1
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
@@ -122,8 +115,7 @@ Dokumentacja do Cacti w formacie HTML.
 %patch4 -p1
 %patch5 -p1
 %patch6 -p1
-%patch7 -p0
-%patch8 -p1
+%patch7 -p1
 
 mkdir -p sql
 mv *.sql sql
