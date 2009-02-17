@@ -3,7 +3,7 @@ Summary:	Cacti is a PHP frontend for rrdtool
 Summary(pl.UTF-8):	Cacti - frontend w PHP do rrdtoola
 Name:		cacti
 Version:	0.8.7d
-Release:	0.1
+Release:	0.2
 License:	GPL
 Group:		Applications/WWW
 Source0:	http://www.cacti.net/downloads/%{name}-%{version}.tar.gz
@@ -13,6 +13,8 @@ Source2:	%{name}.crontab
 Source3:	%{name}-apache.conf
 Source4:	%{name}-lighttpd.conf
 Source5:	%{name}-rrdpath.sql
+Source5:	%{name}-rrdpath.sql
+Source6:	%{name}-pa.sql
 Patch0:		cacti-plugin-%{version}-PA-v2.4.diff
 Patch1:		%{name}-config.patch
 Patch2:		%{name}-adodb.patch
@@ -120,6 +122,7 @@ mkdir -p sql
 mv *.sql sql
 # you should run this sql if your database contains path to %{_datadir}...
 cp %{SOURCE5} sql
+cp %{SOURCE6} sql
 
 rm -rf cacti-plugin-arch
 rm -rf lib/adodb
