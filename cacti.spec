@@ -2,27 +2,26 @@
 Summary:	Cacti is a PHP frontend for rrdtool
 Summary(pl.UTF-8):	Cacti - frontend w PHP do rrdtoola
 Name:		cacti
-Version:	0.8.7c
-Release:	1
+Version:	0.8.7d
+Release:	0.1
 License:	GPL
 Group:		Applications/WWW
 Source0:	http://www.cacti.net/downloads/%{name}-%{version}.tar.gz
-# Source0-md5:	7a1cd5a0aadfabfb9593c9291d79ad53
+# Source0-md5:	0822068bfa547278e94d3143ef9279e0
 Source1:	%{name}.cfg.php
 Source2:	%{name}.crontab
-Source3:	http://cactiusers.org/downloads/%{name}-plugin-arch.tar.gz
-# Source3-md5:	8707462c4e0bfdf0f93e6a963af258c1
-Source4:	%{name}-apache.conf
-Source5:	%{name}-lighttpd.conf
-Source6:	%{name}-rrdpath.sql
-Patch0:		%{name}-config.patch
-Patch1:		%{name}-adodb.patch
-Patch2:		%{name}-ioerror.patch
-Patch3:		%{name}-webroot.patch
-Patch4:		%{name}-linux_memory.patch
-Patch5:		%{name}-log-verbosity.patch
-Patch6:		%{name}-ss_disk-array-indices.patch
-Patch7:		%{name}-rrdresourcecheck.patch
+Source3:	%{name}-apache.conf
+Source4:	%{name}-lighttpd.conf
+Source5:	%{name}-rrdpath.sql
+Patch0:		cacti-plugin-%{version}-PA-v2.4.diff
+Patch1:		%{name}-config.patch
+Patch2:		%{name}-adodb.patch
+Patch3:		%{name}-ioerror.patch
+Patch4:		%{name}-webroot.patch
+Patch5:		%{name}-linux_memory.patch
+Patch6:		%{name}-log-verbosity.patch
+Patch7:		%{name}-ss_disk-array-indices.patch
+Patch8:		%{name}-rrdresourcecheck.patch
 URL:		http://www.cacti.net/
 BuildRequires:	rpm-perlprov
 BuildRequires:	sed >= 4.0
@@ -106,8 +105,7 @@ HTML Documentation for Cacti.
 Dokumentacja do Cacti w formacie HTML.
 
 %prep
-%setup -q -a 3
-%{__patch} -p1 -s < cacti-plugin-arch/cacti-plugin-0.8.7c-PA-v2.3.diff || exit 1
+%setup -q
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
@@ -116,19 +114,18 @@ Dokumentacja do Cacti w formacie HTML.
 %patch5 -p1
 %patch6 -p1
 %patch7 -p1
+%patch8 -p1
 
 mkdir -p sql
 mv *.sql sql
 # you should run this sql if your database contains path to %{_datadir}...
-cp %{SOURCE6} sql
+cp %{SOURCE5} sql
 
-mv cacti-plugin-arch/pa.sql sql
 rm -rf cacti-plugin-arch
 rm -rf lib/adodb
 rm -f log/.htaccess
 rm -f cli/.htaccess
 rm -f rra/.placeholder
-rm -f plugins/index.php
 
 %{__sed} -i -e '1i#!%{_bindir}/php' scripts/*.php
 chmod a+rx scripts/*
@@ -140,11 +137,11 @@ find '(' -name '*~' -o -name '*.orig' ')' -print0 | xargs -0 -r -l512 rm -f
 
 %install
 rm -rf $RPM_BUILD_ROOT
-install -d $RPM_BUILD_ROOT{%{_sysconfdir}/%{name},%{_appdir}/docs,/etc/cron.d,%{_sbindir}}
+install -d $RPM_BUILD_ROOT{%{_sysconfdir}/%{name},%{_appdir}/{docs,plugins},/etc/cron.d,%{_sbindir}}
 install -d $RPM_BUILD_ROOT/var/{log,lib/%{name}}
 
 cp -a *.php $RPM_BUILD_ROOT%{_appdir}
-cp -a cli images include install lib plugins resource scripts sql $RPM_BUILD_ROOT%{_appdir}
+cp -a cli images include install lib resource scripts sql $RPM_BUILD_ROOT%{_appdir}
 cp -a docs/html $RPM_BUILD_ROOT%{_appdir}/docs/html
 mv $RPM_BUILD_ROOT{%{_appdir}/poller.php,%{_sbindir}/cacti-poller}
 
@@ -154,9 +151,9 @@ cp -a rra $RPM_BUILD_ROOT/var/lib/%{name}
 cp -a %{SOURCE1} $RPM_BUILD_ROOT%{_sysconfdir}/config.php
 cp -a %{SOURCE2} $RPM_BUILD_ROOT/etc/cron.d/%{name}
 
-cp -a %{SOURCE4} $RPM_BUILD_ROOT%{_sysconfdir}/apache.conf
-cp -a %{SOURCE4} $RPM_BUILD_ROOT%{_sysconfdir}/httpd.conf
-cp -a %{SOURCE5} $RPM_BUILD_ROOT%{_sysconfdir}/lighttpd.conf
+cp -a %{SOURCE3} $RPM_BUILD_ROOT%{_sysconfdir}/apache.conf
+cp -a %{SOURCE3} $RPM_BUILD_ROOT%{_sysconfdir}/httpd.conf
+cp -a %{SOURCE4} $RPM_BUILD_ROOT%{_sysconfdir}/lighttpd.conf
 
 %clean
 rm -rf $RPM_BUILD_ROOT
