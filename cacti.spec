@@ -13,7 +13,6 @@ Source2:	%{name}.crontab
 Source3:	%{name}-apache.conf
 Source4:	%{name}-lighttpd.conf
 Source5:	%{name}-rrdpath.sql
-Source5:	%{name}-rrdpath.sql
 Source6:	%{name}-pa.sql
 Patch0:		cacti-plugin-%{version}-PA-v2.4.diff
 Patch1:		%{name}-config.patch
