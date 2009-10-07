@@ -1,6 +1,24 @@
---- cacti-0.8.7e/graph_view.php~	2009-06-28 19:07:11.000000000 +0300
-+++ cacti-0.8.7e/graph_view.php	2009-10-02 10:30:43.000000000 +0300
-@@ -550,10 +550,16 @@
+--- cacti-0.8.7e/graph_view.php	2009-10-02 10:30:43.000000000 +0300
++++ cacti/graph_view.php	2009-10-07 12:42:04.032959475 +0300
+@@ -151,11 +151,17 @@
+ 	define("ROWS_PER_PAGE", read_graph_config_option("preview_graphs_per_page"));
+ 
+ 	/* ================= input validation ================= */
++	input_validate_input_regex(get_request_var_request("host_name"), "^([a-zA-Z0-9_.-]+)$");
+ 	input_validate_input_number(get_request_var_request("host_id"));
+ 	input_validate_input_number(get_request_var_request("graph_template_id"));
+ 	input_validate_input_number(get_request_var_request("page"));
+ 	/* ==================================================== */
+ 
++	if (empty($_REQUEST['host_id']) && !empty($_REQUEST['host_name'])) {
++		// fill $host_id from $host_name. empty result is ok too, we'll list previous view then
++		$_REQUEST['host_id'] = db_fetch_cell("select id from host where description='{$_REQUEST['host_name']}'");
++	}
++
+ 	/* clean up search string */
+ 	if (isset($_REQUEST["filter"])) {
+ 		$_REQUEST["filter"] = sanitize_search_string(get_request_var_request("filter"));
+@@ -550,10 +556,16 @@
  	}
  
  	/* ================= input validation ================= */
