@@ -3,7 +3,7 @@ Summary:	Cacti is a PHP frontend for rrdtool
 Summary(pl.UTF-8):	Cacti - frontend w PHP do rrdtoola
 Name:		cacti
 Version:	0.8.7e
-Release:	5
+Release:	6
 License:	GPL
 Group:		Applications/WWW
 Source0:	http://www.cacti.net/downloads/%{name}-%{version}.tar.gz
@@ -14,7 +14,14 @@ Source3:	%{name}-apache.conf
 Source4:	%{name}-lighttpd.conf
 Source5:	%{name}-rrdpath.sql
 Source6:	%{name}-pa.sql
-Patch0:		%{name}-plugin-%{version}-PA-v2.5.diff
+Patch100:	http://www.cacti.net/downloads/patches/0.8.7e/cli_add_graph.patch
+Patch101:	http://www.cacti.net/downloads/patches/0.8.7e/snmp_invalid_response.patch
+Patch102:	http://www.cacti.net/downloads/patches/0.8.7e/template_duplication.patch
+Patch103:	http://www.cacti.net/downloads/patches/0.8.7e/fix_icmp_on_windows_iis_servers.patch
+Patch104:	http://www.cacti.net/downloads/patches/0.8.7e/cross_site_fix.patch
+# http://cactiusers.org/wiki/PluginArchitectureInstall
+# http://mirror.cactiusers.org/downloads/plugins/cacti-plugin-0.8.7e-PA-v2.6.zip
+Patch0:		%{name}-PA.patch
 Patch1:		%{name}-config.patch
 Patch2:		%{name}-adodb.patch
 Patch3:		%{name}-ioerror.patch
@@ -109,6 +116,11 @@ Dokumentacja do Cacti w formacie HTML.
 
 %prep
 %setup -q
+%patch100 -p1
+%patch101 -p1
+%patch102 -p1
+%patch103 -p1
+%patch104 -p1
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
