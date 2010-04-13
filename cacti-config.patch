@@ -16,7 +16,7 @@
  $database_password = "cactiuser";
  $database_port = "3306";
  
-+include '/etc/webapps/cacti/config.php';
++require '/etc/webapps/cacti/config.php';
 +
  /* Default session name - Session name must contain alpha characters */
  #$cacti_session_name = "Cacti";
