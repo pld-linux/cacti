@@ -1,7 +1,7 @@
 diff -ruBbd 0.8.7e/cli/repair_templates.php 0.8.7/cli/repair_templates.php
 --- 0.8.7e/cli/repair_templates.php	2009-08-18 22:03:22.000000000 -0400
 +++ 0.8.7/cli/repair_templates.php	2009-08-20 07:43:54.000000000 -0400
-@@ -0,0 +1,135 @@
+@@ -0,0 +1,136 @@
 +<?php
 +/*
 + +-------------------------------------------------------------------------+
@@ -80,7 +80,7 @@ diff -ruBbd 0.8.7e/cli/repair_templates.php 0.8.7/cli/repair_templates.php
 +$damaged_template_ids = db_fetch_assoc("SELECT DISTINCT data_template_id FROM data_template_rrd WHERE hash='' AND local_data_id=0");
 +if (sizeof($damaged_template_ids)) {
 +	foreach($damaged_template_ids as $id) {
-		$template_name = db_fetch_cell("SELECT name FROM data_template WHERE id=" . $id["data_template_id"]);
++		$template_name = db_fetch_cell("SELECT name FROM data_template WHERE id=" . $id["data_template_id"]);
 +		echo "NOTE: Data Template '$template_name' is Damaged and can be repaired\n";
 +	}
 +
@@ -151,7 +151,6 @@ diff -ruBbd 0.8.7e/docs/README 0.8.7/docs/README
  
  
  
-diff -ruBbd 0.8.7e/lib/export.php 0.8.7/lib/export.php
 --- 0.8.7e/lib/export.php	2009-08-18 21:56:47.000000000 -0400
 +++ 0.8.7/lib/export.php	2009-08-18 21:57:50.000000000 -0400
 @@ -811,7 +811,9 @@
@@ -173,7 +172,6 @@ diff -ruBbd 0.8.7e/lib/export.php 0.8.7/lib/export.php
  }
  
  ?>
-diff -ruBbd 0.8.7e/lib/import.php 0.8.7/lib/import.php
 --- 0.8.7e/lib/import.php	2009-08-18 21:56:59.000000000 -0400
 +++ 0.8.7/lib/import.php	2009-08-18 21:57:55.000000000 -0400
 @@ -36,10 +36,6 @@
@@ -210,7 +208,6 @@ diff -ruBbd 0.8.7e/lib/import.php 0.8.7/lib/import.php
  }
  
  ?>
-diff -ruBbd 0.8.7e/lib/utility.php 0.8.7/lib/utility.php
 --- 0.8.7e/lib/utility.php	2009-08-18 21:57:08.000000000 -0400
 +++ 0.8.7/lib/utility.php	2009-08-18 21:58:00.000000000 -0400
 @@ -346,6 +346,7 @@
