@@ -146,11 +146,12 @@ rm -f log/.htaccess
 rm -f cli/.htaccess
 rm -f rra/.placeholder
 
-%{__sed} -i -e '1i#!%{_bindir}/php' scripts/*.php
-chmod a+rx scripts/*
+# make sure scripts have php shebang
+%{__sed} -i -e '1{
+    /bin.php/!i#!%{_bindir}/php
+}' scripts/*.php  cli/*.php
 
-%{__sed} -i -e '1i#!%{_bindir}/php' cli/*.php
-chmod a+rx cli/*
+chmod a+rx scripts/*.php cli/*.php
 
 find '(' -name '*~' -o -name '*.orig' ')' -print0 | xargs -0 -r -l512 rm -f
 
