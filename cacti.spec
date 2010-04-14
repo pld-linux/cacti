@@ -146,6 +146,12 @@ rm -f log/.htaccess
 rm -f cli/.htaccess
 rm -f rra/.placeholder
 
+# must require libs to get fatals on missing files, not include
+%{__sed} -i -e '
+	s,include(dirname(__FILE__)."/../include/global.php");,require(dirname(__FILE__)."/../include/global.php");,
+	s,include_once,require_once,
+' cli/*.php
+
 # make sure scripts have php shebang
 %{__sed} -i -e '1{
     /bin.php/!i#!%{_bindir}/php
