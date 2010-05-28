@@ -2,26 +2,20 @@
 Summary:	Cacti is a PHP frontend for rrdtool
 Summary(pl.UTF-8):	Cacti - frontend w PHP do rrdtoola
 Name:		cacti
-Version:	0.8.7e
-Release:	11
+Version:	0.8.7f
+Release:	1
 License:	GPL
 Group:		Applications/WWW
 Source0:	http://www.cacti.net/downloads/%{name}-%{version}.tar.gz
-# Source0-md5:	7563a58a57d2c6cc0da28cc341a30969
+# Source0-md5:	c50a49e3b439dba1fd44ddc34276d4df
 Source1:	%{name}.cfg.php
 Source2:	%{name}.crontab
 Source3:	%{name}-apache.conf
 Source4:	%{name}-lighttpd.conf
 Source5:	%{name}-rrdpath.sql
 Source6:	%{name}-pa.sql
-Patch100:	http://www.cacti.net/downloads/patches/0.8.7e/cli_add_graph.patch
-Patch101:	http://www.cacti.net/downloads/patches/0.8.7e/snmp_invalid_response.patch
-Patch102:	http://www.cacti.net/downloads/patches/0.8.7e/template_duplication.patch
-Patch103:	http://www.cacti.net/downloads/patches/0.8.7e/fix_icmp_on_windows_iis_servers.patch
-Patch104:	http://www.cacti.net/downloads/patches/0.8.7e/cross_site_fix.patch
-Patch105:	http://www.cacti.net/downloads/patches/0.8.7e/sql_injection_template_export.patch
 # http://cactiusers.org/wiki/PluginArchitectureInstall
-# http://mirror.cactiusers.org/downloads/plugins/cacti-plugin-0.8.7e-PA-v2.6.zip
+# http://mirror.cactiusers.org/downloads/plugins/cacti-plugin-0.8.7f-PA-v2.7.tar.gz
 Patch0:		%{name}-PA.patch
 Patch1:		%{name}-config.patch
 Patch2:		%{name}-adodb.patch
@@ -30,9 +24,8 @@ Patch4:		%{name}-webroot.patch
 Patch5:		%{name}-linux_memory.patch
 Patch6:		%{name}-log-verbosity.patch
 Patch7:		%{name}-ss_disk-array-indices.patch
-Patch8:		%{name}-rrdresourcecheck.patch
-Patch9:		host_name-url.patch
-Patch10:	cli-relpath.patch
+Patch8:		host_name-url.patch
+Patch9:		cli-relpath.patch
 URL:		http://www.cacti.net/
 BuildRequires:	rpm-perlprov
 BuildRequires:	sed >= 4.0
@@ -119,12 +112,6 @@ Dokumentacja do Cacti w formacie HTML.
 
 %prep
 %setup -q
-%patch100 -p1
-%patch101 -p1
-%patch102 -p1
-%patch103 -p1
-%patch104 -p1
-%patch105 -p1
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
@@ -135,7 +122,6 @@ Dokumentacja do Cacti w formacie HTML.
 %patch7 -p1
 %patch8 -p1
 %patch9 -p1
-%patch10 -p1
 
 mkdir -p sql
 mv *.sql sql
@@ -164,7 +150,6 @@ chmod a+rx scripts/*.php cli/*.php
 
 find '(' -name '*~' -o -name '*.orig' ')' -print0 | xargs -0 -r -l512 rm -f
 
-rm log/.placeholder
 
 # make sure cacti runs out of the box
 sed -e "s,new_install,%{version}," -i sql/cacti.sql

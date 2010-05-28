@@ -4,7 +4,7 @@
  		$num_polling_items,
  		$rrds_processed);
  
--	cacti_log("STATS: " . $cacti_stats ,true,"SYSTEM");
+-	cacti_log("STATS: " . $cacti_stats , true, "SYSTEM");
 +	if (read_config_option('log_verbosity') > POLLER_VERBOSITY_NONE)
 +		cacti_log("STATS: " . $cacti_stats ,true,"SYSTEM");
  
