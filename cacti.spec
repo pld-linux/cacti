@@ -1,13 +1,17 @@
+#
+# Conditional build:
+%bcond_without	pa		# without plugin archidecture patch
+
 %include	/usr/lib/rpm/macros.perl
 Summary:	Cacti is a PHP frontend for rrdtool
 Summary(pl.UTF-8):	Cacti - frontend w PHP do rrdtoola
 Name:		cacti
-Version:	0.8.7f
-Release:	1
+Version:	0.8.7g
+Release:	0.1
 License:	GPL
 Group:		Applications/WWW
 Source0:	http://www.cacti.net/downloads/%{name}-%{version}.tar.gz
-# Source0-md5:	c50a49e3b439dba1fd44ddc34276d4df
+# Source0-md5:	268421cb1a58d3444f7ecbddb4c4b016
 Source1:	%{name}.cfg.php
 Source2:	%{name}.crontab
 Source3:	%{name}-apache.conf
@@ -112,7 +116,7 @@ Dokumentacja do Cacti w formacie HTML.
 
 %prep
 %setup -q
-%patch0 -p1
+%{?with_pa:%patch0 -p1}
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
@@ -134,6 +138,7 @@ rm -rf lib/adodb
 rm -f log/.htaccess
 rm -f cli/.htaccess
 rm -f rra/.placeholder
+rm -f rra/.htaccess
 
 # must require libs to get fatals on missing files, not include
 %{__sed} -i -e '
@@ -149,7 +154,6 @@ rm -f rra/.placeholder
 chmod a+rx scripts/*.php cli/*.php
 
 find '(' -name '*~' -o -name '*.orig' ')' -print0 | xargs -0 -r -l512 rm -f
-
 
 # make sure cacti runs out of the box
 sed -e "s,new_install,%{version}," -i sql/cacti.sql
