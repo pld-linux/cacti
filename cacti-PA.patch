@@ -1,6 +1,6 @@
-diff -Naur cacti-0.8.7f-old/auth_changepassword.php cacti-0.8.7f/auth_changepassword.php
---- cacti-0.8.7f-old/auth_changepassword.php	2010-05-20 14:02:08.000000000 -0500
-+++ cacti-0.8.7f/auth_changepassword.php	2010-05-17 06:21:16.000000000 -0500
+diff -Naur cacti-0.8.7g-old/auth_changepassword.php cacti-0.8.7g/auth_changepassword.php
+--- cacti-0.8.7g-old/auth_changepassword.php	2010-07-09 18:33:46.000000000 -0400
++++ cacti-0.8.7g/auth_changepassword.php	2010-07-09 18:34:11.000000000 -0400
 @@ -59,6 +59,8 @@
  					header("Location: index.php"); break;
  				case '3': /* default graph page */
@@ -10,10 +10,10 @@ diff -Naur cacti-0.8.7f-old/auth_changepassword.php cacti-0.8.7f/auth_changepass
  			}
  		}else{
  			header("Location: graph_view.php");
-diff -Naur cacti-0.8.7f-old/auth_login.php cacti-0.8.7f/auth_login.php
---- cacti-0.8.7f-old/auth_login.php	2010-05-20 14:02:08.000000000 -0500
-+++ cacti-0.8.7f/auth_login.php	2010-05-17 06:21:16.000000000 -0500
-@@ -122,10 +122,12 @@
+diff -Naur cacti-0.8.7g-old/auth_login.php cacti-0.8.7g/auth_login.php
+--- cacti-0.8.7g-old/auth_login.php	2010-07-09 18:33:46.000000000 -0400
++++ cacti-0.8.7g/auth_login.php	2010-07-09 18:34:11.000000000 -0400
+@@ -124,10 +124,12 @@
  		}
  
  	default:
@@ -30,7 +30,7 @@ diff -Naur cacti-0.8.7f-old/auth_login.php cacti-0.8.7f/auth_login.php
  		}
  	}
  	/* end of switch */
-@@ -187,29 +189,35 @@
+@@ -189,29 +191,42 @@
  		decide what to do next */
  		switch ($user["login_opts"]) {
  			case '1': /* referer */
@@ -56,17 +56,23 @@ diff -Naur cacti-0.8.7f-old/auth_login.php cacti-0.8.7f/auth_login.php
 +					$referer = $_SERVER["HTTP_REFERER"];
 +					if (basename($referer) == "logout.php") {
 +						$referer = $config['url_path'] . "index.php";
- 					}
--					header("Location: " . $referer);
++					}
 +				} else if (isset($_SERVER["REQUEST_URI"])) {
 +					$referer = $_SERVER["REQUEST_URI"];
 +					if (basename($referer) == "logout.php") {
 +						$referer = $config['url_path'] . "index.php";
-+					}
+ 					}
 +				} else {
 +					$referer = $config['url_path'] . "index.php";
++				}
++
++				if (substr_count($referer, "plugins")) {
+ 					header("Location: " . $referer);
++				} elseif (sizeof(db_fetch_assoc("SELECT realm_id FROM user_auth_realm WHERE realm_id = 8 AND user_id = " . $_SESSION["sess_user_id"])) == 0) {
++					header("Location: graph_view.php");
++				} else {
++					header("Location: $referer");
  				}
-+				header("Location: " . $referer);
 +
  				break;
  			case '2': /* default console page */
@@ -84,7 +90,7 @@ diff -Naur cacti-0.8.7f-old/auth_login.php cacti-0.8.7f/auth_login.php
  		}
  		exit;
  	}else{
-@@ -260,9 +268,17 @@
+@@ -264,9 +279,17 @@
  <body bgcolor="#FFFFFF" onload="document.login.login_username.focus()">
  	<form name="login" method="post" action="<?php print basename($_SERVER["PHP_SELF"]);?>">
  	<input type="hidden" name="action" value="login">
@@ -103,7 +109,7 @@ diff -Naur cacti-0.8.7f-old/auth_login.php cacti-0.8.7f/auth_login.php
  		</tr>
  		<?php
  
-@@ -299,22 +315,29 @@
+@@ -303,22 +326,29 @@
  			<td><input type="password" name="login_password" size="40" style="width: 295px;"></td>
  		</tr>
  		<?php
@@ -120,7 +126,7 @@ diff -Naur cacti-0.8.7f-old/auth_login.php cacti-0.8.7f/auth_login.php
 +				<select name="realm" style="width: 295px;"><?php
 +				if (sizeof($realms)) {
 +				foreach($realms as $name => $realm) {
-+					print "\t\t\t\t\t<option value='" . $name . "'" . ($realm["selected"] ? " selected":"") . ">" . $realm["name"] . "</option>\n";
++					print "\t\t\t\t\t<option value='" . $name . "'" . ($realm["selected"] ? " selected":"") . ">" . htmlspecialchars($realm["name"]) . "</option>\n";
 +				}
 +				}
 +				?>
@@ -138,9 +144,9 @@ diff -Naur cacti-0.8.7f-old/auth_login.php cacti-0.8.7f/auth_login.php
  	</form>
  </body>
  </html>
-diff -Naur cacti-0.8.7f-old/data_sources.php cacti-0.8.7f/data_sources.php
---- cacti-0.8.7f-old/data_sources.php	2010-05-20 14:02:08.000000000 -0500
-+++ cacti-0.8.7f/data_sources.php	2010-05-18 12:24:16.000000000 -0500
+diff -Naur cacti-0.8.7g-old/data_sources.php cacti-0.8.7g/data_sources.php
+--- cacti-0.8.7g-old/data_sources.php	2010-07-09 18:33:46.000000000 -0400
++++ cacti-0.8.7g/data_sources.php	2010-07-09 18:34:11.000000000 -0400
 @@ -44,6 +44,8 @@
  	7 => "Disable"
  	);
@@ -200,9 +206,9 @@ diff -Naur cacti-0.8.7f-old/data_sources.php cacti-0.8.7f/data_sources.php
  			$data_template_name = ((empty($data_source["data_template_name"])) ? "<em>None</em>" : $data_source["data_template_name"]);
  			$data_input_name    = ((empty($data_source["data_input_name"])) ? "<em>External</em>" : $data_source["data_input_name"]);
  			$poller_interval    = ((isset($poller_intervals[$data_source["local_data_id"]])) ? $poller_intervals[$data_source["local_data_id"]] : 0);
-diff -Naur cacti-0.8.7f-old/graph_image.php cacti-0.8.7f/graph_image.php
---- cacti-0.8.7f-old/graph_image.php	2010-05-20 14:02:08.000000000 -0500
-+++ cacti-0.8.7f/graph_image.php	2010-05-17 06:21:16.000000000 -0500
+diff -Naur cacti-0.8.7g-old/graph_image.php cacti-0.8.7g/graph_image.php
+--- cacti-0.8.7g-old/graph_image.php	2010-07-09 18:33:46.000000000 -0400
++++ cacti-0.8.7g/graph_image.php	2010-07-09 18:34:11.000000000 -0400
 @@ -44,6 +44,8 @@
  /* flush the headers now */
  ob_end_clean();
@@ -212,18 +218,40 @@ diff -Naur cacti-0.8.7f-old/graph_image.php cacti-0.8.7f/graph_image.php
  session_write_close();
  
  $graph_data_array = array();
-diff -Naur cacti-0.8.7f-old/graph.php cacti-0.8.7f/graph.php
---- cacti-0.8.7f-old/graph.php	2010-05-20 14:02:08.000000000 -0500
-+++ cacti-0.8.7f/graph.php	2010-05-17 06:21:16.000000000 -0500
-@@ -100,6 +100,7 @@
- 							<a href='<?php print htmlspecialchars("graph.php?action=zoom&local_graph_id=" . $_GET["local_graph_id"]. "&rra_id=" . $rra["id"] . "&view_type=" . $_REQUEST["view_type"]);?>'><img src='images/graph_zoom.gif' border='0' alt='Zoom Graph' title='Zoom Graph' style='padding: 3px;'></a><br>
- 							<a href='<?php print htmlspecialchars("graph_xport.php?local_graph_id=" . $_GET["local_graph_id"] . "&rra_id=" . $rra["id"] . "&view_type=" . $_REQUEST["view_type"]);?>'><img src='images/graph_query.png' border='0' alt='CSV Export' title='CSV Export' style='padding: 3px;'></a><br>
- 							<a href='<?php print htmlspecialchars("graph.php?action=properties&local_graph_id=" . $_GET["local_graph_id"] . "&rra_id=" . $rra["id"] . "&view_type=" . $_REQUEST["view_type"]);?>'><img src='images/graph_properties.gif' border='0' alt='Graph Source/Properties' title='Graph Source/Properties' style='padding: 3px;'></a>
-+							<?php api_plugin_hook('graph_buttons', array('hook' => 'view', 'local_graph_id' => $_GET['local_graph_id'], 'rra' => $rra['id'], 'view_type' => $_REQUEST['view_type'])); ?>
- 						</td>
- 					</tr>
- 					<tr>
-@@ -215,6 +216,7 @@
+diff -Naur cacti-0.8.7g-old/graph.php cacti-0.8.7g/graph.php
+--- cacti-0.8.7g-old/graph.php	2010-07-09 18:33:46.000000000 -0400
++++ cacti-0.8.7g/graph.php	2010-07-09 18:34:11.000000000 -0400
+@@ -32,6 +32,8 @@
+ include_once("./lib/html_tree.php");
+ include_once("./include/top_graph_header.php");
+ 
++api_plugin_hook_function('graph');
++
+ /* ================= input validation ================= */
+ input_validate_input_regex(get_request_var("rra_id"), "^([0-9]+|all)$");
+ input_validate_input_number(get_request_var("local_graph_id"));
+@@ -94,17 +96,18 @@
+ 					<table width='1' cellpadding='0'>
+ 						<tr>
+ 							<td>
+-								<img class='graphimage' id='graph_<?php print $_GET["local_graph_id"] ?>' src='<?php print htmlspecialchars("graph_image.php?action=view&local_graph_id=" . $_GET["local_graph_id"] . "&rra_id=" . $rra["id"]);?>' border='0' alt='<?php print htmlspecialchars($graph_title);?>'>
++									<img class='graphimage' id='graph_<?php print $_GET["local_graph_id"] ?>' src='<?php print htmlspecialchars("graph_image.php?action=view&local_graph_id=" . $_GET["local_graph_id"] . "&rra_id=" . $rra["id"]);?>' border='0' alt='<?php print htmlspecialchars($graph_title);?>'>
+ 							</td>
+ 							<td valign='top' style='padding: 3px;' class='noprint'>
+ 								<a href='<?php print htmlspecialchars("graph.php?action=zoom&local_graph_id=" . $_GET["local_graph_id"]. "&rra_id=" . $rra["id"] . "&view_type=" . $_REQUEST["view_type"]);?>'><img src='images/graph_zoom.gif' border='0' alt='Zoom Graph' title='Zoom Graph' style='padding: 3px;'></a><br>
+ 								<a href='<?php print htmlspecialchars("graph_xport.php?local_graph_id=" . $_GET["local_graph_id"] . "&rra_id=" . $rra["id"] . "&view_type=" . $_REQUEST["view_type"]);?>'><img src='images/graph_query.png' border='0' alt='CSV Export' title='CSV Export' style='padding: 3px;'></a><br>
+ 								<a href='<?php print htmlspecialchars("graph.php?action=properties&local_graph_id=" . $_GET["local_graph_id"] . "&rra_id=" . $rra["id"] . "&view_type=" . $_REQUEST["view_type"]);?>'><img src='images/graph_properties.gif' border='0' alt='Graph Source/Properties' title='Graph Source/Properties' style='padding: 3px;'></a>
++								<?php api_plugin_hook('graph_buttons', array('hook' => 'view', 'local_graph_id' => $_GET['local_graph_id'], 'rra' => $rra['id'], 'view_type' => $_REQUEST['view_type'])); ?>
+ 							</td>
+ 						</tr>
+ 						<tr>
+ 							<td colspan='2' align='center'>
+-								<strong><?php print htmlspecialchars($rra["name"]);?></strong>
++									<strong><?php print htmlspecialchars($rra["name"]);?></strong>
+ 							</td>
+ 						</tr>
+ 					</table>
+@@ -215,6 +218,7 @@
  					<td valign='top' style='padding: 3px;' class='noprint'>
  						<a href='<?php print htmlspecialchars("graph.php?action=properties&local_graph_id=" . $_GET["local_graph_id"] . "&rra_id=" . $_GET["rra_id"] . "&view_type=" . $_REQUEST["view_type"] . "&graph_start=" . $graph_start . "&graph_end=" . $graph_end);?>'><img src='images/graph_properties.gif' border='0' alt='Graph Source/Properties' title='Graph Source/Properties' style='padding: 3px;'></a>
  						<a href='<?php print htmlspecialchars("graph_xport.php?local_graph_id=" . $_GET["local_graph_id"] . "&rra_id=" . $_GET["rra_id"] . "&view_type=" . $_REQUEST["view_type"]);?>&graph_start=<?php print $graph_start;?>&graph_end=<?php print $graph_end;?>'><img src='images/graph_query.png' border='0' alt='CSV Export' title='CSV Export' style='padding: 3px;'></a><br>
@@ -231,7 +259,7 @@ diff -Naur cacti-0.8.7f-old/graph.php cacti-0.8.7f/graph.php
  					</td>
  				</tr>
  				<tr>
-@@ -247,6 +249,7 @@
+@@ -247,6 +251,7 @@
  					<td valign='top' style='padding: 3px;'>
  						<a href='<?php print htmlspecialchars("graph.php?action=zoom&local_graph_id=" . $_GET["local_graph_id"] . "&rra_id=" . $_GET["rra_id"] . "&view_type=" . $_REQUEST["view_type"]);?>'><img src='images/graph_zoom.gif' border='0' alt='Zoom Graph' title='Zoom Graph' style='padding: 3px;'></a><br>
  						<a href='<?php print htmlspecialchars("graph_xport.php?local_graph_id=" . $_GET["local_graph_id"] . "&rra_id=" . $_GET["rra_id"] . "&view_type=" . $_REQUEST["view_type"]);?>'><img src='images/graph_query.png' border='0' alt='CSV Export' title='CSV Export' style='padding: 3px;'></a><br>
@@ -239,97 +267,10 @@ diff -Naur cacti-0.8.7f-old/graph.php cacti-0.8.7f/graph.php
  					</td>
  				</tr>
  				<tr>
-diff -Naur cacti-0.8.7f-old/graphs_new.php cacti-0.8.7f/graphs_new.php
---- cacti-0.8.7f-old/graphs_new.php	2010-05-20 14:02:08.000000000 -0500
-+++ cacti-0.8.7f/graphs_new.php	2010-05-18 06:18:40.000000000 -0500
-@@ -397,7 +397,7 @@
- 	if (!empty($debug_log)) {
- 		debug_log_clear("new_graphs");
- 		?>
--		<div id='message' style='display:none;color:#FFFFFF;background-color:"#<?php print $colors["light"];?>;border:1px solid #00438C;'>
-+		<div id='message' style='color:#FFFFFF;background-color:"#<?php print $colors["light"];?>;border:1px solid #00438C;'>
- 			<?php print "<center style='font-size:16pt;background-color:#" . $colors["header"] . ";text-align:center;'>Graphs Created</center>";?>
- 			<?php print "<ul style='text-align:left;white-space:nowrap;color:#000000;padding:5px 20px;'>" . $debug_log . "</ul>";?>
- 		</div>
-@@ -407,40 +407,45 @@
- 	<script type="text/javascript">
- 	<!--
- 	var obj = document.getElementById('message');
--	if (window.innerHeight) {
--		height = window.innerHeight;
--		width  = window.innerWidth;
--	}else{
--		height = document.body.clientHeight;
--		width  = document.body.clientWidth;
--	}
--	var opacity=1;
--
--	obj.style.position = "absolute";
--	obj.style.backgroundColor = "#EAEAEA";
--	obj.style.padding = "5px 5px";
--	obj.style.display = "";
--	cw = obj.offsetWidth;
--	// Adjust for IE6
--	if (!cw) cw = 150;
--	ch = obj.offsetHeight;
--	obj.style.top = '150px';
--	obj.style.left = ((width/2) - (cw / 2) - 165)+'px';
--	obj.style.border = 'medium solid #AEAEAE';
--	opacity = 1;
--	obj.style.opacity = opacity;
--	obj.zoom = "100%";
--	if (document.getElementById('message')) {
--		setTimeout("removeMessage()", 4000);
--	}
- 
--	function removeMessage() {
--		if (obj.style.opacity <= 0) return;
--		opacity-=0.15;
--		iopacity = opacity * 100;
-+	if (obj) {
-+		if (window.innerHeight) {
-+			height = window.innerHeight;
-+			width  = window.innerWidth;
-+		}else{
-+			height = document.body.clientHeight;
-+			width  = document.body.clientWidth;
-+		}
-+		var opacity=1;
-+	
-+		obj.style.position = "absolute";
-+		obj.style.backgroundColor = "#EAEAEA";
-+		obj.style.padding = "5px 5px";
-+		obj.style.display = "";
-+		cw = obj.offsetWidth;
-+		// Adjust for IE6
-+		if (!cw) cw = 150;
-+		ch = obj.offsetHeight;
-+		obj.style.top = '150px';
-+		obj.style.left = ((width/2) - (cw / 2) - 165)+'px';
-+		obj.style.border = 'medium solid #AEAEAE';
-+		opacity = 1;
- 		obj.style.opacity = opacity;
--		obj.style.filter = 'alpha(opacity='+iopacity+')';
--		setTimeout("removeMessage()",40);
-+		obj.zoom = "100%";
-+		if (document.getElementById('message')) {
-+	
-+	
-+			setTimeout("removeMessage()", 4000);
-+		}
-+
-+		function removeMessage() {
-+			if (obj.style.opacity <= 0) return;
-+			opacity-=0.15;
-+			iopacity = opacity * 100;
-+			obj.style.opacity = opacity;
-+			obj.style.filter = 'alpha(opacity='+iopacity+')';
-+			setTimeout("removeMessage()",40);
-+		}
- 	}
- 
- 	function applyGraphsNewFilterChange(objForm) {
-@@ -514,7 +519,8 @@
+diff -Naur cacti-0.8.7g-old/graphs_new.php cacti-0.8.7g/graphs_new.php
+--- cacti-0.8.7g-old/graphs_new.php	2010-07-09 18:33:46.000000000 -0400
++++ cacti-0.8.7g/graphs_new.php	2010-07-09 18:34:11.000000000 -0400
+@@ -511,7 +511,8 @@
  			</td>
  			<td nowrap style='white-space: nowrap;' class="textInfo" align="center" valign="top">
  				<span style="white-space: nowrap; color: #c16921;">*</span><a href="<?php print htmlspecialchars("host.php?action=edit&id=" . $_REQUEST["host_id"]);?>">Edit this Host</a><br>
@@ -339,9 +280,9 @@ diff -Naur cacti-0.8.7f-old/graphs_new.php cacti-0.8.7f/graphs_new.php
  			</td>
  		</tr>
  	</table>
-diff -Naur cacti-0.8.7f-old/graphs.php cacti-0.8.7f/graphs.php
---- cacti-0.8.7f-old/graphs.php	2010-05-20 14:02:08.000000000 -0500
-+++ cacti-0.8.7f/graphs.php	2010-05-18 06:22:28.000000000 -0500
+diff -Naur cacti-0.8.7g-old/graphs.php cacti-0.8.7g/graphs.php
+--- cacti-0.8.7g-old/graphs.php	2010-07-09 18:33:46.000000000 -0400
++++ cacti-0.8.7g/graphs.php	2010-07-09 18:34:11.000000000 -0400
 @@ -45,6 +45,8 @@
  	4 => "Convert to Graph Template"
  	);
@@ -373,9 +314,9 @@ diff -Naur cacti-0.8.7f-old/graphs.php cacti-0.8.7f/graphs.php
  		}
  	}else{
  		print "<tr><td bgcolor='#" . $colors["form_alternate1"]. "'><span class='textError'>You must select at least one graph.</span></td></tr>\n";
-diff -Naur cacti-0.8.7f-old/host.php cacti-0.8.7f/host.php
---- cacti-0.8.7f-old/host.php	2010-05-20 14:02:08.000000000 -0500
-+++ cacti-0.8.7f/host.php	2010-05-18 06:19:32.000000000 -0500
+diff -Naur cacti-0.8.7g-old/host.php cacti-0.8.7g/host.php
+--- cacti-0.8.7g-old/host.php	2010-07-09 18:33:46.000000000 -0400
++++ cacti-0.8.7g/host.php	2010-07-09 18:34:11.000000000 -0400
 @@ -44,6 +44,8 @@
  	6 => "Change Availability Options"
  	);
@@ -403,7 +344,7 @@ diff -Naur cacti-0.8.7f-old/host.php cacti-0.8.7f/host.php
 +			$save['host_list'] = $host_list;
 +			$save['host_array'] = (isset($host_array)? $host_array : array());
 +			api_plugin_hook_function('device_action_prepare', $save);
-+			$save_html = "<input type='button' value='Cancel' onClick='window.history.back()'>&nbsp;<input type='submit'>";
++			$save_html = "<input type='button' value='Cancel' onClick='window.history.back()'>&nbsp;<input type='submit' value='Continue'>";
  		}
  	}else{
  		print "<tr><td bgcolor='#" . $colors["form_alternate1"]. "'><span class='textError'>You must select at least one device.</span></td></tr>\n";
@@ -415,7 +356,7 @@ diff -Naur cacti-0.8.7f-old/host.php cacti-0.8.7f/host.php
 +
  	if (!empty($_GET["id"])) {
  		$host = db_fetch_row("select * from host where id=" . $_GET["id"]);
- 		$header_label = "[edit: " . $host["description"] . "]";
+ 		$header_label = "[edit: " . htmlspecialchars($host["description"]) . "]";
 @@ -643,6 +655,7 @@
  					<span style="color: #c16921;">*</span><a href="<?php print htmlspecialchars("graphs_new.php?host_id=" . $host["id"]);?>">Create Graphs for this Host</a><br>
  					<span style="color: #c16921;">*</span><a href="<?php print htmlspecialchars("data_sources.php?host_id=" . $host["id"] . "&ds_rows=30&filter=&template_id=-1&method_id=-1&page=1");?>">Data Source List</a><br>
@@ -433,9 +374,90 @@ diff -Naur cacti-0.8.7f-old/host.php cacti-0.8.7f/host.php
  }
  
  function host() {
-diff -Naur cacti-0.8.7f-old/include/auth.php cacti-0.8.7f/include/auth.php
---- cacti-0.8.7f-old/include/auth.php	2010-05-20 14:02:08.000000000 -0500
-+++ cacti-0.8.7f/include/auth.php	2010-05-17 06:21:16.000000000 -0500
+diff -Naur cacti-0.8.7g-old/images/disable_icon.png cacti-0.8.7g/images/disable_icon.png
+--- cacti-0.8.7g-old/images/disable_icon.png	1969-12-31 19:00:00.000000000 -0500
++++ cacti-0.8.7g/images/disable_icon.png	2010-07-09 18:34:11.000000000 -0400
+@@ -0,0 +1,4 @@
++âPNG
++
++   
+IHDR         (-S   PLTEÄÄÄæ/µ0∑9∏6π9∫9ΩB#¿,¿2
++¡3¬8¿<◊2‘8‡9·>ŸDﬁAÿG#ﬂH"ﬁN%€Q,⁄Q/‹P*‹S0‡B
+ÈH‡G‡K‚N&‰P$·P,ËV$È],‚T1„Z8„];„`?Ëc7‰aBÂeFÂgHÊlOÁoSÁpTËuZËv[Ëy^Ë}c—êÍÅgÓáeÈÉkÍÖkÏçvÏêyçkÒíqµ& ‹ñÖﬁõäÌóÄÓùâÔ†å®ïÒÆùˆ±òÚ≤¢ÙΩ∞Ùø≤ı¬∑ı∆ª¯«∂˚‰‹˚Ë‚¸Óˇˇˇ                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      ⁄˙
+§   tRNS @Êÿf   bKGD àH   	pHYs  ƒ  ƒï+   «IDATxúeœ[oÇ@`Ø„≠¶!Ÿä∂T6öh§!ª‡EK¥î˘ˇ«ˆÕy¸íôdjµßd:\Ø<œ•Ötﬁ˙|ät¨$^‘)Qi«Ö¨`ÈdJeH≈{á¡W)"ó§≠†E	^P\}∞?≤ºZ#©‡3ÑYnHâ˚≥>É„=*ÛØﬂ|⁄ctDB¥úoO∫¶§3nq|√≈z5∆∂C—êo-kT¬p, ò≥Èd4ÿ1Ïçf≥›jwÎÜ±˚~>ÆÇ"X_#¿    IENDÆB`Ç
+\ No newline at end of file
+diff -Naur cacti-0.8.7g-old/images/enable_icon_disabled.png cacti-0.8.7g/images/enable_icon_disabled.png
+--- cacti-0.8.7g-old/images/enable_icon_disabled.png	1969-12-31 19:00:00.000000000 -0500
++++ cacti-0.8.7g/images/enable_icon_disabled.png	2010-07-09 18:34:11.000000000 -0400
+@@ -0,0 +1,3 @@
++âPNG
++
++   
+IHDR         (-S   PLTEÄÄÄPPPUUUWWWXXXYYYZZZ[[[\\\^^^```bbbiiijjjssstttuuuvvvwwwxxx|||}}}~~~KKKÅÅÅÇÇÇÖÖÖÜÜÜáááäääãããåååçççéééíííñññóóóöööõõõùùù†††£££§§§¶¶¶´´´≥≥≥¥¥¥æææ≈≈≈ÀÀÀˇˇˇ                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    ¯›2   bKGD àH   	pHYs  ƒ  ƒï+   ™IDATx⁄]ŒÕJBQ@—•|WiRrA'M:éﬂˇú59D3É¬%Â¸ÿ(®ˆ¨∑KmùÃ¶ñßE∏,Ü¢∂≠nÚºuËU{ò}öò	≠–˙Ãò)K°W≠Á|ê^á·,– 'ª\yªb)	õ˛Ô£:&”…Åå`J≤4Úï†N'i‰htÆÀ ¥ö7j!\Á√XÍõ±ñ°ØÖ›À˙„áXﬂw{èøÿo"ÕHìÏ>]Ó    IENDÆB`Ç
+\ No newline at end of file
+diff -Naur cacti-0.8.7g-old/images/enable_icon.png cacti-0.8.7g/images/enable_icon.png
+--- cacti-0.8.7g-old/images/enable_icon.png	1969-12-31 19:00:00.000000000 -0500
++++ cacti-0.8.7g/images/enable_icon.png	2010-07-09 18:34:11.000000000 -0400
+@@ -0,0 +1,5 @@
++âPNG
++
++   
+IHDR         (-S   PLTEÄÄÄo~tywz#}#ÄëÇçåû££
+§
++≠
++§Ø¢¨#å#%ö%)ó).î.0ï00ò01ò1;û;$Ø$!µ!?†?8™8BüBB†BA®AOßOR¶RT©T[≠[aØag≥gkµkvªv∞yºy o Ö∑ÖäªäÄ¿Äå∆åùœù£÷£±ÿ±ˇˇˇ                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        ◊X4   tRNS @Êÿf   bKGD àH   	pHYs  ƒ  ƒï+   ÆIDATxúeœ€Ç0`‰†”`2%3õ £ceÔˇfvòËΩ˚ø¶iÎ8ãö∫FW  s¡OÑÓ5ˆ]SkT…Ñv|∂çûÄlç†˚Æ÷ sÊúm*Ï+(Põ≠U!8J:èHm~ïZ’ˆ;JÅ,ØòâVÿ´JÃqLâ.Âú≥,¢.BàíÁos9F_ !Ógiö$înÑ˚ Ûœ˜	q›·∂|˛@{I«=˛    IENDÆB`Ç
+\ No newline at end of file
+diff -Naur cacti-0.8.7g-old/images/install_icon_disabled.png cacti-0.8.7g/images/install_icon_disabled.png
+--- cacti-0.8.7g-old/images/install_icon_disabled.png	1969-12-31 19:00:00.000000000 -0500
++++ cacti-0.8.7g/images/install_icon_disabled.png	2010-07-09 18:34:11.000000000 -0400
+@@ -0,0 +1,5 @@
++âPNG
++
++   
+IHDR         (-S   PLTEÄÄÄdddfffgggnnnrrrxxx}}}```ãããïïïúúú¢¢¢©©©≠≠≠µµµπππ∫∫∫¡¡¡»»»œœœ€€€ÈÈÈÌÌÌÒÒÒ˝˝˝˛˝˝                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               g”ˆ   tRNS @Êÿf   bKGD àH   	pHYs  ƒ  ƒï+   ÅIDATxúmŒ¡
++1–"+RK TäÙˇtùÈÏarÀ;D[{ÕîJÿ_u“ãûÓ´íâ#)±í»
+F
++D·›3áèpπ¿j—2
+t–µô…Ω¨ﬂ†ZR…~ Í⁄ÛÍ:î˜Y‡Ì8g?ú 1˘˘ΩJ3b˙Ûz	M’»ˆñ/õ∂∆'∏„Ô    IENDÆB`Ç
+\ No newline at end of file
+diff -Naur cacti-0.8.7g-old/images/install_icon.png cacti-0.8.7g/images/install_icon.png
+--- cacti-0.8.7g-old/images/install_icon.png	1969-12-31 19:00:00.000000000 -0500
++++ cacti-0.8.7g/images/install_icon.png	2010-07-09 18:34:11.000000000 -0400
+@@ -0,0 +1,5 @@
++âPNG
++
++   
+IHDR         (-S   PLTEÄÄÄ2õ+¶;¢",ë$,ê&6ô+6ô&D≠%Uº2[∫)J√)N…#T€1U 2g∆4k–;v›*ˇ/yˇ>FU§NVßRU£Z]®LdµN}œAy‰0Éˇ5Çˇ;Öˇ?ìˇ^Ü“BÑ˚MÖˇOäˇNí˚RàˇWë˙Vò¸^ùıZ§ˇaìˇgóˇ`òˇköˇróÛtòuõırüˇc£ˆd´ˇh®˚i±ˇhµˇ}¶ˇ{º˝~ƒˇ&öïòƒë†“Ö´ˇäØˇç±ˇíøˇóπˇõªˇ´¨–•≤⁄¶∂ﬂ±≤”π∫ÿ°∑„™ª„áÃˇâ»ˇç…ˇì—ˇ∫∆Â≥À˛∏◊ˇ∫’ˇ≈≈›≈÷˛«€ˇÀ›˚…ﬁˇ√·ˇœ‚ˇ÷„ˇŸÊ¸ﬂÎ¸ﬂÓˇ‹ÚˇÍÌ˜ÓÓıËÔˇÊ˙ˇÏÚˇıı˘Úˇˇˇˇˇ                                                                                                                                                                                                                                                                                                                                                                                                                                                                              ‹`·   tRNS @Êÿf   bKGD àH   	pHYs  ƒ  ƒï+   ÕIDATxúc`¿
++‹%XXƒ›‡‹ vn''=w(ﬂ 61:4$"\õ	¨(ôÕ6%ÿ)4ÿﬁ)P€*(‡ÃÎÔdóödnkÔ»k
+34◊6LN“’÷∂U
++0ö:⁄©&%(99È*1òuî#SìúRCÖ8Äíj2jë©@™($'	pï6RèNMçRë—±YÀef&om$ol∆	≤ñ¡O¿“ÀÃ¬¬ÃÀK–‚T?~
+o__o#~Wògí<§§<‚∞ Îz%‡›‘≤    IENDÆB`Ç
+\ No newline at end of file
+diff -Naur cacti-0.8.7g-old/images/uninstall_icon.gif cacti-0.8.7g/images/uninstall_icon.gif
+--- cacti-0.8.7g-old/images/uninstall_icon.gif	1969-12-31 19:00:00.000000000 -0500
++++ cacti-0.8.7g/images/uninstall_icon.gif	2010-07-09 18:34:11.000000000 -0400
+@@ -0,0 +1,4 @@
++GIF89a  ˜N    			
++
++
++
+   !!!"""###$$$%%%&&&'''((()))***+++,,,---...///000111222333444555666777888999:::;;;<<<===>>>???A??C??D??F@@H??J>>M<<N::O99O88P88P77P77P77Q66Q66P66P66P77O77O77X99c==m??xBBÇEEäGGéJJìLLôNNûPP†SSüVV†XX†YYüZZõ\\ü]]¶``±ccΩggƒii»ooŒvv–zz—}}“”ÅÅ”ÇÇ‘ÇÇ‘ÑÑ’ÜÜ’áá’àà÷ää÷ää÷ãã÷ãã÷åå÷çç÷çç“ååÃãã√ää∏ââ©ááûÖÖîÑÑãÇÇÉÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅÇÉ~~Ü~~ä}}ê{{ñzzùxx¶uuØss∏qqªpp∫ppªuuºyyª~~ªÉÉøåå¬ìì∆ôô…ûûÃ°°œ££—••”••’••÷••÷••◊§§◊££◊¢¢◊††◊üü÷ûû÷ûû÷ùù÷ùù÷ûû◊üü◊††◊°°ÿ££⁄ßß€™™€≠≠‹∞∞ﬁ¥¥ﬂ∂∂ﬂ∏∏‡∫∫·ªª·ºº‚ΩΩ„øø‰¡¡Â√√Ê≈≈Á»»Ë……Ë  ÈÀÀÈÃÃÈÕÕÍŒŒÎ––Ï““Ì””Ó‘‘Ó’’Ô÷÷Ôÿÿ⁄⁄Ò››Ú··ÛÂÂÙËËÙÍÍÙÍÍÙÍÍÙÍÍÙÎÎıÎÎıÏÏıÌÌıÓÓıÔÔıˆÒÒ˜ÚÚ¯ÛÛ˘ÙÙ˙ˆˆ˚¯¯¸˘˘¸˚˚˝¸¸˝¸¸˛˝˝˛˝˝˛˝˝!˘	  à ,       ≈ 	H∞`Ay«‘Ñ	£&ô<Éàí}±√Lö4fqæH+(ÒX≥_∆å˝jvL„@w]~˝bc«ùπ=lTvyàËW;iÿò˚˜œõ4{¬$&ç—p<y˙ÃIF í£ˇéπswÏ_85lút¢&Œ±ci¶™˘u,Œ≠à»§˘áMwÚÏƒ±£-N”ö^é˝⁄≥Gﬁ?≤“‹yäHûì8⁄ò
+”Óò∂øH‹
+Lv8úÂppœZ+»ÃIØeª Ÿ1ô'O»lÑ»∫`@ ;
+\ No newline at end of file
+diff -Naur cacti-0.8.7g-old/images/view_none.gif cacti-0.8.7g/images/view_none.gif
+--- cacti-0.8.7g-old/images/view_none.gif	1969-12-31 19:00:00.000000000 -0500
++++ cacti-0.8.7g/images/view_none.gif	2010-07-09 18:34:11.000000000 -0400
+@@ -0,0 +1,4 @@
++GIF89a  ˜     			
++
++
++
+   !!!"""###$$$%%%&&&'''((()))***+++,,,---...///000111222333444555666777888999:::;;;<<<===>>>???@@@AAABBBCCCDDDEEEFFFGGGHHHIIIJJJKKKLLLMMMNNNOOOPPPQQQRRRSSSTTTUUUVVVWWWXXXYYYZZZ[[[\\\]]]^^^___```dddhhhnnntttyyy}}}~~~ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅÅÅÇÇÇÜÜÜãããëëëóóóõõõ†††°°°¢¢¢£££§§§•••¶¶¶ßßß®®®©©©™™™´´´¨¨¨≠≠≠ÆÆÆØØØ∞∞∞±±±≤≤≤≥≥≥¥¥¥µµµ∂∂∂∑∑∑∏∏∏πππ∫∫∫ªªªºººΩΩΩæææøøø¿¿¿¡¡¡¬¬¬√√√ƒƒƒ≈≈≈∆∆∆«««»»»………   ÀÀÀÃÃÃÕÕÕŒŒŒœœœ–––———“““”””‘‘‘’’’÷÷÷◊◊◊ÿÿÿŸŸŸ⁄⁄⁄€€€‹‹‹›››ﬁﬁﬁﬂﬂﬂ‡‡‡···‚‚‚„„„‰‰‰ÂÂÂÊÊÊÁÁÁËËËÈÈÈÍÍÍÎÎÎÏÏÏÌÌÌÓÓÓÔÔÔÒÒÒÚÚÚÛÛÛÙÙÙıııˆˆˆ˜˜˜¯¯¯˘˘˘˙˙˙˚˚˚¸¸¸˝˝˝˛˛˛ˇˇˇ!˘	  å ,        	H∞†¡É*\»∞°√á#JúH±¢≈Å ;
+\ No newline at end of file
+diff -Naur cacti-0.8.7g-old/include/auth.php cacti-0.8.7g/include/auth.php
+--- cacti-0.8.7g-old/include/auth.php	2010-07-09 18:33:46.000000000 -0400
++++ cacti-0.8.7g/include/auth.php	2010-07-09 18:34:11.000000000 -0400
 @@ -31,6 +31,9 @@
  }
  
@@ -458,10 +480,10 @@ diff -Naur cacti-0.8.7f-old/include/auth.php cacti-0.8.7f/include/auth.php
  			}
  
  			?>
-@@ -82,14 +85,14 @@
- 			<html>
+@@ -83,14 +86,14 @@
  			<head>
  				<title>Cacti</title>
+ 				<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
 -				<link href="include/main.css" type="text/css" rel="stylesheet">
 +				<link href="<?php echo $config['url_path']; ?>include/main.css" type="text/css" rel="stylesheet">
  			</head>
@@ -475,9 +497,9 @@ diff -Naur cacti-0.8.7f-old/include/auth.php cacti-0.8.7f/include/auth.php
  				</tr>
  				<tr style='height:10px;'><td></td></tr>
  				<tr>
-diff -Naur cacti-0.8.7f-old/include/bottom_footer.php cacti-0.8.7f/include/bottom_footer.php
---- cacti-0.8.7f-old/include/bottom_footer.php	2010-05-20 14:02:08.000000000 -0500
-+++ cacti-0.8.7f/include/bottom_footer.php	2010-05-17 06:21:16.000000000 -0500
+diff -Naur cacti-0.8.7g-old/include/bottom_footer.php cacti-0.8.7g/include/bottom_footer.php
+--- cacti-0.8.7g-old/include/bottom_footer.php	2010-07-09 18:33:46.000000000 -0400
++++ cacti-0.8.7g/include/bottom_footer.php	2010-07-09 18:34:11.000000000 -0400
 @@ -21,6 +21,10 @@
   | http://www.cacti.net/                                                   |
   +-------------------------------------------------------------------------+
@@ -499,9 +521,30 @@ diff -Naur cacti-0.8.7f-old/include/bottom_footer.php cacti-0.8.7f/include/botto
  /* we use this session var to store field values for when a save fails,
  this way we can restore the field's previous values. we reset it here, because
  they only need to be stored for a single page */
-diff -Naur cacti-0.8.7f-old/include/global_arrays.php cacti-0.8.7f/include/global_arrays.php
---- cacti-0.8.7f-old/include/global_arrays.php	2010-05-20 14:02:08.000000000 -0500
-+++ cacti-0.8.7f/include/global_arrays.php	2010-05-17 06:21:16.000000000 -0500
+diff -Naur cacti-0.8.7g-old/include/config.php cacti-0.8.7g/include/config.php
+--- cacti-0.8.7g-old/include/config.php	2010-07-09 18:33:46.000000000 -0400
++++ cacti-0.8.7g/include/config.php	2010-07-09 18:34:11.000000000 -0400
+@@ -30,6 +30,17 @@
+ $database_password = "cactiuser";
+ $database_port = "3306";
+ 
++/* load up old style plugins here */
++$plugins = array();
++//$plugins[] = 'thold';
++
++/*
++   Edit this to point to the default URL of your Cacti install
++   ex: if your cacti install as at http://serverip/cacti/ this
++   would be set to /cacti/
++*/
++$url_path = "/";
++
+ /* Default session name - Session name must contain alpha characters */
+ #$cacti_session_name = "Cacti";
+ 
+diff -Naur cacti-0.8.7g-old/include/global_arrays.php cacti-0.8.7g/include/global_arrays.php
+--- cacti-0.8.7g-old/include/global_arrays.php	2010-07-09 18:33:46.000000000 -0400
++++ cacti-0.8.7g/include/global_arrays.php	2010-07-09 18:34:11.000000000 -0400
 @@ -22,6 +22,8 @@
   +-------------------------------------------------------------------------+
  */
@@ -511,21 +554,21 @@ diff -Naur cacti-0.8.7f-old/include/global_arrays.php cacti-0.8.7f/include/globa
  $messages = array(
  	1  => array(
  		"message" => 'Save Successful.',
-@@ -653,4 +655,10 @@
+@@ -654,4 +656,10 @@
  	GDC_SLASH => "/"
  	);
  
 +$plugin_architecture = array(
-+	'version' => '2.7'
++	'version' => '2.8'
 +	);
 +
 +api_plugin_hook('config_arrays');
 +
  ?>
-diff -Naur cacti-0.8.7f-old/include/global_constants.php cacti-0.8.7f/include/global_constants.php
---- cacti-0.8.7f-old/include/global_constants.php	2010-05-20 14:02:08.000000000 -0500
-+++ cacti-0.8.7f/include/global_constants.php	2010-05-17 06:21:16.000000000 -0500
-@@ -171,4 +171,8 @@
+diff -Naur cacti-0.8.7g-old/include/global_constants.php cacti-0.8.7g/include/global_constants.php
+--- cacti-0.8.7g-old/include/global_constants.php	2010-07-09 18:33:46.000000000 -0400
++++ cacti-0.8.7g/include/global_constants.php	2010-07-09 18:34:11.000000000 -0400
+@@ -173,4 +173,8 @@
  define("SNMP_CMDPHP", 1);
  define("SNMP_WEBUI", 2);
  
@@ -536,9 +579,9 @@ diff -Naur cacti-0.8.7f-old/include/global_constants.php cacti-0.8.7f/include/gl
 +
 +?>
 \ No newline at end of file
-diff -Naur cacti-0.8.7f-old/include/global_form.php cacti-0.8.7f/include/global_form.php
---- cacti-0.8.7f-old/include/global_form.php	2010-05-20 14:02:08.000000000 -0500
-+++ cacti-0.8.7f/include/global_form.php	2010-05-17 06:21:16.000000000 -0500
+diff -Naur cacti-0.8.7g-old/include/global_form.php cacti-0.8.7g/include/global_form.php
+--- cacti-0.8.7g-old/include/global_form.php	2010-07-09 18:33:46.000000000 -0400
++++ cacti-0.8.7g/include/global_form.php	2010-07-09 18:34:11.000000000 -0400
 @@ -22,8 +22,9 @@
   +-------------------------------------------------------------------------+
  */
@@ -560,41 +603,24 @@ diff -Naur cacti-0.8.7f-old/include/global_form.php cacti-0.8.7f/include/global_
 +
 +api_plugin_hook('config_form');
 +
-diff -Naur cacti-0.8.7f-old/include/global.php cacti-0.8.7f/include/global.php
---- cacti-0.8.7f-old/include/global.php	2010-05-20 14:02:08.000000000 -0500
-+++ cacti-0.8.7f/include/global.php	2010-05-17 06:21:16.000000000 -0500
-@@ -41,6 +41,22 @@
- /* Default session name - Session name must contain alpha characters */
- $cacti_session_name = "Cacti";
+diff -Naur cacti-0.8.7g-old/include/global.php cacti-0.8.7g/include/global.php
+--- cacti-0.8.7g-old/include/global.php	2010-07-09 18:33:46.000000000 -0400
++++ cacti-0.8.7g/include/global.php	2010-07-09 18:34:11.000000000 -0400
+@@ -93,6 +93,13 @@
+ /* built-in snmp support */
+ $config["php_snmp_support"] = function_exists("snmpget");
  
-+$plugins = array();
-+//$plugins[] = 'thold';
++/* set URL path */
++if (! isset($url_path)) { 
++	$url_path = "";
++}
++$config['url_path'] = $url_path;
++define('URL_PATH', $url_path);
 +
-+/* Do not edit this line */
-+$config = array();
-+
-+/*
-+   Edit this to point to the default URL of your Cacti install
-+   ex: if your cacti install as at http://serverip/cacti/ this
-+   would be set to /cacti/
-+*/
-+
-+$config['url_path'] = '/';
-+
-+define('URL_PATH', $config['url_path']);
-+
- /* Include configuration */
- include(dirname(__FILE__) . "/config.php");
- 
-@@ -84,7 +100,6 @@
- 	"structure_rra_paths.php"
- );
- 
--$config = array();
- $colors = array();
- 
- /* this should be auto-detected, set it manually if needed */
-@@ -188,15 +203,17 @@
+ /* used for includes */
+ $config["base_path"] = strtr(ereg_replace("(.*)[\\\/]include", "\\1", dirname(__FILE__)), "\\", "/");
+ $config["library_path"] = ereg_replace("(.*[\\\/])include", "\\1lib", dirname(__FILE__));
+@@ -188,15 +195,17 @@
  /* include base modules */
  include($config["library_path"] . "/adodb/adodb.inc.php");
  include($config["library_path"] . "/database.php");
@@ -616,29 +642,29 @@ diff -Naur cacti-0.8.7f-old/include/global.php cacti-0.8.7f/include/global.php
  include_once($config["include_path"] . "/global_form.php");
  include_once($config["library_path"] . "/html.php");
  include_once($config["library_path"] . "/html_form.php");
-@@ -205,6 +222,8 @@
+@@ -205,6 +214,8 @@
  include_once($config["library_path"] . "/variables.php");
  include_once($config["library_path"] . "/auth.php");
  
 +api_plugin_hook("config_insert");
 +
  /* current cacti version */
- $config["cacti_version"] = "0.8.7f";
+ $config["cacti_version"] = "0.8.7g";
  
-diff -Naur cacti-0.8.7f-old/include/global_settings.php cacti-0.8.7f/include/global_settings.php
---- cacti-0.8.7f-old/include/global_settings.php	2010-05-20 14:02:08.000000000 -0500
-+++ cacti-0.8.7f/include/global_settings.php	2010-05-17 06:21:16.000000000 -0500
-@@ -1185,4 +1185,6 @@
+diff -Naur cacti-0.8.7g-old/include/global_settings.php cacti-0.8.7g/include/global_settings.php
+--- cacti-0.8.7g-old/include/global_settings.php	2010-07-09 18:33:46.000000000 -0400
++++ cacti-0.8.7g/include/global_settings.php	2010-07-09 18:34:11.000000000 -0400
+@@ -1190,4 +1190,6 @@
  		)
  	);
  
 +api_plugin_hook('config_settings');
 +
  ?>
-diff -Naur cacti-0.8.7f-old/include/plugins.php cacti-0.8.7f/include/plugins.php
---- cacti-0.8.7f-old/include/plugins.php	1969-12-31 17:00:00.000000000 -0700
-+++ cacti-0.8.7f/include/plugins.php	2010-05-17 06:21:16.000000000 -0500
-@@ -0,0 +1,36 @@
+diff -Naur cacti-0.8.7g-old/include/plugins.php cacti-0.8.7g/include/plugins.php
+--- cacti-0.8.7g-old/include/plugins.php	1969-12-31 19:00:00.000000000 -0500
++++ cacti-0.8.7g/include/plugins.php	2010-07-09 18:34:11.000000000 -0400
+@@ -0,0 +1,38 @@
 +<?php
 +
 +/*
@@ -646,18 +672,19 @@ diff -Naur cacti-0.8.7f-old/include/plugins.php cacti-0.8.7f/include/plugins.php
 + * Licensed under the GNU GPL. For full terms see the file COPYING.
 + */
 +
-+global $plugin_hooks;
++global $plugin_hooks, $plugins_system;
 +$plugin_hooks = array();
++$plugins_system = array('settings', 'boost', 'dsstats');
 +
 +function use_plugin ($name) {
-+    global $config;
-+    if (file_exists($config['base_path'] . "/plugins/$name/setup.php")) {
-+        include_once($config['base_path'] . "/plugins/$name/setup.php");
-+        $function = "plugin_init_$name";
-+        if (function_exists($function)) {
-+            $function();
-+        }
-+    }
++	global $config;
++	if (file_exists($config['base_path'] . "/plugins/$name/setup.php")) {
++		include_once($config['base_path'] . "/plugins/$name/setup.php");
++		$function = "plugin_init_$name";
++		if (function_exists($function)) {
++			$function();
++		}
++	}
 +}
 +
 +/**
@@ -666,18 +693,19 @@ diff -Naur cacti-0.8.7f-old/include/plugins.php cacti-0.8.7f/include/plugins.php
 + * @return mixed $data
 + */
 +
++$oldplugins = read_config_option('oldplugins');
++$oldplugins = explode(',', $oldplugins);
++$plugins = array_merge($plugins, $oldplugins);
++
 +/* On startup, register all plugins configured for use. */
 +if (isset($plugins) && is_array($plugins)) {
-+    foreach ($plugins as $name) {
-+        use_plugin($name);
-+    }
++	foreach ($plugins as $name) {
++		use_plugin($name);
++	}
 +}
-+
-+
-+
-diff -Naur cacti-0.8.7f-old/include/top_graph_header.php cacti-0.8.7f/include/top_graph_header.php
---- cacti-0.8.7f-old/include/top_graph_header.php	2010-05-20 14:02:08.000000000 -0500
-+++ cacti-0.8.7f/include/top_graph_header.php	2010-05-17 22:23:30.000000000 -0500
+diff -Naur cacti-0.8.7g-old/include/top_graph_header.php cacti-0.8.7g/include/top_graph_header.php
+--- cacti-0.8.7g-old/include/top_graph_header.php	2010-07-09 18:33:46.000000000 -0400
++++ cacti-0.8.7g/include/top_graph_header.php	2010-07-09 18:34:11.000000000 -0400
 @@ -25,6 +25,11 @@
  $using_guest_account = false;
  $show_console_tab = true;
@@ -689,8 +717,8 @@ diff -Naur cacti-0.8.7f-old/include/top_graph_header.php cacti-0.8.7f/include/to
 +
  /* ================= input validation ================= */
  input_validate_input_number(get_request_var_request("local_graph_id"));
- /* ==================================================== */
-@@ -50,40 +55,52 @@
+ input_validate_input_number(get_request_var_request("graph_start"));
+@@ -52,41 +57,53 @@
  	$_SESSION["sess_nav_level_cache"][2]["url"] = "graph.php?local_graph_id=" . $_REQUEST["local_graph_id"] . "&rra_id=all";
  }
  
@@ -703,14 +731,15 @@ diff -Naur cacti-0.8.7f-old/include/top_graph_header.php cacti-0.8.7f/include/to
 -	<title><?php echo draw_navigation_text("title");?></title>
 +	<title><?php echo $page_title; ?></title>
  	<?php
- 	if (isset($_SESSION["custom"])) {
+ 	if (isset($_SESSION["custom"]) && $_SESSION["custom"] == true) {
  		print "<meta http-equiv=refresh content='99999'>\r\n";
  	}else{
 -		print "<meta http-equiv=refresh content='" . htmlspecialchars(read_graph_config_option("page_refresh"),ENT_QUOTES) . "'>\r\n";
-+		$refresh = api_plugin_hook_function('top_graph_refresh', read_graph_config_option('page_refresh'));
++		$refresh = api_plugin_hook_function('top_graph_refresh', htmlspecialchars(read_graph_config_option("page_refresh"),ENT_QUOTES));
 +		print "<meta http-equiv=refresh content='" . $refresh . "'>\r\n";
  	}
  	?>
+ 	<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
 -	<link href="include/main.css" type="text/css" rel="stylesheet">
 -	<link href="images/favicon.ico" rel="shortcut icon"/>
 -	<script type="text/javascript" src="include/layout.js"></script>
@@ -746,18 +775,18 @@ diff -Naur cacti-0.8.7f-old/include/top_graph_header.php cacti-0.8.7f/include/to
 -				<tr style="background: transparent url('images/cacti_backdrop2.gif') no-repeat center right;">
 +				<tr style="background: transparent url('<?php echo $config['url_path']; ?>images/cacti_backdrop2.gif') no-repeat center right;">
  					<td id="tabs" nowrap>
--						&nbsp;<?php if ($show_console_tab == true) {?><a href="index.php"><img src="images/tab_console.gif" alt="Console" align="middle" border="0"></a><?php }?><a href="graph_view.php"><img src="images/tab_graphs<?php if ((substr(basename($_SERVER["PHP_SELF"]),0,5) == "graph") || (basename($_SERVER["PHP_SELF"]) == "graph_settings.php")) { print "_down"; } print ".gif";?>" alt="Graphs" align="middle" border="0"></a>&nbsp;
+-						&nbsp;<?php if ($show_console_tab == true) {?><a href="index.php"><img src="images/tab_console.gif" alt="Console" align="absmiddle" border="0"></a><?php }?><a href="graph_view.php"><img src="images/tab_graphs<?php if ((substr(basename($_SERVER["PHP_SELF"]),0,5) == "graph") || (basename($_SERVER["PHP_SELF"]) == "graph_settings.php")) { print "_down"; } print ".gif";?>" alt="Graphs" align="absmiddle" border="0"></a>&nbsp;
 +						&nbsp;<?php if ($show_console_tab == true) {?><a href="<?php echo $config['url_path']; ?>index.php"><img src="<?php echo $config['url_path']; ?>images/tab_console.gif" alt="Console" align="absmiddle" border="0"></a><?php }?><a href="<?php echo $config['url_path']; ?>graph_view.php"><img src="<?php echo $config['url_path']; ?>images/tab_graphs<?php if ((substr(basename($_SERVER["PHP_SELF"]),0,5) == "graph") || (basename($_SERVER["PHP_SELF"]) == "graph_settings.php")) { print "_down"; } print ".gif";?>" alt="Graphs" align="absmiddle" border="0"></a><?php
 +						api_plugin_hook('top_graph_header_tabs');
 +						?>
  					</td>
  					<td id="gtabs" align="right" nowrap>
--						<?php if ((!isset($_SESSION["sess_user_id"])) || ($current_user["graph_settings"] == "on")) { print '<a href="graph_settings.php"><img src="images/tab_settings'; if (basename($_SERVER["PHP_SELF"]) == "graph_settings.php") { print "_down"; } print '.gif" border="0" alt="Settings" align="middle"></a>';}?>&nbsp;&nbsp;<?php if ((!isset($_SESSION["sess_user_id"])) || ($current_user["show_tree"] == "on")) {?><a href="<?php print htmlspecialchars("graph_view.php?action=tree");?>"><img src="images/tab_mode_tree<?php if (isset($_REQUEST["action"]) && $_REQUEST["action"] == "tree") { print "_down"; }?>.gif" border="0" title="Tree View" alt="Tree View" align="middle"></a><?php }?><?php if ((!isset($_SESSION["sess_user_id"])) || ($current_user["show_list"] == "on")) {?><a href="graph_view.php?action=list"><img src="images/tab_mode_list<?php if (isset($_REQUEST["action"]) && $_REQUEST["action"] == "list") { print "_down"; }?>.gif" border="0" title="List View" alt="List View" align="middle"></a><?php }?><?php if ((!isset($_SESSION["sess_user_id"])) || ($current_user["show_preview"] == "on")) {?><a href="graph_view.php?action=preview"><img src="images/tab_mode_preview<?php if (isset($_REQUEST["action"]) && $_REQUEST["action"] == "preview") { print "_down"; }?>.gif" border="0" title="Preview View" alt="Preview View" align="middle"></a><?php }?>&nbsp;<br>
+-						<?php if ((!isset($_SESSION["sess_user_id"])) || ($current_user["graph_settings"] == "on")) { print '<a href="graph_settings.php"><img src="images/tab_settings'; if (basename($_SERVER["PHP_SELF"]) == "graph_settings.php") { print "_down"; } print '.gif" border="0" alt="Settings" align="absmiddle"></a>';}?>&nbsp;&nbsp;<?php if ((!isset($_SESSION["sess_user_id"])) || ($current_user["show_tree"] == "on")) {?><a href="<?php print htmlspecialchars("graph_view.php?action=tree");?>"><img src="images/tab_mode_tree<?php if (isset($_REQUEST["action"]) && $_REQUEST["action"] == "tree") { print "_down"; }?>.gif" border="0" title="Tree View" alt="Tree View" align="absmiddle"></a><?php }?><?php if ((!isset($_SESSION["sess_user_id"])) || ($current_user["show_list"] == "on")) {?><a href="graph_view.php?action=list"><img src="images/tab_mode_list<?php if (isset($_REQUEST["action"]) && $_REQUEST["action"] == "list") { print "_down"; }?>.gif" border="0" title="List View" alt="List View" align="absmiddle"></a><?php }?><?php if ((!isset($_SESSION["sess_user_id"])) || ($current_user["show_preview"] == "on")) {?><a href="graph_view.php?action=preview"><img src="images/tab_mode_preview<?php if (isset($_REQUEST["action"]) && $_REQUEST["action"] == "preview") { print "_down"; }?>.gif" border="0" title="Preview View" alt="Preview View" align="absmiddle"></a><?php }?>&nbsp;<br>
 +						<?php if ((!isset($_SESSION["sess_user_id"])) || ($current_user["graph_settings"] == "on")) { print '<a href="' . $config['url_path'] . 'graph_settings.php"><img src="' . $config['url_path'] . 'images/tab_settings'; if (basename($_SERVER["PHP_SELF"]) == "graph_settings.php") { print "_down"; } print '.gif" border="0" alt="Settings" align="absmiddle"></a>';}?>&nbsp;&nbsp;<?php if ((!isset($_SESSION["sess_user_id"])) || ($current_user["show_tree"] == "on")) {?><a href="<?php print htmlspecialchars($config['url_path'] . "graph_view.php?action=tree");?>"><img src="<?php echo $config['url_path']; ?>images/tab_mode_tree<?php if (isset($_REQUEST["action"]) && $_REQUEST["action"] == "tree") { print "_down"; }?>.gif" border="0" title="Tree View" alt="Tree View" align="absmiddle"></a><?php }?><?php if ((!isset($_SESSION["sess_user_id"])) || ($current_user["show_list"] == "on")) {?><a href="<?php print htmlspecialchars($config['url_path'] . "graph_view.php?action=list");?>"><img src="<?php echo $config['url_path']; ?>images/tab_mode_list<?php if (isset($_REQUEST["action"]) && $_REQUEST["action"] == "list") { print "_down"; }?>.gif" border="0" title="List View" alt="List View" align="absmiddle"></a><?php }?><?php if ((!isset($_SESSION["sess_user_id"])) || ($current_user["show_preview"] == "on")) {?><a href="<?php print htmlspecialchars($config['url_path'] . "graph_view.php?action=preview");?>"><img src="<?php echo $config['url_path']; ?>images/tab_mode_preview<?php if (isset($_REQUEST["action"]) && $_REQUEST["action"] == "preview") { print "_down"; }?>.gif" border="0" title="Preview View" alt="Preview View" align="absmiddle"></a><?php }?>&nbsp;<br>
  					</td>
  				</tr>
  			</table>
-@@ -91,7 +108,7 @@
+@@ -94,7 +111,7 @@
  	</tr>
  	<tr style="height:2px;" bgcolor="#183c8f" class="noprint">
  		<td colspan="2">
@@ -766,7 +795,7 @@ diff -Naur cacti-0.8.7f-old/include/top_graph_header.php cacti-0.8.7f/include/to
  		</td>
  	</tr>
  	<tr style="height:5px;" bgcolor="#e9e9e9" class="noprint">
-@@ -103,7 +120,7 @@
+@@ -106,7 +123,7 @@
  					</td>
  					<td align="right">
  						<?php if ((isset($_SESSION["sess_user_id"])) && ($using_guest_account == false)) { ?>
@@ -775,7 +804,7 @@ diff -Naur cacti-0.8.7f-old/include/top_graph_header.php cacti-0.8.7f/include/to
  						<?php } ?>
  					</td>
  				</tr>
-@@ -111,10 +128,10 @@
+@@ -114,10 +131,10 @@
  		</td>
  	</tr>
  	<tr class="noprint">
@@ -789,7 +818,7 @@ diff -Naur cacti-0.8.7f-old/include/top_graph_header.php cacti-0.8.7f/include/to
  
  		</td>
  	</tr>
-@@ -140,6 +157,8 @@
+@@ -143,6 +160,8 @@
  		</td>
  	</tr>
  	<?php }
@@ -798,10 +827,10 @@ diff -Naur cacti-0.8.7f-old/include/top_graph_header.php cacti-0.8.7f/include/to
  	load_current_session_value("action", "sess_cacti_graph_action", $graph_views[read_graph_config_option("default_tree_view_mode")]);
  	?>
  	<tr>
-diff -Naur cacti-0.8.7f-old/include/top_header.php cacti-0.8.7f/include/top_header.php
---- cacti-0.8.7f-old/include/top_header.php	2010-05-20 14:02:08.000000000 -0500
-+++ cacti-0.8.7f/include/top_header.php	2010-05-17 06:21:16.000000000 -0500
-@@ -22,37 +22,53 @@
+diff -Naur cacti-0.8.7g-old/include/top_header.php cacti-0.8.7g/include/top_header.php
+--- cacti-0.8.7g-old/include/top_header.php	2010-07-09 18:33:46.000000000 -0400
++++ cacti-0.8.7g/include/top_header.php	2010-07-09 18:34:11.000000000 -0400
+@@ -22,38 +22,53 @@
   +-------------------------------------------------------------------------+
  */
  
@@ -822,24 +851,24 @@ diff -Naur cacti-0.8.7f-old/include/top_header.php cacti-0.8.7f/include/top_head
 -	<title><?php echo draw_navigation_text("title");?></title>
 -	<link href="include/main.css" type="text/css" rel="stylesheet">
 -	<link href="images/favicon.ico" rel="shortcut icon"/>
--	<script type="text/javascript" src="include/layout.js"></script>
 +	<title><?php echo $page_title; ?></title>
 +	<link href="<?php echo $config['url_path']; ?>include/main.css" type="text/css" rel="stylesheet">
-+	<link href="<?php echo $config['url_path']; ?>images/favicon.ico" rel="shortcut icon"/>
++	<link href="<?php echo $config['url_path']; ?>images/favicon.ico" rel="shortcut icon">
+ 	<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+-	<script type="text/javascript" src="include/layout.js"></script>
 +	<script type="text/javascript" src="<?php echo $config['url_path']; ?>include/layout.js"></script>
  	<?php if (isset($refresh)) {
  	print "<meta http-equiv=refresh content=\"" . $refresh["seconds"] . "; url='" . $refresh["page"] . "'\">";
 -	}?>
 +	}
 +	api_plugin_hook('page_head'); ?>
-+</style>
  </head>
  
--<body style="background-image:url('images/left_border.gif');">
+-<body style="background-image:url('images/left_border.gif');background-repeat:repeat-y;">
 +<?php if ($oper_mode == OPER_MODE_NATIVE) {?>
-+<body style="background-image:url('images/left_border.gif');" <?php print api_plugin_hook_function("body_style", "");?>>
++<body style="background-image:url('<?php print $config['url_path'];?>images/left_border.gif');background-repeat:repeat-y;" <?php print api_plugin_hook_function("body_style", "");?>>
 +<?php }else{?>
-+<body style="background-image:url('images/left_border.gif');" <?php print api_plugin_hook_function("body_style", "");?>>
++<body style="background-image:url('<?php print $config['url_path'];?>images/left_border.gif');background-repeat:repeat-y;" <?php print api_plugin_hook_function("body_style", "");?>>
 +<?php }?>
  
  <table width="100%" cellspacing="0" cellpadding="0">
@@ -850,7 +879,7 @@ diff -Naur cacti-0.8.7f-old/include/top_header.php cacti-0.8.7f/include/top_head
 -				<tr style="background: transparent url('images/cacti_backdrop.gif') no-repeat center right;">
 +				<tr style="background: transparent url('<?php echo $config['url_path']; ?>images/cacti_backdrop.gif') no-repeat center right;">
  					<td id="tabs" valign="bottom">
--						&nbsp;<a href="index.php"><img src="images/tab_console_down.gif" alt="Console" align="middle" border="0"></a><a href="graph_view.php"><img src="images/tab_graphs.gif" alt="Graphs" align="middle" border="0"></a>
+-						&nbsp;<a href="index.php"><img src="images/tab_console_down.gif" alt="Console" align="absmiddle" border="0"></a><a href="graph_view.php"><img src="images/tab_graphs.gif" alt="Graphs" align="absmiddle" border="0"></a>
 -					</td>
 +						&nbsp;<a href="<?php echo $config['url_path']; ?>index.php"><img src="<?php echo $config['url_path']; ?>images/tab_console_down.gif" alt="Console" align="absmiddle" border="0"></a><a href="<?php echo $config['url_path']; ?>graph_view.php"><img src="<?php echo $config['url_path']; ?>images/tab_graphs.gif" alt="Graphs" align="absmiddle" border="0"></a><?php
 +						api_plugin_hook('top_header_tabs');
@@ -866,7 +895,7 @@ diff -Naur cacti-0.8.7f-old/include/top_header.php cacti-0.8.7f/include/top_head
  		</td>
  	</tr>
  	<tr style="height:5px;" bgcolor="#e9e9e9">
-@@ -64,7 +80,7 @@
+@@ -65,7 +80,7 @@
  					</td>
  					<td align="right">
  						<?php if (read_config_option("auth_method") != 0) { ?>
@@ -875,7 +904,7 @@ diff -Naur cacti-0.8.7f-old/include/top_header.php cacti-0.8.7f/include/top_head
  						<?php } ?>
  					</td>
  				</tr>
-@@ -72,10 +88,10 @@
+@@ -73,10 +88,10 @@
  		</td>
  	</tr>
  	<tr>
@@ -889,7 +918,7 @@ diff -Naur cacti-0.8.7f-old/include/top_header.php cacti-0.8.7f/include/top_head
  
  		</td>
  	</tr>
-@@ -85,9 +101,12 @@
+@@ -86,9 +101,12 @@
  				<?php draw_menu();?>
  			</table>
  
@@ -906,9 +935,9 @@ diff -Naur cacti-0.8.7f-old/include/top_header.php cacti-0.8.7f/include/top_head
 +	<tr>
 +		<td width="100%" valign="top"><?php display_output_messages();?>
 +<?php } ?>
-diff -Naur cacti-0.8.7f-old/index.php cacti-0.8.7f/index.php
---- cacti-0.8.7f-old/index.php	2010-05-20 14:02:08.000000000 -0500
-+++ cacti-0.8.7f/index.php	2010-05-17 06:21:16.000000000 -0500
+diff -Naur cacti-0.8.7g-old/index.php cacti-0.8.7g/index.php
+--- cacti-0.8.7g-old/index.php	2010-07-09 18:33:46.000000000 -0400
++++ cacti-0.8.7g/index.php	2010-07-09 18:34:11.000000000 -0400
 @@ -25,6 +25,8 @@
  include("./include/auth.php");
  include("./include/top_header.php");
@@ -927,9 +956,9 @@ diff -Naur cacti-0.8.7f-old/index.php cacti-0.8.7f/index.php
  include("./include/bottom_footer.php");
  
  ?>
-diff -Naur cacti-0.8.7f-old/lib/api_device.php cacti-0.8.7f/lib/api_device.php
---- cacti-0.8.7f-old/lib/api_device.php	2010-05-20 14:02:08.000000000 -0500
-+++ cacti-0.8.7f/lib/api_device.php	2010-05-17 06:21:16.000000000 -0500
+diff -Naur cacti-0.8.7g-old/lib/api_device.php cacti-0.8.7g/lib/api_device.php
+--- cacti-0.8.7g-old/lib/api_device.php	2010-07-09 18:33:46.000000000 -0400
++++ cacti-0.8.7g/lib/api_device.php	2010-07-09 18:34:11.000000000 -0400
 @@ -137,6 +137,8 @@
  	$save["ping_retries"]         = form_input_validate($ping_retries, "ping_retries", "^[0-9]+$", true, 3);
  	$save["max_oids"]             = form_input_validate($max_oids, "max_oids", "^[0-9]+$", true, 3);
@@ -939,9 +968,9 @@ diff -Naur cacti-0.8.7f-old/lib/api_device.php cacti-0.8.7f/lib/api_device.php
  	$host_id = 0;
  
  	if (!is_error_message()) {
-diff -Naur cacti-0.8.7f-old/lib/auth.php cacti-0.8.7f/lib/auth.php
---- cacti-0.8.7f-old/lib/auth.php	2010-05-20 14:02:08.000000000 -0500
-+++ cacti-0.8.7f/lib/auth.php	2010-05-18 06:20:48.000000000 -0500
+diff -Naur cacti-0.8.7g-old/lib/auth.php cacti-0.8.7g/lib/auth.php
+--- cacti-0.8.7g-old/lib/auth.php	2010-07-09 18:33:46.000000000 -0400
++++ cacti-0.8.7g/lib/auth.php	2010-07-09 18:34:11.000000000 -0400
 @@ -121,8 +121,9 @@
  		}
  	}
@@ -961,76 +990,10 @@ diff -Naur cacti-0.8.7f-old/lib/auth.php cacti-0.8.7f/lib/auth.php
  }
  
  /* user_disable - disable a user account
-diff -Naur cacti-0.8.7f-old/lib/functions.php cacti-0.8.7f/lib/functions.php
---- cacti-0.8.7f-old/lib/functions.php	2010-05-20 14:02:08.000000000 -0500
-+++ cacti-0.8.7f/lib/functions.php	2010-05-20 13:45:32.000000000 -0500
-@@ -316,7 +316,7 @@
- 				switch ($messages[$current_message_id]["type"]) {
- 				case 'info':
- 					if ($error_message == false) {
--						print "<div id='message' class='textInfo' style='padding:5px 20px;position:relative;background-color: #ffffff; border: 1px solid #bbbbbb;'>";
-+						print "<div class='textInfo' style='padding:5px 20px;position:relative;background-color: #ffffff; border: 1px solid #bbbbbb;'>";
- 						print "$message";
- 						print "</div>";
- 
-@@ -325,7 +325,7 @@
- 					}
- 					break;
- 				case 'error':
--					print "<div id='message' class='textError' style='padding:5px 20px;position:relative;background-color: #ffffff; border: 1px solid #ff0000;'>";
-+					print "<div class='textError' style='padding:5px 20px;position:relative;background-color: #ffffff; border: 1px solid #ff0000;'>";
- 					print "Error: $message";
- 					print "</div>";
- 					break;
-@@ -334,47 +334,6 @@
- 		}else{
- 			display_custom_error_message($_SESSION["sess_messages"]);
- 		}
--
--		?>
--		<script type="text/javascript">
--		<!--
--		var obj = document.getElementById('message');
--		if (window.innerHeight) {
--			height = window.innerHeight;
--			width  = window.innerWidth;
--		}else{
--			height = document.body.clientHeight;
--			width  = document.body.clientWidth;
--		}
--		var opacity=1;
--
--		obj.style.zIndex = 2;
--		obj.style.position = "absolute";
--		obj.style.backgroundColor = "#EAEAEA";
--		obj.style.padding = "10px 20px";
--		cw = obj.scrollWidth;
--		ch = obj.scrollHeight;
--		obj.style.top = '150px';
--		obj.style.left = ((width/2) - (cw / 2) - 75)+'px';
--		obj.style.border = 'medium solid #AEAEAE';
--		opacity = 1;
--		obj.style.opacity = opacity;
--		obj.zoom = "100%";
--		if (document.getElementById('message')) {
--			setTimeout("removeMessage()", 2000);
--		}
--
--		function removeMessage() {
--			if (obj.style.opacity <= 0) return;
--			opacity-=0.15;
--			iopacity = opacity * 100;
--			obj.style.opacity = opacity;
--			obj.style.filter = 'alpha(opacity='+iopacity+')';
--			setTimeout("removeMessage()",40);
--		}
--		-->
--		</script>
--		<?php
- 	}
- 
- 	kill_session_var("sess_messages");
-@@ -1679,6 +1638,8 @@
+diff -Naur cacti-0.8.7g-old/lib/functions.php cacti-0.8.7g/lib/functions.php
+--- cacti-0.8.7g-old/lib/functions.php	2010-07-09 18:33:46.000000000 -0400
++++ cacti-0.8.7g/lib/functions.php	2010-07-09 18:34:11.000000000 -0400
+@@ -1689,6 +1689,8 @@
     @arg $type - (string) Either 'url' or 'title'
     @returns (string> Either the navigation text or title */
  function draw_navigation_text($type = "url") {
@@ -1039,7 +1002,7 @@ diff -Naur cacti-0.8.7f-old/lib/functions.php cacti-0.8.7f/lib/functions.php
  	$nav_level_cache = (isset($_SESSION["sess_nav_level_cache"]) ? $_SESSION["sess_nav_level_cache"] : array());
  
  	$nav = array(
-@@ -1691,8 +1652,8 @@
+@@ -1701,8 +1703,8 @@
  		"graph.php:zoom" => array("title" => "Zoom", "mapping" => "graph_view.php:,?,graph.php:view", "level" => "3"),
  		"graph.php:properties" => array("title" => "Properties", "mapping" => "graph_view.php:,?,graph.php:view", "level" => "3"),
  		"graph_settings.php:" => array("title" => "Settings", "mapping" => "graph_view.php:", "url" => "graph_settings.php", "level" => "1"),
@@ -1050,7 +1013,7 @@ diff -Naur cacti-0.8.7f-old/lib/functions.php cacti-0.8.7f/lib/functions.php
  		"graphs.php:" => array("title" => "Graph Management", "mapping" => "index.php:", "url" => "graphs.php", "level" => "1"),
  		"graphs.php:graph_edit" => array("title" => "(Edit)", "mapping" => "index.php:,graphs.php:", "url" => "", "level" => "2"),
  		"graphs.php:graph_diff" => array("title" => "Change Graph Template", "mapping" => "index.php:,graphs.php:,graphs.php:graph_edit", "url" => "", "level" => "3"),
-@@ -1770,6 +1731,8 @@
+@@ -1780,6 +1782,8 @@
  		"templates_import.php:" => array("title" => "Import Templates", "mapping" => "index.php:", "url" => "templates_import.php", "level" => "1"),
  		);
  
@@ -1059,11 +1022,17 @@ diff -Naur cacti-0.8.7f-old/lib/functions.php cacti-0.8.7f/lib/functions.php
  	$current_page = basename($_SERVER["PHP_SELF"]);
  
  	input_validate_input_regex(get_request_var_request("action"), "^([a-zA-Z0-9_-]+)$");
-diff -Naur cacti-0.8.7f-old/lib/html_form.php cacti-0.8.7f/lib/html_form.php
---- cacti-0.8.7f-old/lib/html_form.php	2010-05-20 14:02:08.000000000 -0500
-+++ cacti-0.8.7f/lib/html_form.php	2010-05-17 06:21:16.000000000 -0500
-@@ -736,8 +736,8 @@
- function form_confirm_buttons($action_url, $cancel_url) { ?>
+diff -Naur cacti-0.8.7g-old/lib/html_form.php cacti-0.8.7g/lib/html_form.php
+--- cacti-0.8.7g-old/lib/html_form.php	2010-07-09 18:33:46.000000000 -0400
++++ cacti-0.8.7g/lib/html_form.php	2010-07-09 18:34:11.000000000 -0400
+@@ -722,11 +722,13 @@
+      on a confirmation form
+    @arg $cancel_url - the url to go to when the user clicks 'cancel'
+    @arg $action_url - the url to go to when the user clicks 'delete' */
+-function form_confirm_buttons($action_url, $cancel_url) { ?>
++function form_confirm_buttons($action_url, $cancel_url) {
++	global $config;
++	?>
  	<tr>
  		<td bgcolor="#E1E1E1">
 -			<input type='button' onClick='cactiReturnTo("<?php print $cancel_url;?>")' value='Cancel'>
@@ -1073,25 +1042,25 @@ diff -Naur cacti-0.8.7f-old/lib/html_form.php cacti-0.8.7f/lib/html_form.php
  		</td>
  	</tr>
  <?php }
-diff -Naur cacti-0.8.7f-old/lib/html.php cacti-0.8.7f/lib/html.php
---- cacti-0.8.7f-old/lib/html.php	2010-05-20 14:02:08.000000000 -0500
-+++ cacti-0.8.7f/lib/html.php	2010-05-17 06:21:16.000000000 -0500
+diff -Naur cacti-0.8.7g-old/lib/html.php cacti-0.8.7g/lib/html.php
+--- cacti-0.8.7g-old/lib/html.php	2010-07-09 18:33:46.000000000 -0400
++++ cacti-0.8.7g/lib/html.php	2010-07-09 18:34:11.000000000 -0400
 @@ -144,14 +144,15 @@
  					<table align='center' cellpadding='0'>
  						<tr>
  							<td align='center'>
--								<div style="min-height: <?php echo (1.6 * $graph["height"]) . "px"?>;"><a href='<?php print htmlspecialchars("graph.php?action=view&local_graph_id=" . $graph["local_graph_id"] . "&rra_id=all");?>'><img class='graphimage' id='graph_<?php print $graph["local_graph_id"] ?>' src='<?php print htmlspecialchars("graph_image.php?local_graph_id=" . $graph["local_graph_id"] . "&rra_id=0" . (($extra_url_args == "") ? "" : "&$extra_url_args"));?>' border='0' alt='<?php print $graph["title_cache"];?>'></a></div>
-+								<div style="min-height: <?php echo (1.6 * $graph["height"]) . "px"?>;"><a href='<?php print htmlspecialchars($config['url_path'] . "graph.php?action=view&local_graph_id=" . $graph["local_graph_id"] . "&rra_id=all");?>'><img class='graphimage' id='graph_<?php print $graph["local_graph_id"] ?>' src='<?php print htmlspecialchars("graph_image.php?local_graph_id=" . $graph["local_graph_id"] . "&rra_id=0" . (($extra_url_args == "") ? "" : "&$extra_url_args"));?>' border='0' alt='<?php print $graph["title_cache"];?>'></a></div>
- 								<?php print (read_graph_config_option("show_graph_title") == "on" ? "<p style='font-size: 10;' align='center'><strong>" . $graph["title_cache"] . "</strong></p>" : "");?>
+-								<div style="min-height: <?php echo (1.6 * $graph["height"]) . "px"?>;"><a href='<?php print htmlspecialchars("graph.php?action=view&local_graph_id=" . $graph["local_graph_id"] . "&rra_id=all");?>'><img class='graphimage' id='graph_<?php print $graph["local_graph_id"] ?>' src='<?php print htmlspecialchars("graph_image.php?local_graph_id=" . $graph["local_graph_id"] . "&rra_id=0" . (($extra_url_args == "") ? "" : "&$extra_url_args"));?>' border='0' alt='<?php print htmlspecialchars($graph["title_cache"]);?>'></a></div>
++								<div style="min-height: <?php echo (1.6 * $graph["height"]) . "px"?>;"><a href='<?php print htmlspecialchars($config['url_path'] . "graph.php?action=view&local_graph_id=" . $graph["local_graph_id"] . "&rra_id=all");?>'><img class='graphimage' id='graph_<?php print $graph["local_graph_id"] ?>' src='<?php print htmlspecialchars($config['url_path'] . "graph_image.php?local_graph_id=" . $graph["local_graph_id"] . "&rra_id=0" . (($extra_url_args == "") ? "" : "&$extra_url_args"));?>' border='0' alt='<?php print htmlspecialchars($graph["title_cache"]);?>'></a></div>
+ 								<?php print (read_graph_config_option("show_graph_title") == "on" ? "<p style='font-size: 10;' align='center'><strong>" . htmlspecialchars($graph["title_cache"]) . "</strong></p>" : "");?>
  							</td>
  							<td valign='top' style='align: left; padding: 3px;' class='noprint'>
 -								<a href='<?php print htmlspecialchars("graph.php?action=zoom&local_graph_id=" . $graph["local_graph_id"] . "&rra_id=0&". $extra_url_args);?>'><img src='images/graph_zoom.gif' border='0' alt='Zoom Graph' title='Zoom Graph' style='padding: 3px;'></a><br>
 -								<a href='<?php print htmlspecialchars("graph_xport.php?local_graph_id=" . $graph["local_graph_id"] . "&rra_id=0&" . $extra_url_args);?>'><img src='images/graph_query.png' border='0' alt='CSV Export' title='CSV Export' style='padding: 3px;'></a><br>
 -								<a href='<?php print htmlspecialchars("graph.php?action=properties&local_graph_id=" . $graph["local_graph_id"] . "&rra_id=0&" . $extra_url_args);?>'><img src='images/graph_properties.gif' border='0' alt='Graph Source/Properties' title='Graph Source/Properties' style='padding: 3px;'></a><br>
 -								<a href='#page_top'><img src='images/graph_page_top.gif' border='0' alt='Page Top' title='Page Top' style='padding: 3px;'></a><br>
-+								<a href='<?php print htmlspecialchars($config['url_path'] . "graph.php?action=zoom&local_graph_id=" . $graph["local_graph_id"] . "&rra_id=0&". $extra_url_args);?>'><img src='images/graph_zoom.gif' border='0' alt='Zoom Graph' title='Zoom Graph' style='padding: 3px;'></a><br>
-+								<a href='<?php print htmlspecialchars($config['url_path'] . "graph_xport.php?local_graph_id=" . $graph["local_graph_id"] . "&rra_id=0&" . $extra_url_args);?>'><img src='images/graph_query.png' border='0' alt='CSV Export' title='CSV Export' style='padding: 3px;'></a><br>
-+								<a href='<?php print htmlspecialchars($config['url_path'] . "graph.php?action=properties&local_graph_id=" . $graph["local_graph_id"] . "&rra_id=0&" . $extra_url_args);?>'><img src='images/graph_properties.gif' border='0' alt='Graph Source/Properties' title='Graph Source/Properties' style='padding: 3px;'></a><br>
++								<a href='<?php print htmlspecialchars($config['url_path'] . "graph.php?action=zoom&local_graph_id=" . $graph["local_graph_id"] . "&rra_id=0&". $extra_url_args);?>'><img src='<?php print $config['url_path'];?>images/graph_zoom.gif' border='0' alt='Zoom Graph' title='Zoom Graph' style='padding: 3px;'></a><br>
++								<a href='<?php print htmlspecialchars($config['url_path'] . "graph_xport.php?local_graph_id=" . $graph["local_graph_id"] . "&rra_id=0&" . $extra_url_args);?>'><img src='<?php print $config['url_path'];?>images/graph_query.png' border='0' alt='CSV Export' title='CSV Export' style='padding: 3px;'></a><br>
++								<a href='<?php print htmlspecialchars($config['url_path'] . "graph.php?action=properties&local_graph_id=" . $graph["local_graph_id"] . "&rra_id=0&" . $extra_url_args);?>'><img src='<?php print $config['url_path'];?>images/graph_properties.gif' border='0' alt='Graph Source/Properties' title='Graph Source/Properties' style='padding: 3px;'></a><br>
 +								<?php api_plugin_hook('graph_buttons', array('hook' => 'graphs_thumbnails', 'local_graph_id' => $graph['local_graph_id'], 'rra' =>  0, 'view_type' => 'view')); ?>
 +								<a href='#page_top'><img src='<?php print $config['url_path']; ?>images/graph_page_top.gif' border='0' alt='Page Top' title='Page Top' style='padding: 3px;'></a><br>
  							</td>
@@ -1109,23 +1078,36 @@ diff -Naur cacti-0.8.7f-old/lib/html.php cacti-0.8.7f/lib/html.php
  				<table align='center' cellpadding='0'>
  					<tr>
  						<td align='center'>
--							<div style="min-height: <?php echo (1.6 * read_graph_config_option("default_height")) . "px"?>;"><a href='<?php print htmlspecialchars("graph.php?action=view&rra_id=all&local_graph_id=" . $graph["local_graph_id"]);?>'><img class='graphimage' id='graph_<?php print $graph["local_graph_id"] ?>' src='<?php print htmlspecialchars("graph_image.php?local_graph_id=" . $graph["local_graph_id"] . "&rra_id=0&graph_height=" . read_graph_config_option("default_height") . "&graph_width=" . read_graph_config_option("default_width") . "&graph_nolegend=true" . (($extra_url_args == "") ? "" : "&$extra_url_args"));?>' border='0' alt='<?php print $graph["title_cache"];?>'></a></div>
-+							<div style="min-height: <?php echo (1.6 * read_graph_config_option("default_height")) . "px"?>;"><a href='<?php print htmlspecialchars($config['url_path'] . "graph.php?action=view&rra_id=all&local_graph_id=" . $graph["local_graph_id"]);?>'><img class='graphimage' id='graph_<?php print $graph["local_graph_id"] ?>' src='<?php print htmlspecialchars("graph_image.php?local_graph_id=" . $graph["local_graph_id"] . "&rra_id=0&graph_height=" . read_graph_config_option("default_height") . "&graph_width=" . read_graph_config_option("default_width") . "&graph_nolegend=true" . (($extra_url_args == "") ? "" : "&$extra_url_args"));?>' border='0' alt='<?php print $graph["title_cache"];?>'></a></div>
- 							<?php print (read_graph_config_option("show_graph_title") == "on" ? "<p style='font-size: 10;' align='center'><strong>" . $graph["title_cache"] . "</strong></p>" : "");?>
+-							<div style="min-height: <?php echo (1.6 * read_graph_config_option("default_height")) . "px"?>;"><a href='<?php print htmlspecialchars("graph.php?action=view&rra_id=all&local_graph_id=" . $graph["local_graph_id"]);?>'><img class='graphimage' id='graph_<?php print $graph["local_graph_id"] ?>' src='<?php print htmlspecialchars("graph_image.php?local_graph_id=" . $graph["local_graph_id"] . "&rra_id=0&graph_height=" . read_graph_config_option("default_height") . "&graph_width=" . read_graph_config_option("default_width") . "&graph_nolegend=true" . (($extra_url_args == "") ? "" : "&$extra_url_args"));?>' border='0' alt='<?php print htmlspecialchars($graph["title_cache"]);?>'></a></div>
++							<div style="min-height: <?php echo (1.6 * read_graph_config_option("default_height")) . "px"?>;"><a href='<?php print htmlspecialchars($config['url_path'] . "graph.php?action=view&rra_id=all&local_graph_id=" . $graph["local_graph_id"]);?>'><img class='graphimage' id='graph_<?php print $graph["local_graph_id"] ?>' src='<?php print htmlspecialchars($config["url_path"] . "graph_image.php?local_graph_id=" . $graph["local_graph_id"] . "&rra_id=0&graph_height=" . read_graph_config_option("default_height") . "&graph_width=" . read_graph_config_option("default_width") . "&graph_nolegend=true" . (($extra_url_args == "") ? "" : "&$extra_url_args"));?>' border='0' alt='<?php print htmlspecialchars($graph["title_cache"]);?>'></a></div>
+ 							<?php print (read_graph_config_option("show_graph_title") == "on" ? "<p style='font-size: 10;' align='center'><strong>" . htmlspecialchars($graph["title_cache"]) . "</strong></p>" : "");?>
  						</td>
  						<td valign='top' style='align: left; padding: 3px;'>
 -							<a href='<?php print htmlspecialchars("graph.php?action=zoom&local_graph_id=" . $graph["local_graph_id"] . "&rra_id=0&" . $extra_url_args);?>'><img src='images/graph_zoom.gif' border='0' alt='Zoom Graph' title='Zoom Graph' style='padding: 3px;'></a><br>
 -							<a href='<?php print htmlspecialchars("graph_xport.php?local_graph_id=" . $graph["local_graph_id"] . "&rra_id=0&" . $extra_url_args);?>'><img src='images/graph_query.png' border='0' alt='CSV Export' title='CSV Export' style='padding: 3px;'></a><br>
 -							<a href='<?php print htmlspecialchars("graph.php?action=properties&local_graph_id=" . $graph["local_graph_id"] . "&rra_id=0&" . $extra_url_args);?>'><img src='images/graph_properties.gif' border='0' alt='Graph Source/Properties' title='Graph Source/Properties' style='padding: 3px;'></a><br>
 -							<a href='#page_top'><img src='images/graph_page_top.gif' border='0' alt='Page Top' title='Page Top' style='padding: 3px;'></a><br>
-+							<a href='<?php print htmlspecialchars($config['url_path'] . "graph.php?action=zoom&local_graph_id=" . $graph["local_graph_id"] . "&rra_id=0&" . $extra_url_args);?>'><img src='images/graph_zoom.gif' border='0' alt='Zoom Graph' title='Zoom Graph' style='padding: 3px;'></a><br>
-+							<a href='<?php print htmlspecialchars($config['url_path'] . "graph_xport.php?local_graph_id=" . $graph["local_graph_id"] . "&rra_id=0&" . $extra_url_args);?>'><img src='images/graph_query.png' border='0' alt='CSV Export' title='CSV Export' style='padding: 3px;'></a><br>
-+							<a href='<?php print htmlspecialchars($config['url_path'] . "graph.php?action=properties&local_graph_id=" . $graph["local_graph_id"] . "&rra_id=0&" . $extra_url_args);?>'><img src='images/graph_properties.gif' border='0' alt='Graph Source/Properties' title='Graph Source/Properties' style='padding: 3px;'></a><br>
++							<a href='<?php print htmlspecialchars($config['url_path'] . "graph.php?action=zoom&local_graph_id=" . $graph["local_graph_id"] . "&rra_id=0&" . $extra_url_args);?>'><img src='<?php print $config['url_path'];?>images/graph_zoom.gif' border='0' alt='Zoom Graph' title='Zoom Graph' style='padding: 3px;'></a><br>
++							<a href='<?php print htmlspecialchars($config['url_path'] . "graph_xport.php?local_graph_id=" . $graph["local_graph_id"] . "&rra_id=0&" . $extra_url_args);?>'><img src='<?php print $config['url_path'];?>images/graph_query.png' border='0' alt='CSV Export' title='CSV Export' style='padding: 3px;'></a><br>
++							<a href='<?php print htmlspecialchars($config['url_path'] . "graph.php?action=properties&local_graph_id=" . $graph["local_graph_id"] . "&rra_id=0&" . $extra_url_args);?>'><img src='<?php print $config['url_path'];?>images/graph_properties.gif' border='0' alt='Graph Source/Properties' title='Graph Source/Properties' style='padding: 3px;'></a><br>
 +							<?php api_plugin_hook('graph_buttons_thumbnails', array('hook' => 'graphs_thumbnails', 'local_graph_id' => $graph['local_graph_id'], 'rra' =>  0, 'view_type' => '')); ?>
 +							<a href='#page_top'><img src='<?php print $config['url_path'] . "images/graph_page_top.gif";?>' border='0' alt='Page Top' title='Page Top' style='padding: 3px;'></a><br>
  						</td>
  					</tr>
  				</table>
+@@ -638,9 +641,9 @@
+ 		print "<td style='$this_row_style'>" . $item["hex"] . "</td>\n";
+ 
+ 		if ($disable_controls == false) {
+-			print "<td><a href='" . htmlspecialchars("$filename?action=item_movedown&id=" . $item["id"] . "&$url_data") . "'><img src='images/move_down.gif' border='0' alt='Move Down'></a>
+-					<a href='" . htmlspecialchars("$filename?action=item_moveup&id=" . $item["id"] . "&$url_data") . "'><img src='images/move_up.gif' border='0' alt='Move Up'></a></td>\n";
+-			print "<td align='right'><a href='" . htmlspecialchars("$filename?action=item_remove&id=" . $item["id"] . "&$url_data") . "'><img src='images/delete_icon.gif' style='height:10px;width:10px;' border='0' alt='Delete'></a></td>\n";
++			print "<td><a href='" . htmlspecialchars("$filename?action=item_movedown&id=" . $item["id"] . "&$url_data") . "'><img src='" . $config['url_path'] . "images/move_down.gif' border='0' alt='Move Down'></a>
++					<a href='" . htmlspecialchars("$filename?action=item_moveup&id=" . $item["id"] . "&$url_data") . "'><img src='" . $config['url_path'] . "images/move_up.gif' border='0' alt='Move Up'></a></td>\n";
++			print "<td align='right'><a href='" . htmlspecialchars("$filename?action=item_remove&id=" . $item["id"] . "&$url_data") . "'><img src='" . $config['url_path'] . "images/delete_icon.gif' style='height:10px;width:10px;' border='0' alt='Delete'></a></td>\n";
+ 		}
+ 
+ 		print "</tr>";
 @@ -706,6 +709,8 @@
  					}
  
@@ -1176,14 +1158,14 @@ diff -Naur cacti-0.8.7f-old/lib/html.php cacti-0.8.7f/lib/html.php
  		<tr>
  			<td width='1' valign='top'>
 -				<img src='images/arrow.gif' alt=''>&nbsp;
-+				<img src='<?php echo $config['url_path']; ?>images/arrow.gif' alt='' align='absmiddle'>&nbsp;
++				<img src='<?php echo $config['url_path']; ?>images/arrow.gif' alt='' align='middle'>&nbsp;
  			</td>
  			<td align='right'>
  				Choose an action:
-diff -Naur cacti-0.8.7f-old/lib/plugins.php cacti-0.8.7f/lib/plugins.php
---- cacti-0.8.7f-old/lib/plugins.php	1969-12-31 17:00:00.000000000 -0700
-+++ cacti-0.8.7f/lib/plugins.php	2010-05-18 11:10:26.000000000 -0500
-@@ -0,0 +1,380 @@
+diff -Naur cacti-0.8.7g-old/lib/plugins.php cacti-0.8.7g/lib/plugins.php
+--- cacti-0.8.7g-old/lib/plugins.php	1969-12-31 19:00:00.000000000 -0500
++++ cacti-0.8.7g/lib/plugins.php	2010-07-09 18:34:11.000000000 -0400
+@@ -0,0 +1,476 @@
 +<?php
 +
 +
@@ -1208,12 +1190,35 @@ diff -Naur cacti-0.8.7f-old/lib/plugins.php cacti-0.8.7f/lib/plugins.php
 + * @return mixed $data
 + */
 +function api_plugin_hook ($name) {
-+	global $config, $plugin_hooks;
++	global $config, $plugin_hooks, $plugins_system;
 +	$data = func_get_args();
 +	$ret = '';
 +	$p = array();
 +
-+	$result = db_fetch_assoc("SELECT name, file, function FROM plugin_hooks WHERE status = 1 AND hook = '$name'", false);
++	$ps_where = '';
++	if (sizeof($plugins_system)) {
++		foreach($plugins_system as $plugin) {
++			$ps_where .= (strlen($ps_where) ? "', '":"('") . $plugin;
++		}
++		$ps_where .= "')";
++	}
++
++	/* order the plugin functions by system first, then followed by order */
++	$result = db_fetch_assoc("SELECT 1 AS id, ph.name, ph.file, ph.function
++		FROM plugin_hooks AS ph
++		LEFT JOIN plugin_config AS pc
++		ON pc.directory=ph.name
++		WHERE ph.status = 1 AND hook = '$name'
++		AND ph.name IN $ps_where
++		UNION
++		SELECT pc.id, ph.name, ph.file, ph.function
++		FROM plugin_hooks AS ph
++		LEFT JOIN plugin_config AS pc
++		ON pc.directory=ph.name
++		WHERE ph.status = 1 AND hook = '$name'
++		AND ph.name NOT IN $ps_where
++		ORDER BY id ASC", true);
++
 +	if (count($result)) {
 +		foreach ($result as $hdata) {
 +			$p[] = $hdata['name'];
@@ -1241,10 +1246,33 @@ diff -Naur cacti-0.8.7f-old/lib/plugins.php cacti-0.8.7f/lib/plugins.php
 +}
 +
 +function api_plugin_hook_function ($name, $parm=NULL) {
-+	global $config, $plugin_hooks;
++	global $config, $plugin_hooks, $plugins_system;
 +	$ret = $parm;
 +	$p = array();
-+	$result = db_fetch_assoc("SELECT name, file, function FROM plugin_hooks WHERE status = 1 AND hook = '$name'", false);
++	$ps_where = '';
++
++	if (sizeof($plugins_system)) {
++		foreach($plugins_system as $plugin) {
++			$ps_where .= (strlen($ps_where) ? "', '":"('") . $plugin;
++		}
++		$ps_where .= "')";
++	}
++
++	/* order the plugin functions by system first, then followed by order */
++	$result = db_fetch_assoc("SELECT 1 AS id, ph.name, ph.file, ph.function
++		FROM plugin_hooks AS ph
++		LEFT JOIN plugin_config AS pc
++		ON pc.directory=ph.name
++		WHERE ph.status = 1 AND hook = '$name'
++		AND ph.name IN $ps_where
++		UNION
++		SELECT pc.id, ph.name, ph.file, ph.function
++		FROM plugin_hooks AS ph
++		LEFT JOIN plugin_config AS pc
++		ON pc.directory=ph.name
++		WHERE ph.status = 1 AND hook = '$name'
++		AND ph.name NOT IN $ps_where
++		ORDER BY id ASC", true);
 +
 +	if (count($result)) {
 +		foreach ($result as $hdata) {
@@ -1398,7 +1426,13 @@ diff -Naur cacti-0.8.7f-old/lib/plugins.php cacti-0.8.7f/lib/plugins.php
 +	if (function_exists($function)){
 +		$info = $function();
 +		$name = $info['longname'];
-+		$webpage = $info['homepage'];
++		if (isset($info['homepage'])) {
++			$webpage = $info['homepage'];
++		}elseif (isset($info['webpage'])) {
++			$webpage = $info['webpage'];
++		}else{
++			$webpage = "Not Stated";
++		}
 +		$author = $info['author'];
 +		$version = $info['version'];
 +	}
@@ -1461,6 +1495,50 @@ diff -Naur cacti-0.8.7f-old/lib/plugins.php cacti-0.8.7f/lib/plugins.php
 +function api_plugin_disable ($plugin) {
 +	api_plugin_disable_hooks ($plugin);
 +	db_execute("UPDATE plugin_config SET status = 4 WHERE directory = '$plugin'");
++}
++
++function api_plugin_moveup($plugin) {
++	global $plugins_system;
++
++	$sql_where = "";
++	if (sizeof($plugins_system)) {
++		foreach($plugins_system as $s) {
++			$sql_where .= (strlen($sql_where) ? " AND ":"(") . " directory!='$s'";
++		}
++
++		$sql_where .= ")";
++	}
++
++	$id = db_fetch_cell("SELECT id FROM plugin_config WHERE directory='$plugin'" . (strlen($sql_where) ? " AND " . $sql_where:""));
++	$temp_id = db_fetch_cell("SELECT MAX(id) FROM plugin_config")+1;
++	$prior_id = db_fetch_cell("SELECT MAX(id) FROM plugin_config WHERE id<$id" . (strlen($sql_where) ? " AND " . $sql_where:""));
++
++	/* update the above plugin to the prior temp id */
++	db_execute("UPDATE plugin_config SET id=$temp_id WHERE id=$prior_id");
++	db_execute("UPDATE plugin_config SET id=$prior_id WHERE id=$id");
++	db_execute("UPDATE plugin_config SET id=$id WHERE id=$temp_id");
++}
++
++function api_plugin_movedown($plugin) {
++	global $plugins_system;
++
++	$sql_where = "";
++	if (sizeof($plugins_system)) {
++		foreach($plugins_system as $s) {
++			$sql_where .= (strlen($sql_where) ? " AND ":"(") . " directory!='$s'";
++		}
++
++		$sql_where .= ")";
++	}
++
++	$id = db_fetch_cell("SELECT id FROM plugin_config WHERE directory='$plugin'" . (strlen($sql_where) ? " AND " . $sql_where:""));
++	$temp_id = db_fetch_cell("SELECT MAX(id) FROM plugin_config")+1;
++	$next_id = db_fetch_cell("SELECT MIN(id) FROM plugin_config WHERE id>$id" . (strlen($sql_where) ? " AND " . $sql_where:""));
++
++	/* update the above plugin to the prior temp id */
++	db_execute("UPDATE plugin_config SET id=$temp_id WHERE id=$next_id");
++	db_execute("UPDATE plugin_config SET id=$next_id WHERE id=$id");
++	db_execute("UPDATE plugin_config SET id=$id WHERE id=$temp_id");
 +}
 +
 +function api_plugin_register_hook ($plugin, $hook, $function, $file) {
@@ -1564,10 +1642,10 @@ diff -Naur cacti-0.8.7f-old/lib/plugins.php cacti-0.8.7f/lib/plugins.php
 +
 +
 +
-diff -Naur cacti-0.8.7f-old/lib/poller.php cacti-0.8.7f/lib/poller.php
---- cacti-0.8.7f-old/lib/poller.php	2010-05-20 14:02:08.000000000 -0500
-+++ cacti-0.8.7f/lib/poller.php	2010-05-17 06:21:16.000000000 -0500
-@@ -343,8 +343,11 @@
+diff -Naur cacti-0.8.7g-old/lib/poller.php cacti-0.8.7g/lib/poller.php
+--- cacti-0.8.7g-old/lib/poller.php	2010-07-09 18:33:46.000000000 -0400
++++ cacti-0.8.7g/lib/poller.php	2010-07-09 18:34:11.000000000 -0400
+@@ -344,8 +344,11 @@
  				}
  			}
  		}
@@ -1580,15 +1658,15 @@ diff -Naur cacti-0.8.7f-old/lib/poller.php cacti-0.8.7f/lib/poller.php
  	}
  
  	return $rrds_processed;
-diff -Naur cacti-0.8.7f-old/lib/rrd.php cacti-0.8.7f/lib/rrd.php
---- cacti-0.8.7f-old/lib/rrd.php	2010-05-20 14:02:08.000000000 -0500
-+++ cacti-0.8.7f/lib/rrd.php	2010-05-17 06:21:16.000000000 -0500
+diff -Naur cacti-0.8.7g-old/lib/rrd.php cacti-0.8.7g/lib/rrd.php
+--- cacti-0.8.7g-old/lib/rrd.php	2010-07-09 18:33:46.000000000 -0400
++++ cacti-0.8.7g/lib/rrd.php	2010-07-09 18:34:11.000000000 -0400
 @@ -419,6 +419,9 @@
  
  	$data_source_path = get_data_source_path($local_data_id, true);
  
 +	/* update the rrdfile if performing a fetch */
-+	api_plugin_hook_function('rrdtool_function_fetch_cache_check', $local_graph_id);
++	api_plugin_hook_function('rrdtool_function_fetch_cache_check', $local_data_id);
 +
  	/* build and run the rrdtool fetch command with all of our data */
  	$cmd_line = "fetch $data_source_path AVERAGE -s $start_time -e $end_time";
@@ -1617,7 +1695,7 @@ diff -Naur cacti-0.8.7f-old/lib/rrd.php cacti-0.8.7f/lib/rrd.php
 +
  	/* either print out the source or pass the source onto rrdtool to get us a nice PNG */
  	if (isset($graph_data_array["print_source"])) {
- 		print "<PRE>" . read_config_option("path_rrdtool") . " graph $graph_opts$graph_defs$txt_graph_items</PRE>";
+ 		print "<PRE>" . htmlspecialchars(read_config_option("path_rrdtool") . " graph " . $graph_opts . $graph_defs . $txt_graph_items) . "</PRE>";
 @@ -1384,13 +1398,19 @@
  			@rrdtool_execute("graph $graph_opts$graph_defs$txt_graph_items", false, RRDTOOL_OUTPUT_NULL, $rrdtool_pipe);
  			return 0;
@@ -1639,9 +1717,9 @@ diff -Naur cacti-0.8.7f-old/lib/rrd.php cacti-0.8.7f/lib/rrd.php
  		}
  	}
  }
-diff -Naur cacti-0.8.7f-old/lib/variables.php cacti-0.8.7f/lib/variables.php
---- cacti-0.8.7f-old/lib/variables.php	2010-05-20 14:02:08.000000000 -0500
-+++ cacti-0.8.7f/lib/variables.php	2010-05-17 06:21:16.000000000 -0500
+diff -Naur cacti-0.8.7g-old/lib/variables.php cacti-0.8.7g/lib/variables.php
+--- cacti-0.8.7g-old/lib/variables.php	2010-07-09 18:33:46.000000000 -0400
++++ cacti-0.8.7g/lib/variables.php	2010-07-09 18:34:11.000000000 -0400
 @@ -183,6 +183,9 @@
  	$string = str_replace($l_escape_string . "host_max_oids" . $r_escape_string, $_SESSION["sess_host_cache_array"][$host_id]["max_oids"], $string);
  	$string = str_replace($l_escape_string . "host_id" . $r_escape_string, $_SESSION["sess_host_cache_array"][$host_id]["id"], $string);
@@ -1652,19 +1730,19 @@ diff -Naur cacti-0.8.7f-old/lib/variables.php cacti-0.8.7f/lib/variables.php
  	return $string;
  }
  
-diff -Naur cacti-0.8.7f-old/plugins/index.php cacti-0.8.7f/plugins/index.php
---- cacti-0.8.7f-old/plugins/index.php	1969-12-31 17:00:00.000000000 -0700
-+++ cacti-0.8.7f/plugins/index.php	2010-05-18 06:21:12.000000000 -0500
+diff -Naur cacti-0.8.7g-old/plugins/index.php cacti-0.8.7g/plugins/index.php
+--- cacti-0.8.7g-old/plugins/index.php	1969-12-31 19:00:00.000000000 -0500
++++ cacti-0.8.7g/plugins/index.php	2010-07-09 18:34:11.000000000 -0400
 @@ -0,0 +1,5 @@
 +<?php
 +
 +header("Location:../index.php");
 +
 +?>
-diff -Naur cacti-0.8.7f-old/plugins.php cacti-0.8.7f/plugins.php
---- cacti-0.8.7f-old/plugins.php	1969-12-31 17:00:00.000000000 -0700
-+++ cacti-0.8.7f/plugins.php	2010-05-17 06:21:16.000000000 -0500
-@@ -0,0 +1,454 @@
+diff -Naur cacti-0.8.7g-old/plugins.php cacti-0.8.7g/plugins.php
+--- cacti-0.8.7g-old/plugins.php	1969-12-31 19:00:00.000000000 -0500
++++ cacti-0.8.7g/plugins.php	2010-07-09 18:34:11.000000000 -0400
+@@ -0,0 +1,647 @@
 +<?php
 +/*
 + +-------------------------------------------------------------------------+
@@ -1691,62 +1769,87 @@ diff -Naur cacti-0.8.7f-old/plugins.php cacti-0.8.7f/plugins.php
 +
 +include("./include/auth.php");
 +
++define("MAX_DISPLAY_PAGES", 21);
 +
-+$pluginslist = retrieve_plugin_list ();
-+
-+/* tab information */
-+$ptabs = array(
-+	"current" => "Installed"
++$actions = array("install" => "Install",
++	"enable" => "Enable",
++	"disable" => "Disable",
++	"uninstall" => "Uninstall",
++//	"check" => "Check"
 +);
 +
++$status_names = array(
++	-2 => 'Disabled',
++	-1 => 'Active',
++	0 => 'Not Installed',
++	1 => 'Active',
++	2 => 'Awaiting Configuration',
++	3 => 'Awaiting Upgrade',
++	4 => 'Installed'
++);
 +
-+$status_names = array(-2 => 'Old Plugin Architecture', -1 => 'Old Plugin Architecture - Running', 0 => 'Not Installed', 1 => 'Active', 2 => 'Awaiting Configuration', 3 => 'Awaiting Upgrade', 4 => 'Installed');
++/* get the comprehensive list of plugins */
++$pluginslist = retrieve_plugin_list();
 +
-+
-+/* set the default settings category */
-+if (!isset($_GET["tab"])) {
-+	/* there is no selected tab; select the first one */
-+	$current_tab = array_keys($ptabs);
-+	$current_tab = $current_tab[0];
-+}else{
-+	$current_tab = $_GET["tab"];
-+}
-+
-+
-+// Check to see if we are installing, etc...
-+$modes = array('install', 'uninstall', 'disable', 'enable', 'check');
++/* Check to see if we are installing, etc... */
++$modes = array('installold', 'uninstallold', 'install', 'uninstall', 'disable', 'enable', 'check', 'moveup', 'movedown');
 +
 +if (isset($_GET['mode']) && in_array($_GET['mode'], $modes)  && isset($_GET['id'])) {
-+
 +	input_validate_input_regex(get_request_var("id"), "^([a-zA-Z0-9]+)$");
 +
 +	$mode = $_GET['mode'];
-+	$id = sanitize_search_string($_GET['id']);
++	$id   = sanitize_search_string($_GET['id']);
 +
 +	switch ($mode) {
++		case 'installold':
++			api_plugin_install_old($id);
++			header("Location: plugins.php");
++			exit;
++			break;
++		case 'uninstallold':
++			api_plugin_uninstall_old($id);
++			header("Location: plugins.php");
++			exit;
++			break;
 +		case 'install':
 +			api_plugin_install($id);
-+			$pluginslist = retrieve_plugin_list ();
++			header("Location: plugins.php");
++			exit;
 +			break;
 +		case 'uninstall':
-+			if (!in_array($id, $pluginslist))
-+				break;
++			if (!in_array($id, $pluginslist)) break;
 +			api_plugin_uninstall($id);
-+			$pluginslist = retrieve_plugin_list ();
++			header("Location: plugins.php");
++			exit;
 +			break;
 +		case 'disable':
-+			if (!in_array($id, $pluginslist))
-+				break;
-+			api_plugin_disable ($id);
++			if (!in_array($id, $pluginslist)) break;
++			api_plugin_disable($id);
++			header("Location: plugins.php");
++			exit;
 +			break;
 +		case 'enable':
-+			if (!in_array($id, $pluginslist))
-+				break;
-+			api_plugin_enable ($id);
++			if (!in_array($id, $pluginslist)) break;
++			api_plugin_enable($id);
++			header("Location: plugins.php");
++			exit;
 +			break;
 +		case 'check':
-+			if (!in_array($id, $pluginslist))
-+				break;
++			if (!in_array($id, $pluginslist)) break;
++			break;
++		case 'moveup':
++			if (!in_array($id, $pluginslist)) break;
++			if (is_system_plugin($id)) break;
++			api_plugin_moveup($id);
++			header("Location: plugins.php");
++			exit;
++			break;
++		case 'movedown':
++			if (!in_array($id, $pluginslist)) break;
++			if (is_system_plugin($id)) break;
++			api_plugin_movedown($id);
++			header("Location: plugins.php");
++			exit;
 +			break;
 +	}
 +}
@@ -1760,53 +1863,56 @@ diff -Naur cacti-0.8.7f-old/plugins.php cacti-0.8.7f/plugins.php
 +	return $pluginslist;
 +}
 +
++include("./include/top_header.php");
 +
-+	include("./include/top_header.php");
++update_show_current();
 +
-+	/* draw the categories tabs on the top of the page */
-+/*
-+	print "<table class='tabs' width='98%' cellspacing='0' cellpadding='3' align='center'><tr>\n";
++include("./include/bottom_footer.php");
 +
-+	if (sizeof($ptabs) > 0) {
-+		foreach (array_keys($ptabs) as $tab_short_name) {
-+			print "<td " . (($tab_short_name == $current_tab) ? "bgcolor='silver'" : "bgcolor='#DFDFDF'") . " nowrap='nowrap' width='" . (strlen($ptabs[$tab_short_name]) * 9) . "' align='center' class='tab'>
-+				<span class='textHeader'><a href='plugins.php?tab=$tab_short_name'>$ptabs[$tab_short_name]</a></span>
-+				</td>\n
-+				<td width='1'></td>\n";
++
++function api_plugin_install_old ($plugin) {
++	global $config;
++	if (!file_exists($config['base_path'] . "/plugins/$plugin/setup.php")) {
++		return false;
++	}
++	$oldplugins = read_config_option('oldplugins');
++	$oldplugins = explode(',', $oldplugins);
++	if (!in_array($plugin, $oldplugins)) {
++		include_once($config['base_path'] . "/plugins/$plugin/setup.php");
++		$function = 'plugin_init_' . $plugin;
++		if (function_exists($function)){
++			$oldplugins[] = $plugin;
++			$oldplugins = implode(',', $oldplugins);
++			set_config_option('oldplugins', $oldplugins);
++			unset($_SESSION['sess_config_array']['oldplugins']);
++			return true;
++		} else {
++			return false;
 +		}
 +	}
++	return false;
++}
 +
-+	print "<td></td>\n</tr></table>\n";
-+*/
-+	html_start_box("<strong> Plugin Management</strong>", "98%", $colors["header"], "3", "center", "");
-+
-+	print "<tr><td><table width='100%'>";
-+
-+	//update_info_table();
-+
-+	switch ($current_tab) {
-+		case 'current':
-+			update_show_current();
-+			break;
-+		case 'uninstalled':
-+			update_show_uninstalled ();
-+			break;
-+		default:
-+			print '<br><br><br>';
++function api_plugin_uninstall_old ($plugin) {
++	global $config;
++	$oldplugins = read_config_option('oldplugins');
++	$oldplugins = explode(',', $oldplugins);
++	if (!empty($oldplugins)) {
++		if (in_array($plugin, $oldplugins)) {
++			for ($a = 0; $a < count($oldplugins); $a++) {
++				if ($oldplugins[$a] == $plugin) {
++					unset($oldplugins[$a]);
++					break;
++				}
++			}
++			$oldplugins = implode(',', $oldplugins);
++			set_config_option('oldplugins', $oldplugins);
++			unset($_SESSION['sess_config_array']['oldplugins']);
++			return true;
++		}
 +	}
-+
-+/*
-+	$last_check = read_config_option("plugin_update_last_check");
-+	if ($last_check < 1)
-+		$last_check = 0;
-+
-+	print "<center>Last Scanned : " . ($last_check > 0 ? date("F j, Y g:i:s a", $last_check) : "Never") . "</center>";
-+*/
-+	print "</table></td></tr>";
-+
-+	html_end_box();
-+
-+	include("./include/bottom_footer.php");
++	return false;
++}
 +
 +function update_show_updates () {
 +	global $pluginslist, $colors, $config, $plugin_architecture;
@@ -1821,10 +1927,11 @@ diff -Naur cacti-0.8.7f-old/plugins.php cacti-0.8.7f/plugins.php
 +	$info = update_get_cached_plugin_info();
 +
 +	$cactinew = update_check_if_newer($cinfo['cacti']['version'], $info['cacti']['version']) ;
-+	if (isset($cinfo['cacti_plugin_arch']['version']))
++	if (isset($cinfo['cacti_plugin_arch']['version'])) {
 +		$archnew =  update_check_if_newer($cinfo['cacti_plugin_arch']['version'], $info['cacti_plugin_arch']['version']);
-+	else
++	} else {
 +		$archnew = 0;
++	}
 +
 +	if ($cactinew) {
 +		$x++;
@@ -1875,253 +1982,417 @@ diff -Naur cacti-0.8.7f-old/plugins.php cacti-0.8.7f/plugins.php
 +	return false;
 +}
 +
-+function update_show_current () {
-+	global $plugins, $pluginslist, $colors, $plugin_architecture, $config, $status_names;
++function plugins_temp_table_exists($table) {
++	return sizeof(db_fetch_row("SHOW TABLES LIKE '$table'"));
++}
 +
++function plugins_load_temp_table() {
++	global $config, $plugins;
 +
++	$pluginslist = retrieve_plugin_list();
 +
-+	$cinfo = array();
-+	$cinfo = update_get_plugin_info ();
++	if (isset($_SESSION["plugin_temp_table"])) {
++		$table = $_SESSION["plugin_temp_table"];
++	}else{
++		$table = "plugin_temp_table_" . rand();
++	}
 +
-+	sort($pluginslist);
++	while (true) {
++		if (!plugins_temp_table_exists($table)) {
++			$_SESSION["plugin_temp_table"] = $table;
++			db_execute("CREATE TEMPORARY TABLE $table LIKE plugin_config");
++			db_execute("INSERT INTO $table SELECT * FROM plugin_config");
++			break;
++		}else{
++			$table = "plugin_temp_table_" . rand();
++		}
++	}
 +
 +	$path = $config['base_path'] . '/plugins/';
 +	$dh = opendir($path);
 +	while (($file = readdir($dh)) !== false) {
-+		if (is_dir("$path/$file")) {
-+			if (file_exists("$path/$file/setup.php") && !in_array($file, $pluginslist)) {
++		if ((is_dir("$path/$file")) && (file_exists("$path/$file/setup.php")) && (!in_array($file, $pluginslist))) {
++			if (!function_exists('plugin_' . $file . '_install')) {
 +				include_once("$path/$file/setup.php");
 +				if (!function_exists('plugin_' . $file . '_install') && function_exists($file . '_version')) {
 +					$function = $file . '_version';
 +					$cinfo[$file] = $function();
++					if (!isset($cinfo[$file]['author'])) $cinfo[$file]['author'] = 'Unknown';
++					if (!isset($cinfo[$file]['homepage'])) $cinfo[$file]['homepage'] = 'Not Stated';
++					if (isset($cinfo[$file]['webpage'])) $cinfo[$file]['homepage'] = $cinfo[$file]['webpage'];
++					if (!isset($cinfo[$file]['longname'])) $cinfo[$file]['longname'] = ucfirst($file);
 +					$cinfo[$file]['status'] = -2;
 +					if (in_array($file, $plugins)) {
 +						$cinfo[$file]['status'] = -1;
 +					}
++					db_execute("REPLACE INTO $table (directory, name, status, author, webpage, version)
++						VALUES ('" .
++							$file . "', '" .
++							$cinfo[$file]['longname'] . "', '" .
++							$cinfo[$file]['status'] . "', '" .
++							$cinfo[$file]['author'] . "', '" .
++							$cinfo[$file]['homepage'] . "', '" .
++							$cinfo[$file]['version'] . "')");
 +					$pluginslist[] = $file;
 +				} else if (function_exists('plugin_' . $file . '_install') && function_exists('plugin_' . $file . '_version')) {
 +					$function = $file . '_version';
 +					$cinfo[$file] = $function();
 +					$cinfo[$file]['status'] = 0;
++					if (!isset($cinfo[$file]['author'])) $cinfo[$file]['author'] = 'Unknown';
++					if (!isset($cinfo[$file]['homepage'])) $cinfo[$file]['homepage'] = 'Not Stated';
++					if (isset($cinfo[$file]['webpage'])) $cinfo[$file]['homepage'] = $cinfo[$file]['webpage'];
++					if (!isset($cinfo[$file]['longname'])) $cinfo[$file]['homepage'] = ucfirst($file);
++					db_execute("REPLACE INTO $table (directory, name, status, author, webpage, version)
++						VALUES ('" .
++							$file . "', '" .
++							$cinfo[$file]['longname'] . "', '" .
++							$cinfo[$file]['status'] . "', '" .
++							$cinfo[$file]['author'] . "', '" .
++							$cinfo[$file]['homepage'] . "', '" .
++							$cinfo[$file]['version'] . "')");
 +					$pluginslist[] = $file;
 +				}
++			}else{
++				cacti_log("WARNING: Install function already exists for plugin directory '$file'", false);
 +			}
 +		}
 +	}
 +	closedir($dh);
 +
-+	print "<table width='100%' cellspacing=0 cellpadding=3>";
-+	print "<tr><td width='50%'><table width='100%'>";
-+	html_header(array("Cacti"), 2);
-+	form_alternate_row_color($colors["alternate"],$colors["light"], 0);
-+	print "<td width='50%'><strong>Version:</strong></td><td>" . $config["cacti_version"] . "</td></tr></table>";
-+	print "</td><td>";
-+	if (isset($plugin_architecture['version'])) {
-+		print "<table width='100%'>";
-+		html_header(array("Plugin Architecture"), 2);
-+		form_alternate_row_color($colors["alternate"],$colors["light"], 0);
-+		print "<td width='50%'><strong>Version:</strong></td><td>" . $plugin_architecture['version'] .  "</td></tr></table>";
++	return $table;
++}
++
++function update_show_current () {
++	global $plugins, $pluginslist, $colors, $plugin_architecture, $config, $status_names, $actions;
++
++	/* ================= input validation ================= */
++	input_validate_input_number(get_request_var_request("page"));
++	/* ==================================================== */
++
++	/* clean up search string */
++	if (isset($_REQUEST["filter"])) {
++		$_REQUEST["filter"] = sanitize_search_string(get_request_var("filter"));
 +	}
-+	print "</td></tr></table>";
 +
-+	print "<table width='100%' cellspacing=0 cellpadding=3>";
-+	$x = 0;
++	/* clean up sort_column */
++	if (isset($_REQUEST["sort_column"])) {
++		$_REQUEST["sort_column"] = sanitize_search_string(get_request_var("sort_column"));
++	}
 +
-+	sort($pluginslist);
-+	foreach ($pluginslist as $plugin) {
-+		if (isset($cinfo[$plugin])) {
++	/* clean up search string */
++	if (isset($_REQUEST["sort_direction"])) {
++		$_REQUEST["sort_direction"] = sanitize_search_string(get_request_var("sort_direction"));
++	}
 +
-+			if ($x == 0) {
-+				print "<tr><td width='50%' valign=top>";
++	/* if the user pushed the 'clear' button */
++	if (isset($_REQUEST["clear_x"])) {
++		kill_session_var("sess_plugins_filter");
++		kill_session_var("sess_plugins_sort_column");
++		kill_session_var("sess_plugins_sort_direction");
++
++		unset($_REQUEST["page"]);
++		unset($_REQUEST["filter"]);
++		unset($_REQUEST["sort_column"]);
++		unset($_REQUEST["sort_direction"]);
++		$_REQUEST["page"] = 1;
++	}
++
++	/* remember these search fields in session vars so we don't have to keep passing them around */
++	load_current_session_value("filter", "sess_plugins_filter", "");
++	load_current_session_value("sort_column", "sess_plugins_sort_column", "name");
++	load_current_session_value("sort_direction", "sess_plugins_sort_direction", "ASC");
++	load_current_session_value("page", "sess_plugins_current_page", "1");
++
++	$table = plugins_load_temp_table();
++
++	html_start_box("<strong>Plugin Management</strong> (Cacti Version: " . $config["cacti_version"] .
++		(isset($plugin_architecture['version']) ? ", Plugin Architecture Version: " . $plugin_architecture['version']:"") .
++		")", "100%", $colors["header"], "3", "center", "");
++
++	?>
++	<tr bgcolor="#<?php print $colors['panel'];?>">
++		<td class="noprint">
++		<form name="form_plugins" method="get" action="plugins.php">
++			<table width="100%" cellpadding="0" cellspacing="0">
++				<tr class="noprint">
++					<td nowrap style='white-space: nowrap;' width="50">
++						Search:&nbsp;
++					</td>
++					<td width="1">
++						<input type="text" name="filter" size="40" value="<?php print get_request_var_request("filter");?>">
++					</td>
++					<td nowrap style='white-space: nowrap;'>
++						&nbsp;<input type="submit" value="Go" title="Set/Refresh Filters">
++						<input type="submit" name="clear_x" value="Clear" title="Clear Filters">
++					</td>
++				</tr>
++			</table>
++			<input type='hidden' name='page' value='1'>
++		</form>
++		</td>
++	</tr>
++	<?php
++
++	html_end_box();
++
++	/* print checkbox form for validation */
++	print "<form name='chk' method='post' action='plugins.php'>\n";
++
++	html_start_box("", "100%", $colors["header"], "3", "center", "");
++
++	/* form the 'where' clause for our main sql query */
++	$sql_where = "WHERE ($table.name LIKE '%%" . get_request_var_request("filter") . "%%')";
++
++	if (get_request_var_request("sort_column") == "version") {
++		$sortc = "version+0";
++	}else{
++		$sortc = get_request_var_request("sort_column");
++	}
++
++	if (get_request_var_request("sort_column") == "id") {
++		$sortd = "ASC";
++	}else{
++		$sortd = get_request_var_request("sort_direction");
++	}
++
++	$total_rows = db_fetch_cell("SELECT
++		count(*)
++		FROM $table
++		$sql_where");
++
++	$plugins = db_fetch_assoc("SELECT *
++		FROM $table
++		$sql_where
++		ORDER BY " . $sortc . " " . $sortd . "
++		LIMIT " . (read_config_option("num_rows_device")*(get_request_var_request("page")-1)) . "," . read_config_option("num_rows_device"));
++
++	db_execute("DROP TABLE $table");
++
++	/* generate page list */
++	$url_page_select = get_page_list(get_request_var_request("page"), MAX_DISPLAY_PAGES, read_config_option("num_rows_device"), $total_rows, "plugins.php?filter=" . get_request_var_request("filter"));
++
++	if ($total_rows == 0) {
++		$nav = "<tr bgcolor='#" . $colors["header"] . "'>
++				<td colspan='9'>
++					<table width='100%' cellspacing='0' cellpadding='0' border='0'>
++						<tr>
++							<td align='center' class='textHeaderDark'>
++								No Plugins Found
++							</td>\n
++						</tr>
++					</table>
++				</td>
++			</tr>\n";
++	}elseif ($total_rows < read_config_option("num_rows_device")) {
++		$nav = "<tr bgcolor='#" . $colors["header"] . "'>
++				<td colspan='9'>
++					<table width='100%' cellspacing='0' cellpadding='0' border='0'>
++						<tr>
++							<td align='center' class='textHeaderDark'>
++								Showing All $total_rows Rows
++							</td>\n
++						</tr>
++					</table>
++				</td>
++			</tr>\n";
++	}else{
++		$nav = "<tr bgcolor='#" . $colors["header"] . "'>
++				<td colspan='9'>
++					<table width='100%' cellspacing='0' cellpadding='0' border='0'>
++						<tr>
++							<td align='left' class='textHeaderDark'>
++								<strong>&lt;&lt; "; if (get_request_var_request("page") > 1) { $nav .= "<a class='linkOverDark' href='" . htmlspecialchars("plugins.php?filter=" . get_request_var_request("filter") . "&page=" . (get_request_var_request("page")-1)) . "'>"; } $nav .= "Previous"; if (get_request_var_request("page") > 1) { $nav .= "</a>"; } $nav .= "</strong>
++							</td>\n
++							<td align='center' class='textHeaderDark'>
++								Showing Rows " . ((read_config_option("num_rows_device")*(get_request_var_request("page")-1))+1) . " to " . ((($total_rows < read_config_option("num_rows_device")) || ($total_rows < (read_config_option("num_rows_device")*get_request_var_request("page")))) ? $total_rows : (read_config_option("num_rows_device")*get_request_var_request("page"))) . " of $total_rows [$url_page_select]
++							</td>\n
++							<td align='right' class='textHeaderDark'>
++								<strong>"; if ((get_request_var_request("page") * read_config_option("num_rows_device")) < $total_rows) { $nav .= "<a class='linkOverDark' href='" . htmlspecialchars("plugins.php?filter=" . get_request_var_request("filter") . "&page=" . (get_request_var_request("page")+1)) . "'>"; } $nav .= "Next"; if ((get_request_var_request("page") * read_config_option("num_rows_device")) < $total_rows) { $nav .= "</a>"; } $nav .= " &gt;&gt;</strong>
++							</td>\n
++						</tr>
++					</table>
++				</td>
++			</tr>\n";
++	}
++
++	print $nav;
++
++	$display_text = array(
++		"nosort" => array("Actions", ""),
++		"directory" => array("Name", "ASC"),
++		"id" => array("Load Order", "ASC"),
++		"name" => array("Description", "ASC"),
++		"nosort1" => array("Type", "ASC"),
++		"status" => array("Status", "ASC"),
++		"author" => array("Author", "ASC"),
++		"webpage" => array("Web Page", "ASC"),
++		"version" => array("Version", "ASC"));
++
++	html_header_sort($display_text, get_request_var_request("sort_column"), get_request_var_request("sort_direction"), 1);
++
++	$i = 0;
++	if (sizeof($plugins)) {
++		if (get_request_var_request("sort_column") == "id") {
++			$inst_system_plugins = get_system_plugins($plugins);
++			if (sizeof($inst_system_plugins)) {
++				foreach($inst_system_plugins as $plugin) {
++					form_alternate_row_color($colors["alternate"], $colors["light"], $i); $i++;
++					print format_plugin_row($plugin, false, false, true);
++				}
++			}
++		}
++
++		$j = 0;
++		foreach ($plugins as $plugin) {
++			if ((isset($plugins[$j+1]) && $plugins[$j+1]['status'] < 0) || (!isset($plugins[$j+1]))) {
++				$last_plugin = true;
++			}else{
++				$last_plugin = false;
++			}
++			if ($plugin['status'] <= 0 || is_system_plugin($plugin) || (get_request_var_request('sort_column') != 'id')) {
++				$load_ordering = false;
++			}else{
++				$load_ordering = true;
++			}
++
++			if (get_request_var_request("sort_column") == "id") {
++				if (!is_system_plugin($plugin)) {
++					form_alternate_row_color($colors["alternate"], $colors["light"], $i);
++					print format_plugin_row($plugin, $last_plugin, $load_ordering, false);
++					$i++;
++				}
++			}else{
++				form_alternate_row_color($colors["alternate"], $colors["light"], $i);
++				print format_plugin_row($plugin, $last_plugin, $load_ordering, is_system_plugin($plugin));
++				$i++;
++			}
++
++			$j++;
++		}
++
++		print $nav;
++	}else{
++		print "<tr><td><em>No Plugins Found</em></td></tr>";
++	}
++
++	html_end_box(false);
++
++	html_start_box("", "100%", $colors["header"], "3", "center", "");
++	echo "<tr><td colspan=10><strong>NOTE:</strong> Please sort by 'Load Order' to change plugin load ordering.<br><strong>NOTE:</strong> SYSTEM plugins can not be ordered.</td></tr>";
++	html_end_box();
++
++	print "</form>\n";
++}
++
++function format_plugin_row($plugin, $last_plugin, $include_ordering, $system_plugin) {
++	global $status_names;
++	static $first_plugin = true;
++
++	$row = plugin_actions($plugin);
++	$row .= "<td><strong>" . (strlen(get_request_var_request("filter")) ? eregi_replace("(" . preg_quote(get_request_var_request("filter")) . ")", "<span style='background-color: #F8D93D;'>\\1</span>", ucfirst($plugin["directory"])) : ucfirst($plugin["directory"])) . "</strong></td>";
++	if ($include_ordering) {
++		$row .= "<td style='white-space:nowrap;'>";
++		if (!$first_plugin) {
++			$row .= "<a href='" . htmlspecialchars("plugins.php?mode=moveup&id=" . $plugin['directory']) . "' title='Order Before Prevous Plugin' class='linkEditMain'><img style='padding:1px;' border='0' align='absmiddle' src='images/move_up.gif'></a>";
++		}else{
++			$row .= "<a href='#' title='Can NOT Reduce Load Order' class='linkEditMain'><img style='padding:1px;' border='0' align='absmiddle' src='images/view_none.gif'></a>";
++		}
++		if (!$last_plugin) {
++			$row .= "<a href='" . htmlspecialchars("plugins.php?mode=movedown&id=" . $plugin['directory']) . "' title='Order After Next Plugin' class='linkEditMain'><img style='padding:1px;' border='0' align='absmiddle' src='images/move_down.gif'></a>";
++		}else{
++			$row .= "<a href='#' title='Can Increase Load Order' class='linkEditMain'><img style='padding:1px;' border='0' align='absmiddle' src='images/view_none.gif'></a>";
++		}
++		$row .= "</td>\n";
++	}else{
++		$row .= "<td></td>\n";
++	}
++
++	$row .= "<td style='white-space:nowrap;'>" . (strlen(get_request_var_request("filter")) ? eregi_replace("(" . preg_quote(get_request_var_request("filter")) . ")", "<span style='background-color: #F8D93D;'>\\1</span>", $plugin["name"]) : $plugin["name"]) . "</td>\n";
++	$row .= "<td style='white-space:nowrap;'>" . ($system_plugin ? "System": ($plugin['status'] < 0 ? "Old PIA":"General")) . "</td>\n";
++	$row .= "<td style='white-space:nowrap;'>" . $status_names[$plugin["status"]] . "</td>\n";
++	$row .= "<td style='white-space:nowrap;'>" . $plugin["author"] . "</td>\n";
++	$row .= "<td><a href='" . htmlspecialchars($plugin["webpage"]) . "'>" . htmlspecialchars($plugin["webpage"]) . "</a></td>\n";
++	$row .= "<td>" . $plugin["version"] . "</td>\n";
++	$row .= "</tr>\n";
++
++	if ($include_ordering) {
++		$first_plugin = false;
++	}
++
++	return $row;
++}
++
++function plugin_actions($plugin) {
++	$link = "<td>";
++	switch ($plugin['status']) {
++		case "-2": // Old PA Not Installed
++			$link .= "<a href='" . htmlspecialchars("plugins.php?mode=installold&id=" . $plugin['directory']) . "' title='Install Old Plugin' class='linkEditMain'><img style='padding:1px;' border='0' align='absmiddle' src='images/install_icon.png'></a>";
++			$link .= "<img style='padding:1px;' border='0' align='absmiddle' src='images/view_none.gif'>";
++			break;
++		case "-1":	// Old PA Currently Active
++			$oldplugins = read_config_option('oldplugins');
++			$oldplugins = explode(',', $oldplugins);
++			if (in_array($plugin['directory'], $oldplugins)) {
++				$link .= "<a href='" . htmlspecialchars("plugins.php?mode=uninstallold&id=" . $plugin['directory']) . "' title='Uninstall Old Plugin' class='linkEditMain'><img style='padding:1px;' border='0' align='absmiddle' src='images/uninstall_icon.gif'></a>";
 +			} else {
-+				print "</td><td valign=top>";
++				$link .= "<a href='#' title='Please Uninstall from config.php' class='linkEditMain'><img style='padding:1px;' align='absmiddle' border='0' src='images/install_icon_disabled.png'></a>";
 +			}
-+			if (!isset($info[$plugin]['version']))
-+				$info[$plugin]['version'] = '';
++			$link .= "<img style='padding:1px;' border='0' align='absmiddle' src='images/view_none.gif'>";
++			break;
++		case "0": // Not Installed
++			$link .= "<a href='" . htmlspecialchars("plugins.php?mode=install&id=" . $plugin['directory']) . "' title='Install Plugin' class='linkEditMain'><img style='padding:1px;' border='0' align='absmiddle' src='images/install_icon.png'></a>";
++			$link .= "<img style='padding:1px;' border='0' align='absmiddle' src='images/view_none.gif'>";
++			break;
++		case "1":	// Currently Active
++			$link .= "<a href='" . htmlspecialchars("plugins.php?mode=uninstall&id=" . $plugin['directory']) . "' title='Uninstall Plugin' class='linkEditMain'><img style='padding:1px;' border='0' align='absmiddle' src='images/uninstall_icon.gif'></a>";
++			$link .= "<a href='" . htmlspecialchars("plugins.php?mode=disable&id=" . $plugin['directory']) . "' title='Disable Plugin' class='linkEditMain'><img style='padding:1px;' border='0' align='absmiddle' src='images/disable_icon.png'></a>";
++			break;
++		case "4":	// Installed but not active
++			$link .= "<a href='" . htmlspecialchars("plugins.php?mode=uninstall&id=" . $plugin['directory']) . "' title='Uninstall Plugin' class='linkEditMain'><img style='padding:1px;' border='0' align='absmiddle' src='images/uninstall_icon.gif'></a>";
++			$link .= "<a href='" . htmlspecialchars("plugins.php?mode=enable&id=" . $plugin['directory']) . "' title='Enable Plugin' class='linkEditMain'><img style='padding:1px;' border='0' align='absmiddle' src='images/enable_icon.png'></a>";
++			break;
++		default: // Old PIA
++			$link .= "<a href='#' title='Please Install/Uninstall from config.php' class='linkEditMain'><img style='padding:1px;' align='absmiddle' border='0' src='images/install_icon_disabled.png'></a>";
++			$link .= "<a href='#' title='Enabling from the UI is not supported' class='linkEditMain'><img style='padding:1px;' align='absmiddle' border='0' src='images/enable_icon_disabled.png'></a>";
++			break;
++	}
++	$link .= "</td>";
 +
-+			print "<table width='100%'>";
-+			html_header(array((isset($cinfo[$plugin]['name']) ? $cinfo[$plugin]['name'] : $plugin)), 2);
-+			form_alternate_row_color($colors["alternate"],$colors["light"], 0);
-+			print "<td width='50%'><strong>Directory:</strong></td><td>$plugin</td>";
-+			form_alternate_row_color($colors["alternate"],$colors["light"], 0);
-+			print "<td><strong>Version:</strong></td><td>" . (isset($cinfo[$plugin]['version']) ? $cinfo[$plugin]['version'] : "") . (update_check_if_newer($cinfo[$plugin]['version'], $info[$plugin]['version']) ?  ' - <font color=red><b>(Update Available!)</strong></font>' : '') . "</td>";
-+			form_alternate_row_color($colors["alternate"],$colors["light"], 0);
-+			print "<td><strong>Author:</strong></td><td>" . (isset($cinfo[$plugin]['author']) && $cinfo[$plugin]['author'] != '' ? (isset($cinfo[$plugin]['email']) && $cinfo[$plugin]['email'] != '' ? "<a href='mailto:" . $cinfo[$plugin]['email'] . "'>" . $cinfo[$plugin]['author'] . "</a>"  : $cinfo[$plugin]['author']) : "") . "</td>";
-+			form_alternate_row_color($colors["alternate"],$colors["light"], 0);
-+			print "<td><strong>Home Page:</strong></td><td>" . (isset($cinfo[$plugin]['webpage']) && $cinfo[$plugin]['webpage'] != '' ? "<a href='" . $cinfo[$plugin]['webpage'] . "'>" . $cinfo[$plugin]['webpage'] . "</a>" : "") . "</td>";
-+			form_alternate_row_color($colors["alternate"],$colors["light"], 0);
-+			print "<td><strong>Status:</strong></td><td>" . $status_names[$cinfo[$plugin]['status']] . "</td>";
++	return $link;
++}
 +
-+			if ($cinfo[$plugin]['status'] > -1) {
-+				form_alternate_row_color($colors["alternate"],$colors["light"], 0);
++function is_system_plugin($plugin) {
++	global $plugins_system;
 +
-+				$links = array('install' => 'Install', 'uninstall' => 'Uninstall', 'enable' => 'Enable', 'disable' => 'Disable', 'check' => 'Check');
++	if (is_array($plugin)) {
++		$plugin = $plugin["directory"];
++	}
 +
-+				switch ($cinfo[$plugin]['status']) {
-+					case 0:	//Not Installed
-+						$links['install'] = "<a href='plugins.php?mode=install&id=$plugin'><b>Install</b></a>";
-+						break;
-+					case 1:	// Currently Active
-+						$links['uninstall'] = "<a href='plugins.php?mode=uninstall&id=$plugin'><b>Uninstall</b></a>";
-+						$links['disable'] = "<a href='plugins.php?mode=disable&id=$plugin'><b>Disable</b></a>";
-+						break;
-+					case 2:	// Needs Configuring
-+						$links['check'] = "<a href='plugins.php?mode=check&id=$plugin'><b>Check</b></a>";
-+						break;
-+					case 3:	// Needs Upgrade
-+						$links['check'] = "<a href='plugins.php?mode=check&id=$plugin'><b>Check</b></a>";
-+						break;
-+					case 4:	// Installed but not active
-+						$links['uninstall'] = "<a href='plugins.php?mode=uninstall&id=$plugin'><b>Uninstall</b></a>";
-+						$links['enable'] = "<a href='plugins.php?mode=enable&id=$plugin'><b>Enable</b></a>";
-+						break;
-+				}
++	if (!in_array($plugin, $plugins_system)) {
++		return false;
++	}else{
++		return true;
++	}
++}
 +
-+				print "<td></td><td>";
-+				$c = 1;
-+				foreach ($links as $temp => $link) {
-+					print $link;
-+					if ($c < count($links))
-+						print ' | ';
-+					$c++;
-+				}
-+				print "</td>";
-+				print "</tr>";
++function get_system_plugins($plugins) {
++	$inst_system_plugins = array();
++
++	if (sizeof($plugins)) {
++		foreach($plugins as $plugin) {
++			if (is_system_plugin($plugin)) {
++				$inst_system_plugins[] = $plugin;
 +			}
-+
-+			print "</table>";
-+			if ($x == 1) {
-+				print "</td></tr>";
-+			}
-+			$x++;
-+			if ($x > 1) $x = 0;
 +		}
 +	}
-+	if ($x == 1)
-+		print "</td><td></td></tr>";
-+	print "</table>";
-+	html_end_box(TRUE);
++
++	return $inst_system_plugins;
 +}
 +
 +
-+function update_show_uninstalled () {
-+	global $pluginslist, $colors, $plugin_architecture, $config, $status_names;
-+
-+	$cinfo = array();
-+	sort($pluginslist);
-+
-+	print "<table width='100%' cellspacing=0 cellpadding=3>";
-+	$x = 0;
-+
-+	$newplugins = array();
-+	$cinfo = array ();
-+
-+	$path = $config['base_path'] . '/plugins/';
-+	$dh = opendir($path);
-+	while (($file = readdir($dh)) !== false) {
-+		if (is_dir("$path/$file")) {
-+			if (file_exists("$path/$file/setup.php") && !in_array($file, $pluginslist)) {
-+				include_once("$path/$file/setup.php");
-+				if (function_exists('plugin_' . $file . '_install') && function_exists('plugin_' . $file . '_version')) {
-+					$function = 'plugin_' . $file . '_version';
-+					$cinfo[$file] = $function();
-+					$cinfo[$file]['status'] = 0;
-+					$newplugins[] = $file;
-+				}
-+			}
-+		}
-+	}
-+	closedir($dh);
-+
-+	if (count($newplugins)) {
-+	foreach ($newplugins as $plugin) {
-+		if (isset($cinfo[$plugin])) {
-+
-+			if ($x == 0) {
-+				print "<tr><td width='50%'>";
-+			} else {
-+				print "</td><td>";
-+			}
-+			if (!isset($info[$plugin]['version']))
-+				$info[$plugin]['version'] = '';
-+
-+			print "<table width='100%'>";
-+			html_header(array((isset($cinfo[$plugin]['name']) ? $cinfo[$plugin]['name'] : $plugin)), 2);
-+			form_alternate_row_color($colors["alternate"],$colors["light"], 0);
-+			print "<td width='50%'><strong>Directory:</strong></td><td>$plugin</td>";
-+			form_alternate_row_color($colors["alternate"],$colors["light"], 0);
-+			print "<td><strong>Version:</strong></td><td>" . (isset($cinfo[$plugin]['version']) ? $cinfo[$plugin]['version'] : "") . (update_check_if_newer($cinfo[$plugin]['version'], $info[$plugin]['version']) ?  ' - <font color=red><b>(Update Available!)</strong></font>' : '') . "</td>";
-+			form_alternate_row_color($colors["alternate"],$colors["light"], 0);
-+			print "<td><strong>Author:</strong></td><td>" . (isset($cinfo[$plugin]['author']) && $cinfo[$plugin]['author'] != '' ? (isset($cinfo[$plugin]['email']) && $cinfo[$plugin]['email'] != '' ? "<a href='mailto:" . $cinfo[$plugin]['email'] . "'>" . $cinfo[$plugin]['author'] . "</a>"  : $cinfo[$plugin]['author']) : "") . "</td>";
-+			form_alternate_row_color($colors["alternate"],$colors["light"], 0);
-+			print "<td><strong>Home Page:</strong></td><td>" . (isset($cinfo[$plugin]['homepage']) && $cinfo[$plugin]['homepage'] != '' ? "<a href='" . $cinfo[$plugin]['homepage'] . "'>" . $cinfo[$plugin]['homepage'] . "</a>" : "") . "</td>";
-+			form_alternate_row_color($colors["alternate"],$colors["light"], 0);
-+			print "<td><strong>Status:</strong></td><td>" . $status_names[$cinfo[$plugin]['status']] . "</td>";
-+			form_alternate_row_color($colors["alternate"],$colors["light"], 0);
-+
-+			$links = array('install' => 'Install', 'uninstall' => 'Uninstall', 'enable' => 'Enable', 'disable' => 'Disable', 'check' => 'Check');
-+
-+			switch ($cinfo[$plugin]['status']) {
-+				case 0:	//Not Installed
-+					$links['install'] = "<a href='plugins.php?mode=install&id=$plugin&tab=uninstalled'><b>Install</b></a>";
-+					break;
-+				case 1:	// Currently Active
-+					$links['uninstall'] = "<a href='plugins.php?mode=uninstall&id=$plugin&tab=uninstalled'><b>Uninstall</b></a>";
-+					$links['disable'] = "<a href='plugins.php?mode=disable&id=$plugin&tab=uninstalled'><b>Disable</b></a>";
-+					break;
-+				case 2:	// Needs Configuring
-+					$links['check'] = "<a href='plugins.php?mode=check&id=$plugin&tab=uninstalled'><b>Check</b></a>";
-+					break;
-+				case 3:	// Needs Upgrade
-+					$links['check'] = "<a href='plugins.php?mode=check&id=$plugin&tab=uninstalled'><b>Check</b></a>";
-+					break;
-+				case 4:	// Installed but not active
-+					$links['enable'] = "<a href='plugins.php?mode=enable&id=$plugin&tab=uninstalled'><b>Enable</b></a>";
-+					break;
-+			}
-+
-+			print "<td></td><td>";
-+			$c = 1;
-+			foreach ($links as $temp => $link) {
-+				print $link;
-+				if ($c < count($links))
-+					print ' | ';
-+				$c++;
-+			}
-+
-+			print "</td>";
-+			print "</tr></table>";
-+			if ($x == 1) {
-+				print "</td></tr>";
-+			}
-+			$x++;
-+			if ($x > 1) $x = 0;
-+		}
-+	}
-+	} else {
-+		print "<center>There are no Uninstalled Plugins</center>";
-+	}
-+	if ($x == 1)
-+		print "</td><td></td></tr>";
-+	print "</table>";
-+	html_end_box(TRUE);
-+}
-+
-+function update_get_plugin_info () {
-+	$cinfo = array();
-+	$info = db_fetch_assoc("SELECT * from plugin_config");
-+	if (is_array($info)) {
-+		foreach($info as $inf) {
-+			$cinfo[$inf['directory']] = $inf;
-+			$cinfo[$inf['directory']]['changes']='';
-+		}
-+	}
-+	return $cinfo;
-+}
-+
-diff -Naur cacti-0.8.7f-old/poller.php cacti-0.8.7f/poller.php
---- cacti-0.8.7f-old/poller.php	2010-05-20 14:02:08.000000000 -0500
-+++ cacti-0.8.7f/poller.php	2010-05-17 06:21:16.000000000 -0500
+diff -Naur cacti-0.8.7g-old/poller.php cacti-0.8.7g/poller.php
+--- cacti-0.8.7g-old/poller.php	2010-07-09 18:33:46.000000000 -0400
++++ cacti-0.8.7g/poller.php	2010-07-09 18:34:11.000000000 -0400
 @@ -108,6 +108,8 @@
  	pcntl_signal(SIGINT, "sig_handler");
  }
@@ -2159,9 +2430,9 @@ diff -Naur cacti-0.8.7f-old/poller.php cacti-0.8.7f/poller.php
 +api_plugin_hook('poller_bottom');
 +
  ?>
-diff -Naur cacti-0.8.7f-old/user_admin.php cacti-0.8.7f/user_admin.php
---- cacti-0.8.7f-old/user_admin.php	2010-05-20 14:02:08.000000000 -0500
-+++ cacti-0.8.7f/user_admin.php	2010-05-17 06:21:16.000000000 -0500
+diff -Naur cacti-0.8.7g-old/user_admin.php cacti-0.8.7g/user_admin.php
+--- cacti-0.8.7g-old/user_admin.php	2010-07-09 18:33:46.000000000 -0400
++++ cacti-0.8.7g/user_admin.php	2010-07-09 18:34:11.000000000 -0400
 @@ -57,9 +57,11 @@
  		break;
  
@@ -2203,9 +2474,9 @@ diff -Naur cacti-0.8.7f-old/user_admin.php cacti-0.8.7f/user_admin.php
  	html_start_box("<strong>User Management</strong> $header_label", "100%", $colors["header"], "3", "center", "");
  
  	draw_edit_form(array(
-diff -Naur cacti-0.8.7f-old/utilities.php cacti-0.8.7f/utilities.php
---- cacti-0.8.7f-old/utilities.php	2010-05-20 14:02:08.000000000 -0500
-+++ cacti-0.8.7f/utilities.php	2010-05-17 06:21:16.000000000 -0500
+diff -Naur cacti-0.8.7g-old/utilities.php cacti-0.8.7g/utilities.php
+--- cacti-0.8.7g-old/utilities.php	2010-07-09 18:33:46.000000000 -0400
++++ cacti-0.8.7g/utilities.php	2010-07-09 18:34:11.000000000 -0400
 @@ -123,11 +123,14 @@
  		include_once("./include/bottom_footer.php");
  		break;
@@ -2224,7 +2495,7 @@ diff -Naur cacti-0.8.7f-old/utilities.php cacti-0.8.7f/utilities.php
  		break;
  }
  
-@@ -1638,6 +1641,8 @@
+@@ -1644,6 +1647,8 @@
  
  	<?php
  
