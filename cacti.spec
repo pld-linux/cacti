@@ -30,6 +30,15 @@ Patch6:		%{name}-log-verbosity.patch
 Patch7:		%{name}-ss_disk-array-indices.patch
 Patch8:		host_name-url.patch
 Patch9:		cli-relpath.patch
+# http://www.cacti.net/download_patches.php
+Patch10: 	data_source_deactivate.patch
+Patch11: 	graph_list_view.patch
+Patch12: 	html_output.patch
+Patch13: 	ldap_group_authenication.patch
+Patch14: 	script_server_command_line_parse.patch
+Patch15: 	ping.patch
+Patch16: 	poller_interval.patch
+
 URL:		http://www.cacti.net/
 BuildRequires:	rpm-perlprov
 BuildRequires:	sed >= 4.0
@@ -117,6 +126,14 @@ Dokumentacja do Cacti w formacie HTML.
 %prep
 %setup -q
 %{?with_pa:%patch0 -p1}
+%patch10 -p1 
+%patch11 -p1 
+%patch12 -p1 
+%patch13 -p1 
+%patch14 -p1 
+%patch15 -p1 
+%patch16 -p1 
+
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
