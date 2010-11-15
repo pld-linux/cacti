@@ -10,12 +10,28 @@
  
  /* colors */
  $colors["dark_outline"] = "454E53";
---- cacti-0.8.7a.orig/include/config.php	2007-11-17 19:11:52.000000000 +0100
-+++ cacti-0.8.7a/include/config.php	2007-12-04 10:53:28.000000000 +0100
-@@ -30,6 +30,8 @@
+diff -ur cacti-0.8.7g/include/config.php cacti-0.8.7g.new//include/config.php
+--- cacti-0.8.7g/include/config.php     2010-07-10 00:33:46.000000000 +0200
++++ cacti-0.8.7g.new//include/config.php        2010-11-15 10:12:12.503157839 +0100
+@@ -22,7 +22,11 @@
+  +-------------------------------------------------------------------------+
+ */
+
+-/* make sure these values refect your actual database/host/user/password */
++/*
++ * !!! Use /etc/webapps/cacti/config.php instead of this section !!!
++ *
++ * Make sure these values refect your actual database/host/user/password
++
+ $database_type = "mysql";
+ $database_default = "cacti";
+ $database_hostname = "localhost";
+@@ -30,6 +34,10 @@
  $database_password = "cactiuser";
  $database_port = "3306";
- 
+
++ */
++
 +require '/etc/webapps/cacti/config.php';
 +
  /* Default session name - Session name must contain alpha characters */
