@@ -5,6 +5,7 @@ $database_hostname = 'localhost';
 $database_username = 'mysql';
 $database_password = '';
 
+$plugins = array();
 // $plugins[] = 'thold';
 // $plugins[] = 'monitor';
 // $plugins[] = 'discovery';
