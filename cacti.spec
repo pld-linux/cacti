@@ -19,7 +19,7 @@ Source4:	%{name}-lighttpd.conf
 Source5:	%{name}-rrdpath.sql
 Source6:	%{name}-pa.sql
 Source7:	%{name}.logrotate
-# http://cactiusers.org/wiki/PluginArchitectureInstall
+# http://docs.cacti.net/manual:087:1_installation.9_pia
 # http://mirror.cactiusers.org/downloads/plugins/cacti-plugin-0.8.7g-PA-v2.8.tar.gz
 Patch0:		%{name}-PA.patch
 Patch1:		%{name}-config.patch
@@ -152,11 +152,9 @@ mv *.sql sql
 cp %{SOURCE5} sql
 cp %{SOURCE6} sql
 
-%{__rm} -r cacti-plugin-arch
 %{__rm} -r lib/adodb
 %{__rm} log/.htaccess
 %{__rm} cli/.htaccess
-%{__rm} rra/.placeholder
 %{__rm} rra/.htaccess
 
 # must require libs to get fatals on missing files, not include
