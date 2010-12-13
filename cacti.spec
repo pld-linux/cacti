@@ -125,7 +125,7 @@ Dokumentacja do Cacti w formacie HTML.
 
 %prep
 %setup -q
-%{?with_pa:%patch0 -p1}
+# official patches
 %patch10 -p1
 %patch11 -p1
 %patch12 -p1
@@ -133,6 +133,8 @@ Dokumentacja do Cacti w formacie HTML.
 %patch14 -p1
 %patch15 -p1
 %patch16 -p1
+
+%{?with_pa:%patch0 -p1}
 
 %patch1 -p1
 %patch2 -p1
