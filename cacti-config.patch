@@ -1,5 +1,14 @@
---- cacti-0.8.7b/include/global.php~	2008-10-05 04:29:33.131404241 +0300
-+++ cacti-0.8.7b/include/global.php	2008-10-05 04:38:29.740276226 +0300
+--- cacti-0.8.7b/include/global.php	2008-10-05 04:38:29.740276226 +0300
++++ cacti-0.8.7g/include/global.php	2010-12-13 12:10:44.312310245 +0200
+@@ -42,7 +42,7 @@
+ $cacti_session_name = "Cacti";
+ 
+ /* Include configuration */
+-include(dirname(__FILE__) . "/config.php");
++require '/etc/webapps/cacti/config.php';
+ 
+ if (isset($config["cacti_version"])) {
+ 	die("Invalid include/config.php file detected.");
 @@ -101,7 +101,8 @@
  $config["base_path"] = strtr(ereg_replace("(.*)[\/\\]include", "\\1", dirname(__FILE__)), "\\", "/");
  $config["library_path"] = ereg_replace("(.*[\/\\])include", "\\1lib", dirname(__FILE__));
@@ -10,33 +19,30 @@
  
  /* colors */
  $colors["dark_outline"] = "454E53";
-diff -ur cacti-0.8.7g/include/config.php cacti-0.8.7g.new//include/config.php
---- cacti-0.8.7g/include/config.php     2010-07-10 00:33:46.000000000 +0200
-+++ cacti-0.8.7g.new//include/config.php        2010-11-15 10:12:12.503157839 +0100
-@@ -22,7 +22,11 @@
-  +-------------------------------------------------------------------------+
- */
-
--/* make sure these values refect your actual database/host/user/password */
-+/*
-+ * !!! Use /etc/webapps/cacti/config.php instead of this section !!!
-+ *
-+ * Make sure these values refect your actual database/host/user/password
-+
+--- cacti-0.8.7g/include/config.php~	2010-12-13 12:15:08.000000000 +0200
++++ cacti-0.8.7g/include/config.php	2010-12-13 12:16:09.275611204 +0200
+@@ -26,8 +26,8 @@
  $database_type = "mysql";
  $database_default = "cacti";
  $database_hostname = "localhost";
-@@ -30,6 +34,10 @@
- $database_password = "cactiuser";
+-$database_username = "cactiuser";
+-$database_password = "cactiuser";
++$database_username = "mysql";
++$database_password = "";
  $database_port = "3306";
-
-+ */
-+
-+require '/etc/webapps/cacti/config.php';
-+
+ 
+ /* load up old style plugins here */
+@@ -39,9 +39,7 @@
+    ex: if your cacti install as at http://serverip/cacti/ this
+    would be set to /cacti/
+ */
+-$url_path = "/";
++$url_path = '/cacti/';
+ 
  /* Default session name - Session name must contain alpha characters */
  #$cacti_session_name = "Cacti";
- 
+-
+-?>
 --- cacti-0.8.7b/include/global_settings.php~	2008-10-05 04:29:33.121404239 +0300
 +++ cacti-0.8.7b/include/global_settings.php	2008-10-05 04:41:11.807395633 +0300
 @@ -96,7 +96,7 @@
