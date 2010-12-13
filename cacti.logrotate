@@ -1,0 +1,9 @@
+# logrotate cacti.log
+/var/log/cacti/cacti.log {
+	olddir /var/log/archive/cacti
+	rotate 7
+	daily
+	compress
+	create 644 http http
+	dateext
+}

@@ -18,6 +18,7 @@ Source3:	%{name}-apache.conf
 Source4:	%{name}-lighttpd.conf
 Source5:	%{name}-rrdpath.sql
 Source6:	%{name}-pa.sql
+Source7:	%{name}.logrotate
 # http://cactiusers.org/wiki/PluginArchitectureInstall
 # http://mirror.cactiusers.org/downloads/plugins/cacti-plugin-0.8.7g-PA-v2.8.tar.gz
 Patch0:		%{name}-PA.patch
@@ -31,14 +32,13 @@ Patch7:		%{name}-ss_disk-array-indices.patch
 Patch8:		host_name-url.patch
 Patch9:		cli-relpath.patch
 # http://www.cacti.net/download_patches.php
-Patch10: 	data_source_deactivate.patch
-Patch11: 	graph_list_view.patch
-Patch12: 	html_output.patch
-Patch13: 	ldap_group_authenication.patch
-Patch14: 	script_server_command_line_parse.patch
-Patch15: 	ping.patch
-Patch16: 	poller_interval.patch
-
+Patch10:	data_source_deactivate.patch
+Patch11:	graph_list_view.patch
+Patch12:	html_output.patch
+Patch13:	ldap_group_authenication.patch
+Patch14:	script_server_command_line_parse.patch
+Patch15:	ping.patch
+Patch16:	poller_interval.patch
 URL:		http://www.cacti.net/
 BuildRequires:	rpm-perlprov
 BuildRequires:	sed >= 4.0
@@ -126,13 +126,13 @@ Dokumentacja do Cacti w formacie HTML.
 %prep
 %setup -q
 %{?with_pa:%patch0 -p1}
-%patch10 -p1 
-%patch11 -p1 
-%patch12 -p1 
-%patch13 -p1 
-%patch14 -p1 
-%patch15 -p1 
-%patch16 -p1 
+%patch10 -p1
+%patch11 -p1
+%patch12 -p1
+%patch13 -p1
+%patch14 -p1
+%patch15 -p1
+%patch16 -p1
 
 %patch1 -p1
 %patch2 -p1
@@ -150,12 +150,12 @@ mv *.sql sql
 cp %{SOURCE5} sql
 cp %{SOURCE6} sql
 
-rm -rf cacti-plugin-arch
-rm -rf lib/adodb
-rm -f log/.htaccess
-rm -f cli/.htaccess
-rm -f rra/.placeholder
-rm -f rra/.htaccess
+%{__rm} -r cacti-plugin-arch
+%{__rm} -r lib/adodb
+%{__rm} log/.htaccess
+%{__rm} cli/.htaccess
+%{__rm} rra/.placeholder
+%{__rm} rra/.htaccess
 
 # must require libs to get fatals on missing files, not include
 %{__sed} -i -e '
@@ -173,11 +173,11 @@ chmod a+rx scripts/*.php cli/*.php
 find '(' -name '*~' -o -name '*.orig' ')' -print0 | xargs -0 -r -l512 rm -f
 
 # make sure cacti runs out of the box
-sed -e "s,new_install,%{version}," -i sql/cacti.sql
+%{__sed} -i -e 's,new_install,%{version},' sql/cacti.sql
 
 %install
 rm -rf $RPM_BUILD_ROOT
-install -d $RPM_BUILD_ROOT{%{_sysconfdir}/%{name},%{_appdir}/{docs,plugins},/etc/cron.d,%{_sbindir}}
+install -d $RPM_BUILD_ROOT{%{_sysconfdir}/%{name},%{_appdir}/{docs,plugins},/etc/{cron.d,logrotate.d},%{_sbindir}}
 install -d $RPM_BUILD_ROOT/var/{log,lib/%{name}}
 
 cp -a *.php $RPM_BUILD_ROOT%{_appdir}
@@ -190,6 +190,7 @@ cp -a rra $RPM_BUILD_ROOT/var/lib/%{name}
 
 cp -a %{SOURCE1} $RPM_BUILD_ROOT%{_sysconfdir}/config.php
 cp -a %{SOURCE2} $RPM_BUILD_ROOT/etc/cron.d/%{name}
+cp -a %{SOURCE7} $RPM_BUILD_ROOT/etc/logrotate.d/%{name}
 
 cp -a %{SOURCE3} $RPM_BUILD_ROOT%{_sysconfdir}/apache.conf
 cp -a %{SOURCE3} $RPM_BUILD_ROOT%{_sysconfdir}/httpd.conf
@@ -244,6 +245,7 @@ fi
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/lighttpd.conf
 %attr(640,root,http) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/config.php
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) /etc/cron.d/%{name}
+%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) /etc/logrotate.d/%{name}
 %attr(755,root,root) %{_sbindir}/cacti-poller
 %dir %{_appdir}
 %exclude %{_appdir}/install
