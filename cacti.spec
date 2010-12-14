@@ -20,6 +20,7 @@ Source6:	%{name}-pa.sql
 Source7:	%{name}.logrotate
 # http://docs.cacti.net/manual:087:1_installation.9_pia
 Source8:	http://mirror.cactiusers.org/downloads/plugins/%{name}-plugin-%{version}-PA-v2.8.tar.gz
+# Source8-md5:	de8cbd06fc0d3a6bdc9f0a66da85660d
 # NOTE: update provides: cacti(pia) when updating the patch
 Patch0:		%{name}-PA.patch
 Patch1:		%{name}-config.patch
