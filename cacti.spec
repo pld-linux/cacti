@@ -2,12 +2,13 @@
 # Conditional build:
 %bcond_without	pa		# without plugin archidecture patch
 
+%define		pia_ver	2.9
 %include	/usr/lib/rpm/macros.perl
 Summary:	Cacti is a PHP frontend for rrdtool
 Summary(pl.UTF-8):	Cacti - frontend w PHP do rrdtoola
 Name:		cacti
 Version:	0.8.7g
-Release:	8
+Release:	9
 License:	GPL
 Group:		Applications/WWW
 Source0:	http://www.cacti.net/downloads/%{name}-%{version}.tar.gz
@@ -19,8 +20,8 @@ Source5:	%{name}-rrdpath.sql
 Source6:	%{name}-pa.sql
 Source7:	%{name}.logrotate
 # http://docs.cacti.net/manual:087:1_installation.9_pia
-Source8:	http://mirror.cactiusers.org/downloads/plugins/%{name}-plugin-%{version}-PA-v2.8.tar.gz
-# Source8-md5:	de8cbd06fc0d3a6bdc9f0a66da85660d
+Source8:	http://www.cacti.net/downloads/pia/%{name}-plugin-%{version}-PA-v%{pia_ver}.tar.gz
+# Source8-md5:	a508cf859577afccb6555557d4ec90f1
 # NOTE: update provides: cacti(pia) when updating the patch
 Patch0:		%{name}-PA.patch
 Patch1:		%{name}-config.patch
@@ -66,7 +67,7 @@ Requires:	webserver(indexfile)
 Requires:	webserver(php)
 Suggests:	cacti-spine
 Suggests:	php-gd
-Provides:	cacti(pia) = 2.8
+Provides:	cacti(pia) = %{pia_ver}
 Provides:	user(cacti)
 BuildArch:	noarch
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
