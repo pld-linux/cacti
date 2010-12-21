@@ -8,7 +8,7 @@ Summary:	Cacti is a PHP frontend for rrdtool
 Summary(pl.UTF-8):	Cacti - frontend w PHP do rrdtoola
 Name:		cacti
 Version:	0.8.7g
-Release:	9
+Release:	10
 License:	GPL
 Group:		Applications/WWW
 Source0:	http://www.cacti.net/downloads/%{name}-%{version}.tar.gz
@@ -194,6 +194,7 @@ cp -a docs/html $RPM_BUILD_ROOT%{_appdir}/docs/html
 mv $RPM_BUILD_ROOT{%{_appdir}/poller.php,%{_sbindir}/cacti-poller}
 
 cp -a log $RPM_BUILD_ROOT/var/log/%{name}
+install -d $RPM_BUILD_ROOT/var/log/archive/%{name}
 cp -a rra $RPM_BUILD_ROOT/var/lib/%{name}
 
 mv $RPM_BUILD_ROOT{%{_appdir}/include,%{_sysconfdir}}/config.php
@@ -275,6 +276,7 @@ fi
 %attr(750,root,http) %dir /var/lib/%{name}
 %attr(770,root,http) %dir /var/lib/%{name}/rra
 %attr(730,root,http) %dir /var/log/%{name}
+%attr(750,root,logs) %dir /var/log/archive/%{name}
 %attr(660,root,http) %ghost /var/log/%{name}/cacti.log
 %attr(730,root,http) %dir /var/cache/%{name}
 
