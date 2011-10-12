@@ -32,17 +32,13 @@
  $database_port = "3306";
  
  /* load up old style plugins here */
-@@ -39,9 +39,7 @@
-    ex: if your cacti install as at http://serverip/cacti/ this
-    would be set to /cacti/
- */
--$url_path = "/";
-+$url_path = '/cacti/';
- 
+@@ -34,4 +34,6 @@
  /* Default session name - Session name must contain alpha characters */
  #$cacti_session_name = "Cacti";
--
--?>
+ 
++$url_path = '/cacti/';
++
+ ?>
 --- cacti-0.8.7b/include/global_settings.php~	2008-10-05 04:29:33.121404239 +0300
 +++ cacti-0.8.7b/include/global_settings.php	2008-10-05 04:41:11.807395633 +0300
 @@ -96,7 +96,7 @@

@@ -2,17 +2,17 @@
 # Conditional build:
 %bcond_without	pa		# without plugin archidecture patch
 
-%define		pia_ver	2.9
+%define		pia_ver	3.0
 %include	/usr/lib/rpm/macros.perl
 Summary:	Cacti is a PHP frontend for rrdtool
 Summary(pl.UTF-8):	Cacti - frontend w PHP do rrdtoola
 Name:		cacti
-Version:	0.8.7g
-Release:	11
+Version:	0.8.7h
+Release:	1
 License:	GPL
 Group:		Applications/WWW
 Source0:	http://www.cacti.net/downloads/%{name}-%{version}.tar.gz
-# Source0-md5:	268421cb1a58d3444f7ecbddb4c4b016
+# Source0-md5:	58c9371341f49a190ae11a85118e598d
 Source2:	%{name}.crontab
 Source3:	%{name}-apache.conf
 Source4:	%{name}-lighttpd.conf
@@ -21,7 +21,7 @@ Source6:	%{name}-pa.sql
 Source7:	%{name}.logrotate
 # http://docs.cacti.net/manual:087:1_installation.9_pia
 Source8:	http://www.cacti.net/downloads/pia/%{name}-plugin-%{version}-PA-v%{pia_ver}.tar.gz
-# Source8-md5:	a508cf859577afccb6555557d4ec90f1
+# Source8-md5:	1f45a65dc76dee368b11f2c78ae89dfb
 # NOTE: update provides: cacti(pia) when updating the patch
 Patch0:		%{name}-PA.patch
 Patch1:		%{name}-config.patch
@@ -32,16 +32,8 @@ Patch5:		%{name}-linux_memory.patch
 Patch6:		%{name}-log-verbosity.patch
 Patch7:		%{name}-ss_disk-array-indices.patch
 Patch8:		host_name-url.patch
-Patch9:		cli-relpath.patch
 # http://www.cacti.net/download_patches.php
-Patch10:	data_source_deactivate.patch
-Patch11:	graph_list_view.patch
-Patch12:	html_output.patch
-Patch13:	ldap_group_authenication.patch
-Patch14:	script_server_command_line_parse.patch
-Patch15:	ping.patch
-Patch16:	poller_interval.patch
-Patch17:	%{name}-0.8.7g-sqli-xss.patch
+#Patch10:	none now
 URL:		http://www.cacti.net/
 BuildRequires:	rpm-perlprov
 BuildRequires:	sed >= 4.0
@@ -130,19 +122,12 @@ Dokumentacja do Cacti w formacie HTML.
 %prep
 %setup -q %{?with_pa:-a8}
 # official patches
-%patch10 -p1
-%patch11 -p1
-%patch12 -p1
-%patch13 -p1
-%patch14 -p1
-%patch15 -p1
-%patch16 -p1
-%patch17 -p1
+#%patch10 -p1
 
 %if %{with pa}
 %patch0 -p1
 # copy images and drop the rest
-mv cacti-plugin-arch/files-%{version}/images/* images
+mv cacti-plugin-arch/files/images/* images
 %{__rm} -r cacti-plugin-arch
 %endif
 
@@ -154,7 +139,6 @@ mv cacti-plugin-arch/files-%{version}/images/* images
 %patch6 -p1
 %patch7 -p1
 %patch8 -p1
-%patch9 -p1
 
 mkdir -p sql
 mv *.sql sql

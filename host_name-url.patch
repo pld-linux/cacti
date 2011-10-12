@@ -1,13 +1,14 @@
 --- cacti-0.8.7e/graph_view.php	2009-10-02 10:30:43.000000000 +0300
 +++ cacti/graph_view.php	2009-10-07 12:42:04.032959475 +0300
-@@ -151,11 +151,17 @@
- 	define("ROWS_PER_PAGE", read_graph_config_option("preview_graphs_per_page"));
+@@ -158,12 +158,18 @@
+ 	}
  
  	/* ================= input validation ================= */
 +	input_validate_input_regex(get_request_var_request("host_name"), "^([a-zA-Z0-9_.-]+)$");
  	input_validate_input_number(get_request_var_request("host_id"));
  	input_validate_input_number(get_request_var_request("graph_template_id"));
  	input_validate_input_number(get_request_var_request("page"));
+ 	input_validate_input_number(get_request_var_request("rows"));
  	/* ==================================================== */
  
 +	if (empty($_REQUEST['host_id']) && !empty($_REQUEST['host_name'])) {
