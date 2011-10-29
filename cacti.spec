@@ -62,6 +62,7 @@ Suggests:	cacti-spine
 Suggests:	php-gd
 Provides:	cacti(pia) = %{pia_ver}
 Provides:	user(cacti)
+Obsoletes:	cacti-plugin-update
 BuildArch:	noarch
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
