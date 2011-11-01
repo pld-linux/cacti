@@ -1,9 +1,10 @@
---- cacti-0.8.7h/include/global.php~	2011-10-12 20:39:09.000000000 +0200
-+++ cacti-0.8.7h/include/global.php	2011-10-12 20:39:56.873975023 +0200
-@@ -201,6 +201,7 @@
+--- cacti-0.8.7h/include/global.php	2011-10-12 20:39:56.873975023 +0200
++++ cacti-0.8.7h/include/global.php	2011-11-01 23:52:55.343710747 +0200
+@@ -200,7 +200,7 @@
+ }
  
  /* include base modules */
- include_once($config["library_path"] . "/adodb/adodb.inc.php");
+-include_once($config["library_path"] . "/adodb/adodb.inc.php");
 +include('/usr/share/php/adodb/adodb.inc.php');
  include_once($config["library_path"] . "/database.php");
  
