@@ -5,7 +5,7 @@
  
  /* include base modules */
 -include_once($config["library_path"] . "/adodb/adodb.inc.php");
-+include('/usr/share/php/adodb/adodb.inc.php');
++require_once '/usr/share/php/adodb/adodb.inc.php';
  include_once($config["library_path"] . "/database.php");
  
  /* connect to the database server */
