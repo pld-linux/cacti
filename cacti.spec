@@ -145,8 +145,8 @@ mv cacti-plugin-arch/files/images/* images
 mkdir -p sql
 mv *.sql sql
 # you should run this sql if your database contains path to %{_datadir}...
-cp %{SOURCE5} sql
-cp %{SOURCE6} sql
+cp -p %{SOURCE5} sql
+cp -p %{SOURCE6} sql
 
 %{__rm} -r lib/adodb
 %{__rm} log/.htaccess
@@ -176,7 +176,7 @@ rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT{%{_sysconfdir}/%{name},%{_appdir}/{docs,plugins},/etc/{cron.d,logrotate.d},%{_sbindir}}
 install -d $RPM_BUILD_ROOT/var/{log,{lib,cache}/%{name}}
 
-cp -a *.php $RPM_BUILD_ROOT%{_appdir}
+cp -p *.php $RPM_BUILD_ROOT%{_appdir}
 cp -a cli images include install lib resource scripts sql $RPM_BUILD_ROOT%{_appdir}
 cp -a docs/html $RPM_BUILD_ROOT%{_appdir}/docs/html
 mv $RPM_BUILD_ROOT{%{_appdir}/poller.php,%{_sbindir}/cacti-poller}
@@ -186,12 +186,12 @@ install -d $RPM_BUILD_ROOT/var/log/archive/%{name}
 cp -a rra $RPM_BUILD_ROOT/var/lib/%{name}
 
 mv $RPM_BUILD_ROOT{%{_appdir}/include,%{_sysconfdir}}/config.php
-cp -a %{SOURCE2} $RPM_BUILD_ROOT/etc/cron.d/%{name}
-cp -a %{SOURCE7} $RPM_BUILD_ROOT/etc/logrotate.d/%{name}
+cp -p %{SOURCE2} $RPM_BUILD_ROOT/etc/cron.d/%{name}
+cp -p %{SOURCE7} $RPM_BUILD_ROOT/etc/logrotate.d/%{name}
 
-cp -a %{SOURCE3} $RPM_BUILD_ROOT%{_sysconfdir}/apache.conf
-cp -a %{SOURCE3} $RPM_BUILD_ROOT%{_sysconfdir}/httpd.conf
-cp -a %{SOURCE4} $RPM_BUILD_ROOT%{_sysconfdir}/lighttpd.conf
+cp -p %{SOURCE3} $RPM_BUILD_ROOT%{_sysconfdir}/apache.conf
+cp -p %{SOURCE3} $RPM_BUILD_ROOT%{_sysconfdir}/httpd.conf
+cp -p %{SOURCE4} $RPM_BUILD_ROOT%{_sysconfdir}/lighttpd.conf
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -203,6 +203,8 @@ rm -rf $RPM_BUILD_ROOT
 if [ ! -f /var/log/%{name}/cacti.log ]; then
 	install -m660 -oroot -ghttp /dev/null /var/log/%{name}/cacti.log
 fi
+
+%{_appdir}/cli/upgrade_database.php || :
 
 %postun
 if [ "$1" = "0" ]; then
