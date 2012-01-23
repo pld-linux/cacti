@@ -1,29 +1,18 @@
-#
-# Conditional build:
-%bcond_without	pa		# without plugin archidecture patch
-
-%define		pia_ver	3.0
-%include	/usr/lib/rpm/macros.perl
+%define		pia_ver	3.1
 Summary:	Cacti is a PHP frontend for rrdtool
 Summary(pl.UTF-8):	Cacti - frontend w PHP do rrdtoola
 Name:		cacti
-Version:	0.8.7h
-Release:	3
-License:	GPL
+Version:	0.8.7i
+Release:	1
+License:	GPL v2
 Group:		Applications/WWW
-Source0:	http://www.cacti.net/downloads/%{name}-%{version}.tar.gz
-# Source0-md5:	58c9371341f49a190ae11a85118e598d
+Source0:	http://www.cacti.net/downloads/%{name}-%{version}-PIA-%{pia_ver}.tar.gz
+# Source0-md5:	669770a7837986971a279104dbb50b75
 Source2:	%{name}.crontab
 Source3:	%{name}-apache.conf
 Source4:	%{name}-lighttpd.conf
 Source5:	%{name}-rrdpath.sql
-Source6:	%{name}-pa.sql
 Source7:	%{name}.logrotate
-# http://docs.cacti.net/manual:087:1_installation.9_pia
-Source8:	http://www.cacti.net/downloads/pia/%{name}-plugin-%{version}-PA-v%{pia_ver}.tar.gz
-# Source8-md5:	1f45a65dc76dee368b11f2c78ae89dfb
-# NOTE: update provides: cacti(pia) when updating the patch
-Patch0:		%{name}-PA.patch
 Patch1:		%{name}-config.patch
 Patch2:		%{name}-adodb.patch
 Patch3:		%{name}-ioerror.patch
@@ -33,14 +22,15 @@ Patch6:		%{name}-log-verbosity.patch
 Patch7:		%{name}-ss_disk-array-indices.patch
 Patch8:		host_name-url.patch
 # http://www.cacti.net/download_patches.php
-#Patch10:	none now
+Patch10:	http://www.cacti.net/downloads/patches/%{version}/settings_checkbox.patch
+# Patch10-md5:	930e6c18b692fb94a19ddbd95a529a8b
 URL:		http://www.cacti.net/
-BuildRequires:	rpm-perlprov
 BuildRequires:	sed >= 4.0
 Requires(postun):	/usr/sbin/userdel
 Requires(pre):	/bin/id
 Requires(pre):	/usr/sbin/useradd
 Requires:	adodb >= 4.67-1.17
+Requires:	cacti-plugin-boost >= 5.0
 Requires:	crondaemon
 Requires:	group(http)
 Requires:	net-snmp-utils
@@ -122,16 +112,9 @@ HTML Documentation for Cacti.
 Dokumentacja do Cacti w formacie HTML.
 
 %prep
-%setup -q %{?with_pa:-a8}
+%setup -q -n %{name}-%{version}-PIA-%{pia_ver}
 # official patches
-#%patch10 -p1
-
-%if %{with pa}
-%patch0 -p1
-# copy images and drop the rest
-mv cacti-plugin-arch/files/images/* images
-%{__rm} -r cacti-plugin-arch
-%endif
+%patch10 -p1
 
 %patch1 -p1
 %patch2 -p1
@@ -146,7 +129,6 @@ mkdir -p sql
 mv *.sql sql
 # you should run this sql if your database contains path to %{_datadir}...
 cp -p %{SOURCE5} sql
-cp -p %{SOURCE6} sql
 
 %{__rm} -r lib/adodb
 %{__rm} log/.htaccess
