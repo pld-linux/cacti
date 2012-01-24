@@ -18,7 +18,7 @@
  
 -	if ($port != "3306") {
 +	// socket supported for mysqli only, not mysql
-+	if ($port && !is_numeric($port) && $db_type == "mysqli") {
++	if ($port && !is_numeric($port)) {
 +		$dsn .= "&socket=" . $port;
 +	} elseif ($port != "3306") {
  		$dsn .= "&port=" . $port;
