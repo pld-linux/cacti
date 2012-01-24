@@ -1,3 +1,15 @@
+allow using socket to connect to mysql
+
+split the socket from port if hostname contains colon
+this also allows $port to be just path to socket (not-numeric)
+
+localhost:/tmp/sock inspired by:
+http://bugs.cacti.net/view.php?id=425
+
+note: this socket works for mysqli driver only:
+http://phplens.com/lens/adodb/docs-adodb.htm
+
+
 --- cacti-0.8.7i-PIA-3.1/lib/database.php~	2011-12-12 03:56:06.000000000 +0200
 +++ cacti-0.8.7i-PIA-3.1/lib/database.php	2012-01-24 11:18:39.563094454 +0200
 @@ -34,6 +34,11 @@
