@@ -1,5 +1,6 @@
 # logrotate cacti.log
 /var/log/cacti/cacti.log {
+	su root http
 	olddir /var/log/archive/cacti
 	rotate 7
 	daily
