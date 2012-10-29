@@ -72,14 +72,14 @@
  		}
  
  		/* echo the data to the log (append) */
---- cacti-0.8.7b/utilities.php~	2008-10-05 04:29:33.128070807 +0300
-+++ cacti-0.8.7b/utilities.php	2008-10-05 04:43:30.176737491 +0300
-@@ -693,12 +693,12 @@
+--- cacti-0.8.8/utilities.php~	2012-10-29 22:14:05.000000000 +0200
++++ cacti-0.8.8/utilities.php	2012-10-29 22:15:05.781005237 +0200
+@@ -798,12 +798,12 @@
  }
  
  function utilities_view_logfile() {
--	global $colors, $log_tail_lines, $page_refresh_interval;
-+	global $config, $colors, $log_tail_lines, $page_refresh_interval;
+-	global $colors, $log_tail_lines, $page_refresh_interval, $refresh;
++	global $colors, $log_tail_lines, $page_refresh_interval, $config;
  
  	$logfile = read_config_option("path_cactilog");
  
