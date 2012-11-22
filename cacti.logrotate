@@ -5,6 +5,6 @@
 	rotate 7
 	daily
 	compress
-	create 644 http http
+	create 660 root http
 	dateext
 }
