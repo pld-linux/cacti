@@ -4,7 +4,7 @@ MAILTO=root
 */5 * * * * cacti umask 022; exec /usr/sbin/cacti-poller > /dev/null
 
 # reindex interface data (expensive); reapply data source/graph names based on templates and reindexed data
-# 20 1 * * 7 cacti umask 022; exec /usr/share/cacti/cli/poller_reindex_hosts.php --id=All > /dev/null ; /usr/share/cacti/cli/poller_data_sources_reapply_names.php --id=All > /dev/null ; /usr/share/cacti/cli/poller_graphs_reapply_names.php --id=All > /dev/null
+# 20 1 * * 7 cacti umask 022; /usr/share/cacti/cli/poller_reindex_hosts.php --id=All > /dev/null ; /usr/share/cacti/cli/poller_data_sources_reapply_names.php --id=All > /dev/null ; /usr/share/cacti/cli/poller_graphs_reapply_names.php --id=All > /dev/null
 
 # 
 
