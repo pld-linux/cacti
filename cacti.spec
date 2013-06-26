@@ -3,7 +3,7 @@ Summary:	Cacti is a PHP frontend for rrdtool
 Summary(pl.UTF-8):	Cacti - frontend w PHP do rrdtoola
 Name:		cacti
 Version:	0.8.8a
-Release:	4
+Release:	3
 License:	GPL v2
 Group:		Applications/WWW
 Source0:	http://www.cacti.net/downloads/%{name}-%{version}.tar.gz
@@ -13,7 +13,6 @@ Source3:	%{name}-apache.conf
 Source4:	%{name}-lighttpd.conf
 Source5:	%{name}-rrdpath.sql
 Source7:	%{name}.logrotate
-Source8:	%{name}-httpd.conf
 Patch0:		mysql-socket.patch
 Patch1:		%{name}-config.patch
 Patch2:		%{name}-adodb.patch
@@ -56,7 +55,6 @@ Provides:	user(cacti)
 Obsoletes:	cacti-add_template
 Obsoletes:	cacti-plugin-update
 Conflicts:	logrotate < 3.8.0
-Conflicts:	apache-base < 2.4.0-1
 BuildArch:	noarch
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -176,7 +174,7 @@ cp -p %{SOURCE2} $RPM_BUILD_ROOT/etc/cron.d/%{name}
 cp -p %{SOURCE7} $RPM_BUILD_ROOT/etc/logrotate.d/%{name}
 
 cp -p %{SOURCE3} $RPM_BUILD_ROOT%{_sysconfdir}/apache.conf
-cp -p %{SOURCE8} $RPM_BUILD_ROOT%{_sysconfdir}/httpd.conf
+cp -p %{SOURCE3} $RPM_BUILD_ROOT%{_sysconfdir}/httpd.conf
 cp -p %{SOURCE4} $RPM_BUILD_ROOT%{_sysconfdir}/lighttpd.conf
 
 %clean
@@ -203,10 +201,10 @@ fi
 %triggerun -- apache1 < 1.3.37-3, apache1-base
 %webapp_unregister apache %{_webapp}
 
-%triggerin -- apache-base
+%triggerin -- apache < 2.2.0, apache-base
 %webapp_register httpd %{_webapp}
 
-%triggerun -- apache-base
+%triggerun -- apache < 2.2.0, apache-base
 %webapp_unregister httpd %{_webapp}
 
 %triggerin -- lighttpd
