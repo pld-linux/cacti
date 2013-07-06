@@ -8,3 +8,13 @@
 	create 660 root http
 	dateext
 }
+
+/var/log/cacti/poller.log {
+	missingok
+	olddir /var/log/archive/cacti
+	rotate 7
+	daily
+	compress
+	create 644 cacti http
+	dateext
+}

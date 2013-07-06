@@ -1,7 +1,7 @@
 MAILTO=root
 
 # poller
-*/5 * * * * cacti umask 022; exec /usr/sbin/cacti-poller > /dev/null
+*/5 * * * * cacti umask 022; exec nice -n 19 /usr/sbin/cacti-poller >> /var/log/cacti/poller.log 2>&1
 
 # reindex interface data (expensive); reapply data source/graph names based on templates and reindexed data
 # remove "exec>/dev/null" if you want to receive output from the jobs
