@@ -1,4 +1,6 @@
 %define		pia_ver	3.1
+%define		php_min_version 5.2.13-10
+%include	/usr/lib/rpm/macros.php
 Summary:	Cacti is a PHP frontend for rrdtool
 Summary(pl.UTF-8):	Cacti - frontend w PHP do rrdtoola
 Name:		cacti
@@ -23,7 +25,7 @@ Patch6:		%{name}-log-verbosity.patch
 Patch7:		%{name}-ss_disk-array-indices.patch
 Patch8:		host_name-url.patch
 # http://www.cacti.net/download_patches.php
-#Patch100:	http://www.cacti.net/downloads/patches/%{version}/
+#Patch100:	-
 ## Patch100-md5:	-
 BuildRequires:	sed >= 4.0
 Requires(postun):	/usr/sbin/userdel
@@ -34,7 +36,7 @@ Requires:	cacti-plugin-boost >= 5.0
 Requires:	crondaemon
 Requires:	group(http)
 Requires:	net-snmp-utils
-Requires:	php(core) >= 5.2.13-10
+Requires:	php(core) >= %{php_min_version}
 Requires:	php(mysql)
 Requires:	php(pcre)
 Requires:	php(session)
@@ -61,6 +63,12 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 %define		_webapp		%{name}
 %define		_sysconfdir	%{_webapps}/%{_webapp}
 %define		_appdir		/usr/share/%{name}
+
+# bad depsolver
+%define		_noautopear	pear
+
+# put it together for rpmbuild
+%define		_noautoreq	%{?_noautophp} %{?_noautopear}
 
 %description
 Cacti is a complete frondend to rrdtool, it stores all of the
