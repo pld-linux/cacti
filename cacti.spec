@@ -27,6 +27,7 @@ Patch8:		host_name-url.patch
 # http://www.cacti.net/download_patches.php
 #Patch100:	-
 ## Patch100-md5:	-
+URL:		http://www.cacti.net/
 BuildRequires:	sed >= 4.0
 Requires(postun):	/usr/sbin/userdel
 Requires(pre):	/bin/id
