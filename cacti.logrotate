@@ -10,6 +10,7 @@
 }
 
 /var/log/cacti/poller.log {
+	su cacti http
 	missingok
 	olddir /var/log/archive/cacti
 	rotate 7
