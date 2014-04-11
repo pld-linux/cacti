@@ -1,6 +1,6 @@
 # logrotate cacti.log
 /var/log/cacti/cacti.log {
-	su root http
+	su root logs
 	olddir /var/log/archive/cacti
 	rotate 7
 	daily
@@ -10,7 +10,7 @@
 }
 
 /var/log/cacti/poller.log {
-	su cacti http
+	su root logs
 	missingok
 	olddir /var/log/archive/cacti
 	rotate 7
