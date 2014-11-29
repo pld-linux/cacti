@@ -74,12 +74,12 @@
  		/* echo the data to the log (append) */
 --- cacti-0.8.8/utilities.php~	2012-10-29 22:14:05.000000000 +0200
 +++ cacti-0.8.8/utilities.php	2012-10-29 22:15:05.781005237 +0200
-@@ -798,12 +798,12 @@
+@@ -773,12 +773,12 @@ function utilities_clear_user_log() {
  }
  
  function utilities_view_logfile() {
--	global $colors, $log_tail_lines, $page_refresh_interval, $refresh;
-+	global $colors, $log_tail_lines, $page_refresh_interval, $config;
+-	global $log_tail_lines, $page_refresh_interval, $refresh;
++	global $log_tail_lines, $page_refresh_interval, $config;
  
  	$logfile = read_config_option("path_cactilog");
  
@@ -89,15 +89,14 @@
  	}
  
  	/* helps determine output color */
-@@ -858,7 +858,7 @@
+@@ -1014,6 +1014,7 @@ function utilities_view_logfile() {
  }
  
  function utilities_clear_logfile() {
--	global $colors;
-+	global $config, $colors;
- 
++	global $config;
  	load_current_session_value("refresh", "sess_logfile_refresh", read_config_option("log_refresh_interval"));
  
+ 	$refresh["seconds"] = get_request_var_request("refresh");
 @@ -870,7 +870,7 @@
  	$logfile = read_config_option("path_cactilog");
  
