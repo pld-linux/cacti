@@ -202,12 +202,13 @@ if [ ! -f /var/log/%{name}/cacti.log ]; then
 	install -m660 -oroot -ghttp /dev/null /var/log/%{name}/cacti.log
 fi
 
-%{_appdir}/cli/upgrade_database.php || :
-
 %postun
 if [ "$1" = "0" ]; then
 	%userremove cacti
 fi
+
+%post setup
+%{_appdir}/cli/upgrade_database.php || :
 
 %triggerin -- apache1 < 1.3.37-3, apache1-base
 %webapp_register apache %{_webapp}
