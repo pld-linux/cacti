@@ -79,7 +79,7 @@
  
  function utilities_view_logfile() {
 -	global $log_tail_lines, $page_refresh_interval, $refresh;
-+	global $log_tail_lines, $page_refresh_interval, $config;
++	global $log_tail_lines, $page_refresh_interval, $refresh, $config;
  
  	$logfile = read_config_option("path_cactilog");
  
