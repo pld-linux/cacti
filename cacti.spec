@@ -50,9 +50,9 @@ Requires:	webserver(alias)
 Requires:	webserver(indexfile)
 Requires:	webserver(php)
 Suggests:	cacti-spine
-Suggests:	php-bcmath
-Suggests:	php-ftp
-Suggests:	php-gd
+Suggests:	php(bcmath)
+Suggests:	php(ftp)
+Suggests:	php(gd)
 Provides:	cacti(pia) = %{pia_ver}
 Provides:	user(cacti)
 Obsoletes:	cacti-add_template
