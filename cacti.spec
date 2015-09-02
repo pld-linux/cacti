@@ -57,7 +57,9 @@ Provides:	cacti(pia) = %{pia_ver}
 Provides:	user(cacti)
 Obsoletes:	cacti-add_template
 Obsoletes:	cacti-plugin-update
+%if "%{pld_release}" != "ac"
 Conflicts:	logrotate < 3.8.0
+%endif
 BuildArch:	noarch
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -186,6 +188,10 @@ cp -a rra $RPM_BUILD_ROOT/var/lib/%{name}
 mv $RPM_BUILD_ROOT{%{_appdir}/include,%{_sysconfdir}}/config.php
 cp -p %{SOURCE2} $RPM_BUILD_ROOT/etc/cron.d/%{name}
 cp -p %{SOURCE7} $RPM_BUILD_ROOT/etc/logrotate.d/%{name}
+
+%if "%{pld_release}" == "ac"
+%{__sed} -i -e '/su/d' $RPM_BUILD_ROOT/etc/logrotate.d/%{name}
+%endif
 
 cp -p %{SOURCE3} $RPM_BUILD_ROOT%{_sysconfdir}/apache.conf
 cp -p %{SOURCE3} $RPM_BUILD_ROOT%{_sysconfdir}/httpd.conf
