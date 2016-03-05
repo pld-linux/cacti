@@ -1,3 +1,4 @@
+# vim:ft=crontab
 MAILTO=root
 
 # poller
@@ -6,5 +7,3 @@ MAILTO=root
 # reindex interface data (expensive); reapply data source/graph names based on templates and reindexed data
 # remove "exec>/dev/null" if you want to receive output from the jobs
 #20 1 * * 7 cacti umask 022; exec > /dev/null; cd /usr/share/cacti/cli; ./poller_reindex_hosts.php --id=All; ./poller_data_sources_reapply_names.php --id=All; ./poller_graphs_reapply_names.php -id=All
-
-# vim:ft=crontab
