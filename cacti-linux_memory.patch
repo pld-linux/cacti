@@ -1,10 +1,12 @@
 --- cacti-0.8.7b/scripts/linux_memory.pl~	2008-02-12 02:57:48.000000000 +0200
 +++ cacti-0.8.7b/scripts/linux_memory.pl	2008-10-05 17:06:04.399773770 +0300
-@@ -1,6 +1,6 @@
- #!/usr/bin/perl
+@@ -6,7 +6,7 @@ $path = $ENV{'PATH'};
+ $val1 = $ARGV[0];
+ ($val1) = $val1 =~ /^([\w.:]+)$/;
  
--open(PROCESS, "cat /proc/meminfo | grep -w $ARGV[0] |");
+-open(PROCESS, "cat /proc/meminfo | grep -w $val1 |");
 +open(PROCESS, "grep $ARGV[0] < /proc/meminfo |");
  foreach (<PROCESS>) {
- 	if ($_ =~ /($ARGV[0].*\s)(.*[0-9])( kB)/) {
- 		print $2;
+   if ($_ =~ /($ARGV[0].*\s)(.*[0-9])( kB)/) {
+    print $2;
+

@@ -4,20 +4,20 @@
 Summary:	Cacti is a PHP frontend for rrdtool
 Summary(pl.UTF-8):	Cacti - frontend w PHP do rrdtoola
 Name:		cacti
-Version:	0.8.8h
-Release:	1
+Version:	1.1.20
+Release:	0.1
 License:	GPL v2
 Group:		Applications/WWW
 Source0:	http://www.cacti.net/downloads/%{name}-%{version}.tar.gz
-# Source0-md5:	e5a2eb9e1b187a92284f46e7d4cd6505
+# Source0-md5:	7d06d9a31f02f69b994f50aff2a40aa4
 Source2:	%{name}.crontab
 Source3:	%{name}-apache.conf
 Source4:	%{name}-lighttpd.conf
 Source5:	%{name}-rrdpath.sql
 Source7:	%{name}.logrotate
-Patch0:		mysql-socket.patch
+
 Patch1:		%{name}-config.patch
-Patch2:		%{name}-adodb.patch
+
 Patch3:		%{name}-ioerror.patch
 Patch4:		%{name}-webroot.patch
 Patch5:		%{name}-linux_memory.patch
@@ -31,7 +31,6 @@ BuildRequires:	sed >= 4.0
 Requires(postun):	/usr/sbin/userdel
 Requires(pre):	/bin/id
 Requires(pre):	/usr/sbin/useradd
-Requires:	adodb >= 4.67-1.17
 Requires:	cacti-plugin-boost >= 5.0
 Requires:	crondaemon
 Requires:	group(http)
@@ -133,22 +132,21 @@ Dokumentacja do Cacti w formacie HTML.
 %patch100 -p1
 %endif
 
-%patch0 -p1
 %patch1 -p1
-%patch2 -p1
+
 %patch3 -p1
 %patch4 -p1
 %patch5 -p1
 %patch6 -p1
 %patch7 -p1
-%patch8 -p1
+# ?
+# %patch8 -p1
 
 mkdir -p sql
 mv *.sql sql
 # you should run this sql if your database contains path to %{_datadir}...
 cp -p %{SOURCE5} sql
 
-%{__rm} -r lib/adodb
 %{__rm} log/.htaccess
 %{__rm} cli/.htaccess
 %{__rm} rra/.htaccess
@@ -182,6 +180,7 @@ cp -a docs/html $RPM_BUILD_ROOT%{_appdir}/docs/html
 mv $RPM_BUILD_ROOT{%{_appdir}/poller.php,%{_sbindir}/cacti-poller}
 
 cp -a log $RPM_BUILD_ROOT/var/log/%{name}
+:> $RPM_BUILD_ROOT/var/log/%{name}/%{name}.log
 install -d $RPM_BUILD_ROOT/var/log/archive/%{name}
 cp -a rra $RPM_BUILD_ROOT/var/lib/%{name}
 
@@ -242,7 +241,7 @@ fi
 
 %files
 %defattr(644,root,root,755)
-%doc docs/CHANGELOG docs/CONTRIB docs/README docs/txt/manual.txt
+%doc README.md docs/CHANGELOG docs/txt/manual.txt
 %dir %attr(750,root,http) %{_sysconfdir}
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/apache.conf
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/httpd.conf
