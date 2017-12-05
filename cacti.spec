@@ -175,7 +175,7 @@ install -d $RPM_BUILD_ROOT{%{_sysconfdir}/%{name},%{_appdir}/{docs,plugins},/etc
 install -d $RPM_BUILD_ROOT/var/{log,{lib,cache}/%{name}}
 
 cp -p *.php $RPM_BUILD_ROOT%{_appdir}
-cp -a cli images include install lib resource scripts sql $RPM_BUILD_ROOT%{_appdir}
+cp -a cli images include install lib mibs resource scripts sql $RPM_BUILD_ROOT%{_appdir}
 cp -a docs/html $RPM_BUILD_ROOT%{_appdir}/docs/html
 mv $RPM_BUILD_ROOT{%{_appdir}/poller.php,%{_sbindir}/cacti-poller}
 
@@ -258,6 +258,7 @@ fi
 %{_appdir}/lib
 %{_appdir}/include
 %{_appdir}/images
+%{_appdir}/mibs
 %{_appdir}/plugins
 %{_appdir}/*.php
 
