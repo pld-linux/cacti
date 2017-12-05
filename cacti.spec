@@ -171,11 +171,13 @@ find '(' -name '*~' -o -name '*.orig' ')' -print0 | xargs -0 -r -l512 rm -f
 
 %install
 rm -rf $RPM_BUILD_ROOT
-install -d $RPM_BUILD_ROOT{%{_sysconfdir}/%{name},%{_appdir}/{docs,plugins},/etc/{cron.d,logrotate.d},%{_sbindir}}
+install -d $RPM_BUILD_ROOT{%{_sysconfdir}/%{name},%{_appdir}/docs,/etc/{cron.d,logrotate.d},%{_sbindir}}
 install -d $RPM_BUILD_ROOT/var/{log,{lib,cache}/%{name}}
 
 cp -p *.php $RPM_BUILD_ROOT%{_appdir}
-cp -a cli images include install lib mibs resource scripts sql $RPM_BUILD_ROOT%{_appdir}
+# dirs that contain index.php are likely to be installed
+# ls -1d */index.php | cut -d"/" -f1 | xargs
+cp -a cache cli formats images include install lib mibs plugins resource scripts sql $RPM_BUILD_ROOT%{_appdir}
 cp -a docs/html $RPM_BUILD_ROOT%{_appdir}/docs/html
 mv $RPM_BUILD_ROOT{%{_appdir}/poller.php,%{_sbindir}/cacti-poller}
 
@@ -253,13 +255,15 @@ fi
 %dir %{_appdir}
 %exclude %{_appdir}/install
 %exclude %{_appdir}/docs
-%{_appdir}/resource
-%{_appdir}/sql
-%{_appdir}/lib
-%{_appdir}/include
+%{_appdir}/cache
+%{_appdir}/formats
 %{_appdir}/images
+%{_appdir}/include
+%{_appdir}/lib
 %{_appdir}/mibs
 %{_appdir}/plugins
+%{_appdir}/resource
+%{_appdir}/sql
 %{_appdir}/*.php
 
 %dir %{_appdir}/cli
