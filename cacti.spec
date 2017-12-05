@@ -36,6 +36,9 @@ Requires:	crondaemon
 Requires:	group(http)
 Requires:	net-snmp-utils
 Requires:	php(core) >= %{php_min_version}
+Requires:	php(filter)
+Requires:	php(json)
+Requires:	php(mbstring)
 Requires:	php(pcre)
 Requires:	php(pdo-mysql)
 Requires:	php(session)
