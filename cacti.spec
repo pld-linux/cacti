@@ -216,6 +216,12 @@ rm -rf $RPM_BUILD_ROOT
 %pre
 %useradd -u 184 -d /var/lib/%{name} -g http -c "Cacti User" cacti
 
+%pretrans
+if [ -d "%{_appdir}/cache" ] && [ ! -L "%{_appdir}/cache" ]; then
+        mv -v %{_appdir}/cache{,.rpmsave}
+fi
+exit 0
+
 %post
 if [ ! -f /var/log/%{name}/cacti.log ]; then
 	install -m660 -oroot -ghttp /dev/null /var/log/%{name}/cacti.log
