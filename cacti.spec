@@ -38,13 +38,18 @@ Requires:	net-snmp-utils
 Requires:	php(core) >= %{php_min_version}
 Requires:	php(ctype)
 Requires:	php(filter)
+Requires:	php(gd)
 Requires:	php(json)
+Requires:	php(ldap)
 Requires:	php(mbstring)
+Requires:	php(openssl)
 Requires:	php(pcre)
 Requires:	php(pdo-mysql)
+Requires:	php(posix)
 Requires:	php(session)
-Requires:	php(snmp)
+Requires:	php(sockets)
 Requires:	php(xml)
+Requires:	php(zlib)
 Requires:	rrdtool
 Requires:	webapps
 Requires:	webserver
@@ -55,7 +60,8 @@ Requires:	webserver(php)
 Suggests:	cacti-spine
 Suggests:	php(bcmath)
 Suggests:	php(ftp)
-Suggests:	php(gd)
+Suggests:	php(gmp)
+Suggests:	php(snmp)
 Provides:	cacti(pia) = %{pia_ver}
 Provides:	user(cacti)
 Obsoletes:	cacti-add_template
@@ -285,13 +291,13 @@ fi
 %attr(750,root,logs) %dir /var/log/archive/%{name}
 %attr(660,root,http) %ghost /var/log/%{name}/cacti.log
 %attr(730,root,http) %dir /var/cache/%{name}
-%attr(644,root,root) /var/cache/%{name}/index.php
+/var/cache/%{name}/index.php
 %attr(730,root,http) %dir /var/cache/%{name}/boost
 %attr(730,root,http) %dir /var/cache/%{name}/mibcache
 %attr(730,root,http) %dir /var/cache/%{name}/realtime
 %attr(730,root,http) %dir /var/cache/%{name}/spikekill
-%attr(644,root,root) /var/cache/%{name}/*/.htaccess
-%attr(644,root,root) /var/cache/%{name}/*/index.php
+/var/cache/%{name}/*/.htaccess
+/var/cache/%{name}/*/index.php
 
 %files setup
 %defattr(644,root,root,755)
