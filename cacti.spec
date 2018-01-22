@@ -4,12 +4,12 @@
 Summary:	Cacti is a PHP frontend for rrdtool
 Summary(pl.UTF-8):	Cacti - frontend w PHP do rrdtoola
 Name:		cacti
-Version:	1.1.31
+Version:	1.1.32
 Release:	1
 License:	GPL v2
 Group:		Applications/WWW
 Source0:	http://www.cacti.net/downloads/%{name}-%{version}.tar.gz
-# Source0-md5:	177608f1ecd0307f31e5509db618b7e8
+# Source0-md5:	7c6951e3c977146d72eb68398c82add2
 Source2:	%{name}.crontab
 Source3:	%{name}-apache.conf
 Source4:	%{name}-lighttpd.conf
@@ -181,7 +181,9 @@ install -d $RPM_BUILD_ROOT/var/{log,{lib,cache}/%{name}}
 cp -p *.php $RPM_BUILD_ROOT%{_appdir}
 # dirs that contain index.php are likely to be installed
 # ls -1d */index.php | cut -d"/" -f1 | xargs
-cp -a cache cli formats images include install lib locales mibs plugins resource scripts sql $RPM_BUILD_ROOT%{_appdir}
+cp -a cache/* $RPM_BUILD_ROOT/var/cache/%{name}
+ln -s /var/cache/%{name} $RPM_BUILD_ROOT%{_appdir}/cache
+cp -a cli formats images include install lib locales mibs plugins resource scripts sql $RPM_BUILD_ROOT%{_appdir}
 cp -a docs/html $RPM_BUILD_ROOT%{_appdir}/docs/html
 mv $RPM_BUILD_ROOT{%{_appdir}/poller.php,%{_sbindir}/cacti-poller}
 
@@ -283,6 +285,13 @@ fi
 %attr(750,root,logs) %dir /var/log/archive/%{name}
 %attr(660,root,http) %ghost /var/log/%{name}/cacti.log
 %attr(730,root,http) %dir /var/cache/%{name}
+%attr(644,root,root) /var/cache/%{name}/index.php
+%attr(730,root,http) %dir /var/cache/%{name}/boost
+%attr(730,root,http) %dir /var/cache/%{name}/mibcache
+%attr(730,root,http) %dir /var/cache/%{name}/realtime
+%attr(730,root,http) %dir /var/cache/%{name}/spikekill
+%attr(644,root,root) /var/cache/%{name}/*/.htaccess
+%attr(644,root,root) /var/cache/%{name}/*/index.php
 
 %files setup
 %defattr(644,root,root,755)
