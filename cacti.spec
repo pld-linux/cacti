@@ -4,12 +4,12 @@
 Summary:	Cacti is a PHP frontend for rrdtool
 Summary(pl.UTF-8):	Cacti - frontend w PHP do rrdtoola
 Name:		cacti
-Version:	1.1.35
+Version:	1.1.36
 Release:	1
 License:	GPL v2
 Group:		Applications/WWW
 Source0:	http://www.cacti.net/downloads/%{name}-%{version}.tar.gz
-# Source0-md5:	e5b19a34480d262d520b6e9d009e738d
+# Source0-md5:	dba0422ba64c6ccc312b74ae2fa58bf5
 Source2:	%{name}.crontab
 Source3:	%{name}-apache.conf
 Source4:	%{name}-lighttpd.conf
