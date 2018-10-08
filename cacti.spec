@@ -300,7 +300,7 @@ fi
 /var/cache/%{name}/index.php
 %attr(730,root,http) %dir /var/cache/%{name}/boost
 %attr(730,root,http) %dir /var/cache/%{name}/mibcache
-%attr(730,root,http) %dir /var/cache/%{name}/realtime
+%attr(770,root,http) %dir /var/cache/%{name}/realtime
 %attr(730,root,http) %dir /var/cache/%{name}/spikekill
 /var/cache/%{name}/*/.htaccess
 /var/cache/%{name}/*/index.php
