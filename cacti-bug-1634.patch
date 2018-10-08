@@ -1,0 +1,130 @@
+commit 32f1538a4a382b7b27e2340705e9b034f335ae6e
+Author: cigamit <jimmy@sqmail.org>
+Date:   Sat Jun 2 12:16:13 2018 -0500
+
+    Resolving Issue #1634
+    
+    * Default snmp quick print setting resulting in false poller ASSERTS on
+    some php releases
+    * Also enhance the cacti snmp functions to require only 3 or 4
+    parameters.
+    * Minor format change to the vendor file classSNMP.php.  No functional
+    change.
+
+diff --git a/include/phpsnmp/classSNMP.php b/include/phpsnmp/classSNMP.php
+index e0f5b86d..ffa4aa88 100644
+--- a/include/phpsnmp/classSNMP.php
++++ b/include/phpsnmp/classSNMP.php
+@@ -150,7 +150,7 @@ class SNMP {
+ 				$backup['valueretrieval'] = snmp_get_valueretrieval();
+ 				snmp_set_valueretrieval($this->valueretrieval);
+ 
+-				$backup['quick_print']    = snmp_get_quick_print();
++				$backup['quick_print'] = snmp_get_quick_print();
+ 				snmp_set_quick_print($this->quick_print);
+ 
+ 				if ($this->oid_output_format !== NULL) {
+diff --git a/lib/snmp.php b/lib/snmp.php
+index 885a07ee..382f94aa 100644
+--- a/lib/snmp.php
++++ b/lib/snmp.php
+@@ -47,8 +47,8 @@ if (!class_exists('SNMP')) {
+ 	include_once($config['include_path'] . '/phpsnmp/classSNMP.php');
+ }
+ 
+-function cacti_snmp_session($hostname, $community, $version, $auth_user, $auth_pass,
+-	$auth_proto, $priv_pass, $priv_proto, $context, $engineid,
++function cacti_snmp_session($hostname, $community, $version, $auth_user = '', $auth_pass = '',
++	$auth_proto = '', $priv_pass = '', $priv_proto = '', $context = '', $engineid = '',
+ 	$port = 161, $timeout = 500, $retries = 0, $max_oids = 10) {
+ 
+ 	switch ($version) {
+@@ -74,6 +74,7 @@ function cacti_snmp_session($hostname, $community, $version, $auth_user, $auth_p
+ 		$session->valueretrieval = SNMP_VALUE_LIBRARY;
+ 	}
+ 
++	$session->quick_print = false;
+ 	$session->max_oids = $max_oids;
+ 
+ 	if (read_config_option('oid_increasing_check_disable') == 'on') {
+@@ -105,8 +106,8 @@ function cacti_snmp_session($hostname, $community, $version, $auth_user, $auth_p
+ 	return $session;
+ }
+ 
+-function cacti_snmp_get($hostname, $community, $oid, $version, $auth_user, $auth_pass,
+-	$auth_proto, $priv_pass, $priv_proto, $context,
++function cacti_snmp_get($hostname, $community, $oid, $version, $auth_user = '', $auth_pass = '',
++	$auth_proto = '', $priv_pass = '', $priv_proto = '', $context = '',
+ 	$port = 161, $timeout = 500, $retries = 0, $environ = SNMP_POLLER,
+ 	$engineid = '', $value_output_format = SNMP_STRING_OUTPUT_GUESS) {
+ 
+@@ -198,8 +199,8 @@ function cacti_snmp_get($hostname, $community, $oid, $version, $auth_user, $auth
+ 	return $snmp_value;
+ }
+ 
+-function cacti_snmp_get_raw($hostname, $community, $oid, $version, $auth_user, $auth_pass,
+-	$auth_proto, $priv_pass, $priv_proto, $context,
++function cacti_snmp_get_raw($hostname, $community, $oid, $version, $auth_user = '', $auth_pass = '',
++	$auth_proto = '', $priv_pass = '', $priv_proto = '', $context = '',
+ 	$port = 161, $timeout = 500, $retries = 0, $environ = SNMP_POLLER,
+ 	$engineid = '', $value_output_format = SNMP_STRING_OUTPUT_GUESS) {
+ 
+@@ -287,8 +288,8 @@ function cacti_snmp_get_raw($hostname, $community, $oid, $version, $auth_user, $
+ 	return $snmp_value;
+ }
+ 
+-function cacti_snmp_getnext($hostname, $community, $oid, $version, $auth_user, $auth_pass,
+-	$auth_proto, $priv_pass, $priv_proto, $context,
++function cacti_snmp_getnext($hostname, $community, $oid, $version, $auth_user = '', $auth_pass = '',
++	$auth_proto = '', $priv_pass = '', $priv_proto = '', $context = '',
+ 	$port = 161, $timeout = 500, $retries = 0, $environ = SNMP_POLLER,
+ 	$engineid = '', $value_output_format = SNMP_STRING_OUTPUT_GUESS) {
+ 
+@@ -530,8 +531,8 @@ function cacti_snmp_session_getnext($session, $oid) {
+ 	return $out;
+ }
+ 
+-function cacti_snmp_walk($hostname, $community, $oid, $version, $auth_user, $auth_pass,
+-	$auth_proto, $priv_pass, $priv_proto, $context,
++function cacti_snmp_walk($hostname, $community, $oid, $version, $auth_user = '', $auth_pass = '',
++	$auth_proto = '', $priv_pass = '', $priv_proto = '', $context = '',
+ 	$port = 161, $timeout = 500, $retries = 0, $max_oids = 10, $environ = SNMP_POLLER,
+ 	$engineid = '', $value_output_format = SNMP_STRING_OUTPUT_GUESS) {
+ 
+commit afa01553f574554f782bbed3d2f1efaa355df2d0
+Author: cigamit <jimmy@sqmail.org>
+Date:   Sat Jun 2 20:16:28 2018 -0500
+
+    Additional Change for Issue #1634
+
+diff --git a/cmd.php b/cmd.php
+index 0820444d..5a17c7c6 100644
+--- a/cmd.php
++++ b/cmd.php
+@@ -525,7 +525,7 @@ if ((sizeof($polling_items) > 0) && (read_config_option('poller_enabled') == 'on
+ 
+ 							if (isset($sessions[$host_id . '_' . $item['snmp_version'] . '_' . $item['snmp_port']])) {
+ 								$sessions[$host_id . '_' . $item['snmp_version'] . '_' . $item['snmp_port']]->quick_print = true;
+-								$output = cacti_snmp_session_get($sessions[$host_id . '_' . $item['snmp_version'] . '_' . $item['snmp_port']], $index_item['arg1'], true);
++								$output = cacti_snmp_session_get($sessions[$host_id . '_' . $item['snmp_version'] . '_' . $item['snmp_port']], $index_item['arg1']);
+ 							} else {
+ 								$output = 'U';
+ 							}
+commit 9311987e8a22e9c838bc879ff8eceae7abfbeb65
+Author: cigamit <jimmy@sqmail.org>
+Date:   Sat Jun 2 20:26:48 2018 -0500
+
+    Last update for issue #1634
+
+diff --git a/cmd.php b/cmd.php
+index 5a17c7c6..3061dc41 100644
+--- a/cmd.php
++++ b/cmd.php
+@@ -524,7 +524,6 @@ if ((sizeof($polling_items) > 0) && (read_config_option('poller_enabled') == 'on
+ 							open_snmp_session($host_id, $item);
+ 
+ 							if (isset($sessions[$host_id . '_' . $item['snmp_version'] . '_' . $item['snmp_port']])) {
+-								$sessions[$host_id . '_' . $item['snmp_version'] . '_' . $item['snmp_port']]->quick_print = true;
+ 								$output = cacti_snmp_session_get($sessions[$host_id . '_' . $item['snmp_version'] . '_' . $item['snmp_port']], $index_item['arg1']);
+ 							} else {
+ 								$output = 'U';
