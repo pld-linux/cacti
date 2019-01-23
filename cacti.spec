@@ -4,12 +4,12 @@
 Summary:	Cacti is a PHP frontend for rrdtool
 Summary(pl.UTF-8):	Cacti - frontend w PHP do rrdtoola
 Name:		cacti
-Version:	1.1.38
-Release:	2
+Version:	1.2.1
+Release:	1
 License:	GPL v2
 Group:		Applications/WWW
 Source0:	http://www.cacti.net/downloads/%{name}-%{version}.tar.gz
-# Source0-md5:	a1ffe414280ec6518de7f0f16a5960c5
+# Source0-md5:	dd90a6c851a14cc4d4019b32368a493f
 Source2:	%{name}.crontab
 Source3:	%{name}-apache.conf
 Source4:	%{name}-lighttpd.conf
@@ -17,7 +17,7 @@ Source5:	%{name}-rrdpath.sql
 Source7:	%{name}.logrotate
 
 Patch1:		%{name}-config.patch
-Patch2:		cacti-bug-1634.patch
+
 Patch3:		%{name}-ioerror.patch
 Patch4:		%{name}-webroot.patch
 Patch5:		%{name}-linux_memory.patch
@@ -143,7 +143,7 @@ Dokumentacja do Cacti w formacie HTML.
 %endif
 
 %patch1 -p1
-%patch2 -p1
+
 %patch3 -p1
 %patch4 -p1
 %patch5 -p1
@@ -189,8 +189,7 @@ cp -p *.php $RPM_BUILD_ROOT%{_appdir}
 # ls -1d */index.php | cut -d"/" -f1 | xargs
 cp -a cache/* $RPM_BUILD_ROOT/var/cache/%{name}
 ln -s /var/cache/%{name} $RPM_BUILD_ROOT%{_appdir}/cache
-cp -a cli formats images include install lib locales mibs plugins resource scripts sql $RPM_BUILD_ROOT%{_appdir}
-cp -a docs/html $RPM_BUILD_ROOT%{_appdir}/docs/html
+cp -a cli docs formats images include install lib locales mibs plugins resource scripts sql $RPM_BUILD_ROOT%{_appdir}
 mv $RPM_BUILD_ROOT{%{_appdir}/poller.php,%{_sbindir}/cacti-poller}
 
 cp -a log $RPM_BUILD_ROOT/var/log/%{name}
@@ -261,7 +260,7 @@ fi
 
 %files
 %defattr(644,root,root,755)
-%doc README.md docs/CHANGELOG docs/txt/manual.txt
+%doc README.md CHANGELOG
 %dir %attr(750,root,http) %{_sysconfdir}
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/apache.conf
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/httpd.conf

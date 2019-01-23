@@ -37,13 +37,13 @@
  
 --- cacti/poller.php~	2017-08-28 05:48:36.000000000 +0200
 +++ cacti/poller.php	2017-08-31 08:39:19.780902180 +0200
-@@ -61,7 +61,7 @@ if (!isset($_SERVER['argv'][0]) || isset
- }
+@@ -26,7 +26,7 @@
+ /* tick use required as of PHP 4.3.0 to accomodate signal handling */
+ declare(ticks = 1);
  
- /* start initialization section */
--include(dirname(__FILE__) . '/include/global.php');
-+require "/usr/share/cacti/include/global.php";
- include_once($config['base_path'] . '/lib/poller.php');
- include_once($config['base_path'] . '/lib/data_query.php');
- include_once($config['base_path'] . '/lib/rrd.php');
+-require(__DIR__ . '/include/cli_check.php');
++require('/usr/share/cacti/include/cli_check.php');
+ require_once($config['base_path'] . '/lib/poller.php');
+ require_once($config['base_path'] . '/lib/data_query.php');
+ require_once($config['base_path'] . '/lib/rrd.php');
 
