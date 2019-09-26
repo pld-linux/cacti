@@ -47,3 +47,37 @@
  require_once($config['base_path'] . '/lib/data_query.php');
  require_once($config['base_path'] . '/lib/rrd.php');
 
+diff -ur cacti-1.2.6.org/install/functions.php cacti-1.2.6/install/functions.php
+--- cacti-1.2.6.org/install/functions.php	2019-09-02 10:23:43.000000000 +0200
++++ cacti-1.2.6/install/functions.php	2019-09-26 11:19:59.780907049 +0200
+@@ -794,8 +794,8 @@
+ 			$section = 'general';
+ 		}
+ 		$logfile = 'install' . '-' . $section;
+-		file_put_contents($config['base_path'] . '/log/' . $logfile . '.log', sprintf($format_log1, $day, $time, $levelname, $data, PHP_EOL), $flags);
+-		file_put_contents($config['base_path'] . '/log/install-complete.log', sprintf($format_log2, $day, $time, $sectionname, $levelname, $data, PHP_EOL), $flags);
++		file_put_contents('/var/log/cacti/' . $logfile . '.log', sprintf($format_log1, $day, $time, $levelname, $data, PHP_EOL), $flags);
++		file_put_contents('/var/log/cacti/install-complete.log', sprintf($format_log2, $day, $time, $sectionname, $levelname, $data, PHP_EOL), $flags);
+ 	}
+ }
+ 
+diff -ur cacti-1.2.6.org/lib/installer.php cacti-1.2.6/lib/installer.php
+--- cacti-1.2.6.org/lib/installer.php	2019-09-02 10:23:43.000000000 +0200
++++ cacti-1.2.6/lib/installer.php	2019-09-26 11:20:54.749208954 +0200
+@@ -465,7 +465,6 @@
+ 
+ 		$always_paths = array(
+ 			sys_get_temp_dir(),
+-			$config['base_path'] . '/log',
+ 			$config['base_path'] . '/cache/boost',
+ 			$config['base_path'] . '/cache/mibcache',
+ 			$config['base_path'] . '/cache/realtime',
+@@ -3216,7 +3215,7 @@
+ 		global $config;
+ 
+ 		$page_nr = 1;
+-		$logcontents = tail_file($config['base_path'] . '/log/cacti.log', 100, -1, ' INSTALL:' , $page_nr, $total_rows);
++		$logcontents = tail_file('/var/log/cacti/cacti.log', 100, -1, ' INSTALL:' , $page_nr, $total_rows);
+ 
+ 		$output_log = '';
+ 		foreach ($logcontents as $logline) {
