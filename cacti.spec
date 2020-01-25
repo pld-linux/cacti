@@ -1,6 +1,5 @@
 %define		pia_ver	3.1
 %define		php_min_version 5.4.0
-%include	/usr/lib/rpm/macros.php
 Summary:	Cacti is a PHP frontend for rrdtool
 Summary(pl.UTF-8):	Cacti - frontend w PHP do rrdtoola
 Name:		cacti
