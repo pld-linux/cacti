@@ -1,12 +1,11 @@
---- /poller.php~	2008-10-05 16:54:15.000000000 +0300
-+++ /poller.php	2008-10-05 16:57:05.946911539 +0300
-@@ -424,7 +424,7 @@ while ($poller_runs_completed < $poller_
- 	$started_processes = 0;
+--- cacti-1.2.11/poller.php~	2020-05-01 01:21:10.000000000 +0200
++++ cacti-1.2.11/poller.php	2020-05-01 01:22:05.873227629 +0200
+@@ -438,7 +438,7 @@ while ($poller_runs_completed < $poller_
  	$first_host        = 0;
  	$last_host         = 0;
+ 	$rrds_processed    = 0;
 -	$webroot           = addslashes(($config['cacti_server_os'] == 'win32') ? strtr(strtolower(substr(dirname(__FILE__), 0, 1)) . substr(dirname(__FILE__), 1),"\\", '/') : dirname(__FILE__));
-+	$webroot = $config['base_path'];
++	$webroot = $config['base_path';
  
  	// update web paths for the poller
  	set_config_option('path_webroot', $webroot);
-
