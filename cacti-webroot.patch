@@ -5,7 +5,7 @@
  	$last_host         = 0;
  	$rrds_processed    = 0;
 -	$webroot           = addslashes(($config['cacti_server_os'] == 'win32') ? strtr(strtolower(substr(dirname(__FILE__), 0, 1)) . substr(dirname(__FILE__), 1),"\\", '/') : dirname(__FILE__));
-+	$webroot = $config['base_path';
++	$webroot = $config['base_path'];
  
  	// update web paths for the poller
  	set_config_option('path_webroot', $webroot);
