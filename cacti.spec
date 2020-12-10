@@ -3,12 +3,12 @@
 Summary:	Cacti is a PHP frontend for rrdtool
 Summary(pl.UTF-8):	Cacti - frontend w PHP do rrdtoola
 Name:		cacti
-Version:	1.2.15
+Version:	1.2.16
 Release:	1
 License:	GPL v2
 Group:		Applications/WWW
 Source0:	http://www.cacti.net/downloads/%{name}-%{version}.tar.gz
-# Source0-md5:	b9bba65da360581c51c46bbae24849e8
+# Source0-md5:	1fd84fdf4b3ef87c859678611d487145
 Source2:	%{name}.crontab
 Source3:	%{name}-apache.conf
 Source4:	%{name}-lighttpd.conf
@@ -166,12 +166,12 @@ cp -p %{SOURCE5} sql
 	s,include_once,require_once,
 ' cli/*.php
 
+%{__sed} -i -e 's,#!/usr/bin/env php,#!/usr/bin/php,' include/vendor/cldr-to-gettext-plural-rules/bin/export-plural-rules *.php */*.php
+
 # make sure scripts have php shebang
 %{__sed} -i -e '1{
     /bin.php/!i#!%{_bindir}/php
 }' scripts/*.php  cli/*.php
-
-%{__sed} -i -e 's,#!/usr/bin/env php,#!/usr/bin/php,' include/vendor/cldr-to-gettext-plural-rules/bin/export-plural-rules
 
 chmod a+rx scripts/*.php cli/*.php
 
