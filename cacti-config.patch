@@ -1,7 +1,7 @@
---- cacti-0.8.7b/include/global.php	2008-10-05 04:38:29.740276226 +0300
-+++ cacti-0.8.7g/include/global.php	2010-12-13 12:10:44.312310245 +0200
-@@ -83,13 +83,7 @@ $disable_log_rotation = false;
- ini_set('max_input_vars', '5000');
+--- cacti-1.2.26/include/global.php~	2023-12-24 03:17:14.000000000 +0100
++++ cacti-1.2.26/include/global.php	2024-02-28 13:34:23.293235210 +0100
+@@ -81,13 +81,7 @@ $disable_log_rotation = false;
+ 
  $config = array();
  
 -/* Include configuration, or use the defaults */
@@ -15,19 +15,18 @@
  
  if (isset($config['cacti_version'])) {
  	die('Invalid include/config.php file detected.' . PHP_EOL);
-@@ -139,7 +139,8 @@ if ($config['cacti_server_os'] == 'win32
- 	$config['library_path'] = preg_replace("/(.*[\/])include/", "\\1lib", dirname(__FILE__));
+@@ -238,7 +232,7 @@ if ($config['cacti_server_os'] == 'win32
  }
+ 
  $config['include_path'] = dirname(__FILE__);
 -$config['rra_path'] = $config['base_path'] . '/rra';
 +$config["rra_path"] = '/var/lib/cacti/rra';
-+$config["path_cactilog"] = '/var/log/cacti/cacti.log';
  
  /* for multiple pollers, we need to know this location */
  if (!isset($scripts_path)) {
---- cacti-0.8.7g/include/config.php~	2010-12-13 12:15:08.000000000 +0200
-+++ cacti-0.8.7g/include/config.php	2010-12-13 12:16:09.275611204 +0200
-@@ -27,8 +27,8 @@
+--- cacti-1.2.26/include/config.php~	2023-12-24 03:17:14.000000000 +0100
++++ cacti-1.2.26/include/config.php	2024-02-28 13:35:19.813235204 +0100
+@@ -29,8 +29,8 @@
  $database_type     = 'mysql';
  $database_default  = 'cacti';
  $database_hostname = 'localhost';
@@ -36,20 +35,19 @@
 +$database_username = 'mysql';
 +$database_password = '';
  $database_port     = '3306';
+ $database_retries  = 5;
  $database_ssl      = false;
+--- cacti-1.2.26/poller.php~	2023-12-24 03:17:14.000000000 +0100
++++ cacti-1.2.26/poller.php	2024-02-28 13:36:02.066568538 +0100
+@@ -31,7 +31,7 @@ if (function_exists('pcntl_async_signals
  
---- cacti/poller.php~	2017-08-28 05:48:36.000000000 +0200
-+++ cacti/poller.php	2017-08-31 08:39:19.780902180 +0200
-@@ -26,7 +26,7 @@
- /* tick use required as of PHP 4.3.0 to accomodate signal handling */
- declare(ticks = 1);
+ ini_set('output_buffering', 'Off');
  
 -require(__DIR__ . '/include/cli_check.php');
 +require('/usr/share/cacti/include/cli_check.php');
  require_once($config['base_path'] . '/lib/poller.php');
  require_once($config['base_path'] . '/lib/data_query.php');
  require_once($config['base_path'] . '/lib/rrd.php');
-
 diff -ur cacti-1.2.6.org/install/functions.php cacti-1.2.6/install/functions.php
 --- cacti-1.2.6.org/install/functions.php	2019-09-02 10:23:43.000000000 +0200
 +++ cacti-1.2.6/install/functions.php	2019-09-26 11:19:59.780907049 +0200
@@ -64,23 +62,23 @@ diff -ur cacti-1.2.6.org/install/functions.php cacti-1.2.6/install/functions.php
  	}
  }
  
-diff -ur cacti-1.2.6.org/lib/installer.php cacti-1.2.6/lib/installer.php
---- cacti-1.2.6.org/lib/installer.php	2019-09-02 10:23:43.000000000 +0200
-+++ cacti-1.2.6/lib/installer.php	2019-09-26 11:20:54.749208954 +0200
-@@ -465,7 +465,6 @@
+--- cacti-1.2.26/lib/installer.php~	2023-12-24 03:17:14.000000000 +0100
++++ cacti-1.2.26/lib/installer.php	2024-02-28 13:37:29.589901867 +0100
+@@ -528,7 +528,6 @@ class Installer implements JsonSerializa
  
  		$always_paths = array(
- 			sys_get_temp_dir(),
--			$config['base_path'] . '/log',
- 			$config['base_path'] . '/cache/boost',
- 			$config['base_path'] . '/cache/mibcache',
- 			$config['base_path'] . '/cache/realtime',
-@@ -3216,7 +3215,7 @@
- 		global $config;
+ 			'sys_temp'  => sys_get_temp_dir(),
+-			'log'       => $config['base_path'] . '/log',
+ 			'boost'     => $config['base_path'] . '/cache/boost',
+ 			'mibcache'  => $config['base_path'] . '/cache/mibcache',
+ 			'realtime'  => $config['base_path'] . '/cache/realtime',
+@@ -3539,7 +3538,7 @@ class Installer implements JsonSerializa
  
  		$page_nr = 1;
+ 		$total_rows = 500;
 -		$logcontents = tail_file($config['base_path'] . '/log/cacti.log', 100, -1, ' INSTALL:' , $page_nr, $total_rows);
-+		$logcontents = tail_file('/var/log/cacti/cacti.log', 100, -1, ' INSTALL:' , $page_nr, $total_rows);
++                $logcontents = tail_file('/var/log/cacti/cacti.log', 100, -1, ' INSTALL:' , $page_nr, $total_rows);
  
  		$output_log = '';
  		foreach ($logcontents as $logline) {
+
