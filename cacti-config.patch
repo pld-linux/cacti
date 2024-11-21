@@ -24,8 +24,8 @@
  
  /* for multiple pollers, we need to know this location */
  if (!isset($scripts_path)) {
---- cacti-1.2.26/include/config.php~	2023-12-24 03:17:14.000000000 +0100
-+++ cacti-1.2.26/include/config.php	2024-02-28 13:35:19.813235204 +0100
+--- cacti-1.2.26/include/config.php.dist~	2023-12-24 03:17:14.000000000 +0100
++++ cacti-1.2.26/include/config.php.dist	2024-02-28 13:35:19.813235204 +0100
 @@ -29,8 +29,8 @@
  $database_type     = 'mysql';
  $database_default  = 'cacti';
