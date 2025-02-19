@@ -150,7 +150,7 @@ Dokumentacja do Cacti w formacie HTML.
 %patch -P6 -p1
 
 # ?
-# %patch -P8 -p1
+# %%patch -P8 -p1
 
 mkdir -p sql
 mv *.sql sql
