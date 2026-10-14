@@ -1,14 +1,14 @@
 %define		pia_ver	3.1
-%define		php_min_version 5.4.0
+%define		php_min_version 8.0.0
 Summary:	Cacti is a PHP frontend for rrdtool
 Summary(pl.UTF-8):	Cacti - frontend w PHP do rrdtoola
 Name:		cacti
-Version:	1.2.30
+Version:	1.2.31
 Release:	1
 License:	GPL v2
 Group:		Applications/WWW
-Source0:	http://www.cacti.net/downloads/%{name}-%{version}.tar.gz
-# Source0-md5:	f330157afc4b4527e78585b5327f86ef
+Source0:	https://www.cacti.net/downloads/%{name}-%{version}.tar.gz
+# Source0-md5:	23fd50e0e9bd970ccf5551d5257639f9
 Source2:	%{name}.crontab
 Source3:	%{name}-apache.conf
 Source4:	%{name}-lighttpd.conf
@@ -21,12 +21,14 @@ Patch3:		%{name}-ioerror.patch
 Patch4:		%{name}-webroot.patch
 Patch5:		%{name}-linux_memory.patch
 Patch6:		%{name}-log-verbosity.patch
+Patch7:		%{name}-htmlpurifier-cache.patch
 
 Patch8:		host_name-url.patch
 # http://www.cacti.net/download_patches.php
 # Patch100: ..
-URL:		http://www.cacti.net/
+URL:		https://www.cacti.net/
 BuildRequires:	sed >= 4.0
+Requires(post):	coreutils
 Requires(postun):	/usr/sbin/userdel
 Requires(pre):	/bin/id
 Requires(pre):	/usr/sbin/useradd
@@ -35,9 +37,11 @@ Requires:	group(http)
 Requires:	net-snmp-utils
 Requires:	php(core) >= %{php_min_version}
 Requires:	php(ctype)
+Requires:	php(dom)
 Requires:	php(filter)
 Requires:	php(gd)
 Requires:	php(gettext)
+Requires:	php(gmp)
 Requires:	php(intl)
 Requires:	php(json)
 Requires:	php(ldap)
@@ -48,6 +52,7 @@ Requires:	php(pcntl)
 Requires:	php(pdo-mysql)
 Requires:	php(posix)
 Requires:	php(session)
+Requires:	php(simplexml)
 Requires:	php(sockets)
 Requires:	php(xml)
 Requires:	php(zlib)
@@ -61,7 +66,6 @@ Requires:	webserver(php)
 Suggests:	cacti-spine
 Suggests:	php(bcmath)
 Suggests:	php(ftp)
-Suggests:	php(gmp)
 Suggests:	php(snmp)
 Provides:	cacti(pia) = %{pia_ver}
 Provides:	user(cacti)
@@ -148,6 +152,7 @@ Dokumentacja do Cacti w formacie HTML.
 %patch -P4 -p1
 %patch -P5 -p1
 %patch -P6 -p1
+%patch -P7 -p1
 
 # ?
 # %%patch -P8 -p1
@@ -158,8 +163,16 @@ mv *.sql sql
 cp -p %{SOURCE5} sql
 
 %{__rm} log/.htaccess
+%{__rm} log/index.php
 %{__rm} cli/.htaccess
 %{__rm} rra/.htaccess
+%{__rm} scripts/.htaccess
+
+# upstream tarball ships a fixed CSRF secret, every install must generate its own
+%{__rm} include/vendor/csrf/csrf-secret.php
+
+# phar build tooling of bundled random_compat, not used at runtime
+%{__rm} -r include/vendor/paragonie/random_compat/{build-phar.sh,dist,other,psalm-autoload.php,psalm.xml}
 
 # must require libs to get fatals on missing files, not include
 %{__sed} -i -e '
@@ -190,6 +203,7 @@ cp -p *.php $RPM_BUILD_ROOT%{_appdir}
 # dirs that contain index.php are likely to be installed
 # ls -1d */index.php | cut -d"/" -f1 | xargs
 cp -a cache/* $RPM_BUILD_ROOT/var/cache/%{name}
+install -d $RPM_BUILD_ROOT/var/cache/%{name}/htmlpurifier
 ln -s /var/cache/%{name} $RPM_BUILD_ROOT%{_appdir}/cache
 cp -a cli docs formats images include install lib locales mibs plugins resource scripts sql $RPM_BUILD_ROOT%{_appdir}
 mv $RPM_BUILD_ROOT{%{_appdir}/poller.php,%{_sbindir}/cacti-poller}
@@ -198,6 +212,7 @@ cp -a log $RPM_BUILD_ROOT/var/log/%{name}
 :> $RPM_BUILD_ROOT/var/log/%{name}/%{name}.log
 install -d $RPM_BUILD_ROOT/var/log/archive/%{name}
 cp -a rra $RPM_BUILD_ROOT/var/lib/%{name}
+:> $RPM_BUILD_ROOT/var/lib/%{name}/csrf-secret.php
 
 mv $RPM_BUILD_ROOT%{_appdir}/include/config.php.dist $RPM_BUILD_ROOT%{_sysconfdir}/config.php
 cp -p %{SOURCE2} $RPM_BUILD_ROOT/etc/cron.d/%{name}
@@ -226,6 +241,10 @@ exit 0
 %post
 if [ ! -f /var/log/%{name}/cacti.log ]; then
 	install -m660 -oroot -ghttp /dev/null /var/log/%{name}/cacti.log
+fi
+if [ ! -s /var/lib/%{name}/csrf-secret.php ]; then
+	install -m640 -oroot -ghttp /dev/null /var/lib/%{name}/csrf-secret.php
+	head -c 32 /dev/urandom | sha1sum | cut -c1-40 > /var/lib/%{name}/csrf-secret.php
 fi
 
 %postun
@@ -293,6 +312,7 @@ fi
 %attr(755,root,root) %{_appdir}/scripts/*
 
 %attr(750,root,http) %dir /var/lib/%{name}
+%attr(640,root,http) %ghost /var/lib/%{name}/csrf-secret.php
 %attr(770,root,http) %dir /var/lib/%{name}/rra
 %attr(730,root,http) %dir /var/log/%{name}
 %attr(750,root,logs) %dir /var/log/archive/%{name}
@@ -300,6 +320,7 @@ fi
 %attr(730,root,http) %dir /var/cache/%{name}
 /var/cache/%{name}/index.php
 %attr(730,root,http) %dir /var/cache/%{name}/boost
+%attr(770,root,http) %dir /var/cache/%{name}/htmlpurifier
 %attr(730,root,http) %dir /var/cache/%{name}/mibcache
 %attr(770,root,http) %dir /var/cache/%{name}/realtime
 %attr(730,root,http) %dir /var/cache/%{name}/spikekill

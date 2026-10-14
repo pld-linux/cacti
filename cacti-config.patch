@@ -1,6 +1,6 @@
---- cacti-1.2.26/include/global.php~	2023-12-24 03:17:14.000000000 +0100
-+++ cacti-1.2.26/include/global.php	2024-02-28 13:34:23.293235210 +0100
-@@ -81,13 +81,7 @@ $disable_log_rotation = false;
+--- cacti-1.2.31/include/global.php~
++++ cacti-1.2.31/include/global.php
+@@ -81,13 +81,7 @@
  
  $config = array();
  
@@ -15,7 +15,16 @@
  
  if (isset($config['cacti_version'])) {
  	die('Invalid include/config.php file detected.' . PHP_EOL);
-@@ -238,7 +232,7 @@ if ($config['cacti_server_os'] == 'win32
+@@ -195,6 +189,8 @@
+ 
+ if (!empty($path_csrf_secret)) {
+ 	$config['path_csrf_secret'] = $path_csrf_secret;
++} else {
++	$config['path_csrf_secret'] = '/var/lib/cacti/csrf-secret.php';
+ }
+ 
+ /* built-in snmp support */
+@@ -238,7 +234,7 @@
  }
  
  $config['include_path'] = dirname(__FILE__);
@@ -24,8 +33,8 @@
  
  /* for multiple pollers, we need to know this location */
  if (!isset($scripts_path)) {
---- cacti-1.2.26/include/config.php.dist~	2023-12-24 03:17:14.000000000 +0100
-+++ cacti-1.2.26/include/config.php.dist	2024-02-28 13:35:19.813235204 +0100
+--- cacti-1.2.31/include/config.php.dist~
++++ cacti-1.2.31/include/config.php.dist
 @@ -29,8 +29,8 @@
  $database_type     = 'mysql';
  $database_default  = 'cacti';
@@ -37,9 +46,18 @@
  $database_port     = '3306';
  $database_retries  = 5;
  $database_ssl      = false;
---- cacti-1.2.26/poller.php~	2023-12-24 03:17:14.000000000 +0100
-+++ cacti-1.2.26/poller.php	2024-02-28 13:36:02.066568538 +0100
-@@ -31,7 +31,7 @@ if (function_exists('pcntl_async_signals
+@@ -131,7 +131,7 @@
+  * the CRSF secret file.
+  */
+ 
+-//$path_csrf_secret = '/usr/share/cacti/resource/csrf-secret.php';
++//$path_csrf_secret = '/var/lib/cacti/csrf-secret.php';
+ 
+ /**
+  * The following are optional variables for debugging low level system
+--- cacti-1.2.31/poller.php~
++++ cacti-1.2.31/poller.php
+@@ -31,7 +31,7 @@
  
  ini_set('output_buffering', 'Off');
  
@@ -48,10 +66,9 @@
  require_once($config['base_path'] . '/lib/poller.php');
  require_once($config['base_path'] . '/lib/data_query.php');
  require_once($config['base_path'] . '/lib/rrd.php');
-diff -ur cacti-1.2.6.org/install/functions.php cacti-1.2.6/install/functions.php
---- cacti-1.2.6.org/install/functions.php	2019-09-02 10:23:43.000000000 +0200
-+++ cacti-1.2.6/install/functions.php	2019-09-26 11:19:59.780907049 +0200
-@@ -794,8 +794,8 @@
+--- cacti-1.2.31/install/functions.php~
++++ cacti-1.2.31/install/functions.php
+@@ -1056,8 +1056,8 @@
  			$section = 'general';
  		}
  		$logfile = 'install' . '-' . $section;
@@ -62,9 +79,9 @@ diff -ur cacti-1.2.6.org/install/functions.php cacti-1.2.6/install/functions.php
  	}
  }
  
---- cacti-1.2.26/lib/installer.php~	2023-12-24 03:17:14.000000000 +0100
-+++ cacti-1.2.26/lib/installer.php	2024-02-28 13:37:29.589901867 +0100
-@@ -528,7 +528,6 @@ class Installer implements JsonSerializa
+--- cacti-1.2.31/lib/installer.php~
++++ cacti-1.2.31/lib/installer.php
+@@ -528,7 +528,6 @@
  
  		$always_paths = array(
  			'sys_temp'  => sys_get_temp_dir(),
@@ -72,7 +89,7 @@ diff -ur cacti-1.2.6.org/install/functions.php cacti-1.2.6/install/functions.php
  			'boost'     => $config['base_path'] . '/cache/boost',
  			'mibcache'  => $config['base_path'] . '/cache/mibcache',
  			'realtime'  => $config['base_path'] . '/cache/realtime',
-@@ -3539,7 +3538,7 @@ class Installer implements JsonSerializa
+@@ -3556,7 +3555,7 @@
  
  		$page_nr = 1;
  		$total_rows = 500;
@@ -81,4 +98,3 @@ diff -ur cacti-1.2.6.org/install/functions.php cacti-1.2.6/install/functions.php
  
  		$output_log = '';
  		foreach ($logcontents as $logline) {
-

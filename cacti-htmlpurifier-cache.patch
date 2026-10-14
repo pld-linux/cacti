@@ -1,0 +1,16 @@
+HTMLPurifier by default writes its definition cache into its own library dir,
+which is read-only under /usr/share and triggers warnings on every call
+
+--- cacti-1.2.31/lib/html.php~
++++ cacti-1.2.31/lib/html.php
+@@ -1160,7 +1160,9 @@
+  * @return string The sanitized string
+  */
+ function html_purify($string) {
+-	$purifier = new HTMLPurifier();
++	$purifier_config = HTMLPurifier_Config::createDefault();
++	$purifier_config->set('Cache.SerializerPath', '/var/cache/cacti/htmlpurifier');
++	$purifier = new HTMLPurifier($purifier_config);
+ 
+ 	return $purifier->purify($string);
+ }
